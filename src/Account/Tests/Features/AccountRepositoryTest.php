@@ -3,15 +3,17 @@
 namespace App\Account\Tests\Features;
 
 use App\Account\Domain\Repository\AccountRepository;
-use App\Account\Infrastructure\Models\AccountModel;
+use App\Account\Infrastructure\Models\Account;
 use App\Account\Infrastructure\Repository\PdoAccountRepository;
 use App\Shared\VO\AmountVO;
 use App\Shared\VO\StringVO;
 use Exception;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AccountRepositoryTest extends TestCase
 {
+    use RefreshDatabase;
     private AccountRepository $repository;
     protected function setUp(): void
     {
@@ -20,6 +22,7 @@ class AccountRepositoryTest extends TestCase
     }
 
     /**
+     * @return void
      * @throws Exception
      */
     public function test_can_create_account()
@@ -31,11 +34,15 @@ class AccountRepositoryTest extends TestCase
 
         $this->repository->save($account);
 
-        $createdAccountDb = AccountModel::whereUuid($account->id()->value())->whereIsDeleted(false)->first();
+        $createdAccountDb = Account::whereUuid($account->id()->value())->whereIsDeleted(false)->first();
 
         $this->assertNotNull($createdAccountDb);
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function test_can_update_account()
     {
         $initData = AccountSUT::asSUT()
@@ -56,9 +63,31 @@ class AccountRepositoryTest extends TestCase
 
         $this->repository->save($account);
 
-        $updatedAccountDb = AccountModel::whereUuid($account->id()->value())->whereIsDeleted(false)->first();
+        $updatedAccountDb = Account::whereUuid($account->id()->value())->whereIsDeleted(false)->first();
 
         $this->assertNotNull($updatedAccountDb);
         $this->assertEquals(1000000, $updatedAccountDb['balance']);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function test_can_delete_account()
+    {
+        $initData = AccountSUT::asSUT()
+            ->withExistingAccount();
+        $account = $initData->account;
+        $accountId = $account->id()->value();
+        $this->repository->save($account);
+
+        $account->delete();
+
+        $this->repository->save($account);
+
+        $deletedAccount = Account::whereUuid($accountId)->whereIsDeleted(true)->first();
+
+        $this->assertNotNull($deletedAccount);
+        $this->assertEquals($deletedAccount->deleted_at, $account->deletedAt()->formatYMDHIS());
     }
 }

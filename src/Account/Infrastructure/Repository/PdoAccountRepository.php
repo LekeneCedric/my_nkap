@@ -28,6 +28,9 @@ class PdoAccountRepository implements AccountRepository
         if ($account->eventState() === AccountEventStateEnum::onUpdate) {
             $this->updateAccount($account);
         }
+        if ($account->eventState() === AccountEventStateEnum::onDelete) {
+            $this->deleteAccount($account);
+        }
     }
 
     /**
@@ -49,6 +52,26 @@ class PdoAccountRepository implements AccountRepository
         $sql = $this->getUpdateAccountSql();
         $stmt = $this->pdo->prepare($sql);
         $data = $account->toArray();
+        $stmt->execute($data);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function deleteAccount(Account $account): void
+    {
+        $data = [
+            'uuid' => $account->id()->value(),
+            'deleted_at' => $account->deletedAt()->formatYMDHIS(),
+        ];
+
+        $sql = "
+            UPDATE accounts
+            SET is_deleted = 1,
+                deleted_at = :deleted_at
+            WHERE uuid=:uuid
+        ";
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute($data);
     }
 

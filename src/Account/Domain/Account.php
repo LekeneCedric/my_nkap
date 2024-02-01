@@ -92,6 +92,7 @@ class Account
 
     public function delete(): void
     {
+        $this->eventState = AccountEventStateEnum::onDelete;
         $this->updatedAt = new DateVO();
         $this->deletedAt = new DateVO();
         $this->isDeleted = true;
@@ -105,6 +106,11 @@ class Account
     public function eventState()
     {
         return $this->eventState;
+    }
+
+    public function deletedAt(): ?DateVO
+    {
+        return $this->deletedAt;
     }
 
     /**
