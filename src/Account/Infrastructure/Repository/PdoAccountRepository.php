@@ -5,9 +5,12 @@ namespace App\Account\Infrastructure\Repository;
 use App\Account\Domain\Account;
 use App\Account\Domain\Enums\AccountEventStateEnum;
 use App\Account\Domain\Repository\AccountRepository;
+use App\Shared\VO\AmountVO;
 use App\Shared\VO\Id;
+use App\Shared\VO\StringVO;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Psy\Util\Str;
 
 class PdoAccountRepository implements AccountRepository
 {
@@ -124,6 +127,42 @@ class PdoAccountRepository implements AccountRepository
 
     public function byId(Id $accountId): ?Account
     {
-        return null;
+        $sql = "
+            SELECT
+                uuid as Id,
+                name,
+                type,
+                icon,
+                color,
+                balance,
+                is_include_in_total_balance as isIncludeInTotalBalance
+            FROM accounts
+            WHERE uuid = :uuid AND
+                  is_deleted = false
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+        $stmt->execute([
+            'uuid' => $accountId->value(),
+        ]);
+        $result = $stmt->fetch();
+        if (!$result) {
+            return null;
+        }
+        return $this->toAccountDomain($result);
+    }
+
+    private function toAccountDomain(array $result): Account
+    {
+        return Account::create(
+            name: new StringVO($result['name']),
+            type: new StringVO($result['type']),
+            icon: new StringVO($result['icon']),
+            color: new StringVO($result['color']),
+            balance: new AmountVO($result['balance']),
+            isIncludeInTotalBalance: $result['isIncludeInTotalBalance'],
+            isDeleted: false,
+            accountId: new Id(($result['Id']))
+        );
     }
 }

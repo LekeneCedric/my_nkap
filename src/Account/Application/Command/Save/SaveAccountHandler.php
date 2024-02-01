@@ -42,6 +42,10 @@ class SaveAccountHandler
         $response->status = true;
         $response->isSaved = true;
         $response->accountId = $account->id()->value();
+        $response->message = 'Compte créer avec succès !';
+        if ($command->accountId) {
+            $response->message = 'Informations compte modifiés avec succès !';
+        }
         return $response;
     }
 

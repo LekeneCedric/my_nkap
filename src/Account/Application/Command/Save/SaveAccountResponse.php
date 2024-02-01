@@ -7,4 +7,5 @@ class SaveAccountResponse
     public bool $isSaved = false;
     public bool $status = false;
     public string $accountId = '';
+    public string $message = '';
 }
