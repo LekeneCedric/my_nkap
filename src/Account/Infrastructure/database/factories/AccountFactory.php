@@ -17,7 +17,9 @@ class AccountFactory extends Factory
             'type' => $this->faker->title,
             'icon' => $this->faker->image,
             'color' => $this->faker->colorName,
-            'balance' => $this->faker->numberBetween(2000, 200000),
+            'balance' => $this->faker->numberBetween(0, 0),
+            'total_incomes' => 0,
+            'total_expenses' => 0,
             'is_include_in_total_balance' => $this->faker->boolean,
         ];
     }

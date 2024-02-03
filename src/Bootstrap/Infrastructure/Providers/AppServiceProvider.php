@@ -3,6 +3,7 @@
 namespace App\Bootstrap\Infrastructure\Providers;
 
 use App\Account\Infrastructure\Provider\AccountServiceProvider;
+use App\Operation\Infrastructure\providers\OperationServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
     private function loadModuleServiceProviders(): void
     {
         $this->app->register(AccountServiceProvider::class);
+        $this->app->register(OperationServiceProvider::class);
     }
 
     /**
