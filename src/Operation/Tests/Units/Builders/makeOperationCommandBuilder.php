@@ -8,6 +8,7 @@ use App\Operation\Domain\OperationTypeEnum;
 class makeOperationCommandBuilder
 {
     private string $accountId;
+    private ?string $operationId = null;
     private OperationTypeEnum $type;
     private string $category;
     private string $detail;
@@ -19,9 +20,15 @@ class makeOperationCommandBuilder
         return new self();
     }
 
-    public function withAccountId(string $accountId)
+    public function withAccountId(string $accountId): static
     {
         $this->accountId = $accountId;
+        return $this;
+    }
+
+    public function withOperationId(mixed $operationId): static
+    {
+        $this->operationId = $operationId;
         return $this;
     }
 
@@ -55,9 +62,9 @@ class makeOperationCommandBuilder
         return $this;
     }
 
-    public function build()
+    public function build(): makeOperationCommand
     {
-        return new makeOperationCommand(
+        $command =  new makeOperationCommand(
             accountId: $this->accountId,
             type: $this->type,
             amount: $this->amount,
@@ -65,6 +72,9 @@ class makeOperationCommandBuilder
             detail: $this->detail,
             date: $this->date,
         );
+        $command->operationId = $this->operationId;
+
+        return $command;
     }
 
 }

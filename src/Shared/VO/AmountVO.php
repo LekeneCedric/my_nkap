@@ -8,7 +8,7 @@ class AmountVO
         private float $value
     )
     {
-        $this->validate($this->value);
+//        $this->validate($this->value);
     }
 
     private function validate(float $value): void

@@ -45,6 +45,67 @@ class OperationAccountRepositoryTest extends TestCase
         $this->assertEquals($updatedAccount->total_incomes, $createdOperation->amount);
     }
 
+    public function test_can_update_operation()
+    {
+        $initSUT = $this->buildSUT(operationAmount: 40000);
+        $operationId = $initSUT['operationId'];
+        $operationAccount = $initSUT['account'];
+
+        $this->repository->saveOperation($operationAccount);
+
+        $operationAccount->updateOperation(
+            operationId: new Id($operationId),
+            amount: new AmountVO(30000),
+            type: OperationTypeEnum::EXPENSE,
+            category: new StringVO('danse'),
+            detail: new StringVO('$command->detail'),
+            date: new DateVO('2002-09-30 00:00:00'),
+        );
+
+        $this->repository->saveOperation($operationAccount);
+
+        $updatedAccount = Account::whereUuid($operationAccount->id()->value())
+            ->whereIsDeleted(false)
+            ->first();
+        $createdOperation = Operation::whereUuid($operationId)
+            ->whereIsDeleted(false)
+            ->first();
+
+        $this->assertNotNull($createdOperation);
+        $this->assertEquals(30000, $createdOperation->amount);
+        $this->assertEquals(OperationTypeEnum::EXPENSE->value, $createdOperation->type);
+        $this->assertEquals(-30000, $updatedAccount->balance);
+        $this->assertEquals(30000, $updatedAccount->total_expenses);
+    }
+
+    /**
+     * @return void
+     * @throws OperationGreaterThanAccountBalanceException
+     */
+    public function test_can_delete_operation()
+    {
+        $initSUT = $this->buildSUT(operationAmount: 40000);
+        $operationId = $initSUT['operationId'];
+        $operationAccount = $initSUT['account'];
+
+        $this->repository->saveOperation($operationAccount);
+
+        $operationAccount->deleteOperation(new Id($operationId));
+
+        $this->repository->saveOperation($operationAccount);
+
+        $updatedAccount = Account::whereUuid($operationAccount->id()->value())
+            ->whereIsDeleted(false)
+            ->first();
+        $createdOperation = Operation::whereUuid($operationId)
+            ->whereIsDeleted(false)
+            ->first();
+
+        $this->assertNull($createdOperation);
+        $this->assertEquals(0, $updatedAccount->balance);
+        $this->assertEquals(0, $updatedAccount->total_incomes);
+    }
+
     /**
      * @param int $operationAmount
      * @return array

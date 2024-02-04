@@ -6,6 +6,7 @@ use App\Operation\Domain\OperationTypeEnum;
 
 class makeOperationCommand
 {
+    public ?string $operationId = null;
     public function __construct(
         public string            $accountId,
         public OperationTypeEnum $type,

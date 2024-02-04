@@ -15,6 +15,7 @@ use App\Operation\Tests\Units\Repository\InMemoryOperationAccountRepository;
 use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
+use App\Shared\VO\StringVO;
 use Exception;
 use Tests\TestCase;
 
@@ -56,8 +57,40 @@ class MakeOperationTest extends TestCase
     }
 
     /**
+     * @throws NotFoundAccountException
+     * @throws OperationGreaterThanAccountBalanceException
+     */
+    public function test_can_update_operation()
+    {
+        $initData = $this->buildSUT(withExistingOperation: true);
+        $updatedOperationAmount = 30000;
+        $command = makeOperationCommandBuilder::asCommand()
+            ->withAccountId($initData['accountId'])
+            ->withOperationId($initData['operationId'])
+            ->withType(OperationTypeEnum::EXPENSE)
+            ->withAmount($updatedOperationAmount)
+            ->withCategory('earning')
+            ->withDetail("Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s")
+            ->withDate((new DateVO())->formatYMDHIS())
+            ->build();
+
+        $response = $this->makeOperation($command);
+        $updatedAccount = $this->repository->operationsAccounts[$initData['accountId']];
+
+        $this->assertTrue($response->operationSaved);
+        $this->assertEquals($initData['operationId'], $updatedAccount->currentOperation()->id()->value());
+        $this->assertEquals(30000, $updatedAccount->currentOperation()->amount()->value());
+        $this->assertEquals('earning', $updatedAccount->currentOperation()->category()->value());
+        $this->assertEquals(OperationTypeEnum::EXPENSE, $updatedAccount->currentOperation()->type());
+        $this->assertEquals(-30000, $updatedAccount->balance()->value());
+        $this->assertEquals(30000, $updatedAccount->totalExpenses()->value());
+    }
+
+    /**
      * @return void
      * @throws NotFoundAccountException
+     * @throws OperationGreaterThanAccountBalanceException
      */
     public function test_can_throw_exception_if_expense_operation_amount_is_greater_than_balance()
     {
@@ -77,7 +110,12 @@ class MakeOperationTest extends TestCase
         $this->makeOperation($command);
     }
 
-    private function buildSUT(): array
+    /**
+     * @param bool $withExistingOperation
+     * @return array
+     * @throws OperationGreaterThanAccountBalanceException
+     */
+    private function buildSUT(bool $withExistingOperation = false): array
     {
         $account = operationAccount::create(
             accountId: new Id(),
@@ -86,10 +124,24 @@ class MakeOperationTest extends TestCase
             totalExpenses: new AmountVO(0),
         );
 
+        if ($withExistingOperation) {
+            $account->makeOperation(
+                amount: new AmountVO(100000),
+                type: OperationTypeEnum::INCOME,
+                category: new StringVO('operation'),
+                detail: new StringVO('Detail transaction'),
+                date: new DateVO('2024-09-30 00:00:00')
+            );
+        }
         $this->repository->operationsAccounts[$account->id()->value()] = $account;
-        return [
+        $data = [
           'accountId' => $account->id()->value(),
         ];
+
+        if ($withExistingOperation) {
+            $data['operationId'] = $account->currentOperation()->id()->value();
+        }
+        return $data;
     }
 
     /**

@@ -29,6 +29,112 @@ class operationAccount
     }
 
     /**
+     * @param Id $operationId
+     * @param AmountVO $amount
+     * @param OperationTypeEnum $type
+     * @param StringVO $category
+     * @param StringVO $detail
+     * @param DateVO $date
+     * @return void
+     * @throws OperationGreaterThanAccountBalanceException
+     */
+    public function updateOperation(
+        Id                $operationId,
+        AmountVO          $amount,
+        OperationTypeEnum $type,
+        StringVO          $category,
+        StringVO          $detail,
+        DateVO            $date
+    ): void
+    {
+        $this->checkIfOperationAmoutGreaterThantAccountBalancecapacity(
+            operationType: $type,
+            amount: $amount,
+        );
+        $operation = $this->operations[$operationId->value()];
+        $previousOperationType = $operation->type();
+        $previousOperationAmount = $operation->amount();
+        $operation->update(
+            amount: $amount,
+            type: $type,
+            category: $category,
+            detail: $detail,
+            date: $date
+        );
+        $this->currentOperation = $operation;
+        $this->applyUpdateOperationSideEffects(
+            previousType: $previousOperationType,
+            previousAmount: $previousOperationAmount,
+            newType: $operation->type(),
+            newAmount: $operation->amount()
+        );
+    }
+
+    /**
+     * @param OperationTypeEnum $operationType
+     * @param AmountVO $amount
+     * @return void
+     * @throws OperationGreaterThanAccountBalanceException
+     */
+    private function checkIfOperationAmoutGreaterThantAccountBalancecapacity(
+        OperationTypeEnum $operationType,
+        AmountVO          $amount
+    ): void
+    {
+        if ($operationType === OperationTypeEnum::EXPENSE) {
+            if ($amount->value() > $this->balance->value()) {
+                throw new OperationGreaterThanAccountBalanceException("
+                    Le solde du compte est insuffisant pour cette transaction !
+                ");
+            }
+        }
+    }
+
+    /**
+     * @param OperationTypeEnum $previousType
+     * @param AmountVO $previousAmount
+     * @param OperationTypeEnum $newType
+     * @param AmountVO $newAmount
+     * @return void
+     */
+    private function applyUpdateOperationSideEffects(
+        OperationTypeEnum $previousType,
+        AmountVO          $previousAmount,
+        OperationTypeEnum $newType,
+        AmountVO          $newAmount
+    ): void
+    {
+        $this->applyDeleteOperationSideEffects(
+            type: $previousType,
+            amount: $previousAmount,
+        );
+        $this->applyNewOperationSideEffects(
+            type: $newType,
+            amount: $newAmount,
+        );
+
+    }
+
+    private function applyNewOperationSideEffects(
+        OperationTypeEnum $type,
+        AmountVO          $amount
+    ): void
+    {
+        $balanceValue = $this->balance->value();
+        $totalIncomesValue = $this->totalIncomes->value();
+        $totalExpensesValue = $this->totalExpenses->value();
+        $amountValue = $amount->value();
+        if ($type === OperationTypeEnum::INCOME) {
+            $this->balance = new AmountVO($balanceValue + $amountValue);
+            $this->totalIncomes = new AmountVO($totalIncomesValue + $amountValue);
+        } else {
+            $this->balance = new AmountVO($balanceValue - $amountValue);
+            $this->totalExpenses = new AmountVO($totalExpensesValue + $amountValue);
+        }
+        $this->updatedAt = new DateVO();
+    }
+
+    /**
      * @param AmountVO $amount
      * @param OperationTypeEnum $type
      * @param StringVO $category
@@ -56,32 +162,12 @@ class operationAccount
             detail: $detail,
             date: $date
         );
-        $this->operations[] = $operation;
+        $this->operations[$operation->id()->value()] = $operation;
         $this->currentOperation = $operation;
         $this->applyNewOperationSideEffects(
             type: $operation->type(),
             amount: $operation->amount()
         );
-    }
-
-    /**
-     * @param OperationTypeEnum $operationType
-     * @param AmountVO $amount
-     * @return void
-     * @throws OperationGreaterThanAccountBalanceException
-     */
-    private function checkIfOperationAmoutGreaterThantAccountBalancecapacity(
-        OperationTypeEnum $operationType,
-        AmountVO          $amount
-    ): void
-    {
-        if ($operationType === OperationTypeEnum::EXPENSE) {
-            if ($amount->value() > $this->balance->value()) {
-                throw new OperationGreaterThanAccountBalanceException("
-                    Le solde du compte est insuffisant pour cette transaction !
-                ");
-            }
-        }
     }
 
     /**
@@ -104,25 +190,6 @@ class operationAccount
             totalIncomes: $totalIncomes,
             totalExpenses: $totalExpenses,
         );
-    }
-
-    private function applyNewOperationSideEffects(
-        OperationTypeEnum $type,
-        AmountVO          $amount
-    ): void
-    {
-        $balanceValue = $this->balance->value();
-        $totalIncomesValue = $this->totalIncomes->value();
-        $totalExpensesValue = $this->totalExpenses->value();
-        $amountValue = $amount->value();
-        if ($type === OperationTypeEnum::INCOME) {
-            $this->balance = new AmountVO($balanceValue + $amountValue);
-            $this->totalIncomes = new AmountVO($totalIncomesValue + $amountValue);
-        } else {
-            $this->balance = new AmountVO($balanceValue - $amountValue);
-            $this->totalExpenses = new AmountVO($totalExpensesValue + $amountValue);
-        }
-        $this->updatedAt = new DateVO();
     }
 
     /**
@@ -171,10 +238,10 @@ class operationAccount
 
     private function deleteAndRetrieveOperation(Id $operationId): ?Operation
     {
-        for ($i = 0; $i < count($this->operations); $i++) {
-            if ($this->operations[$i]->id()->value() === $operationId->value()) {
-                $this->operations[$i]->delete();
-                return $this->operations[$i];
+        foreach ($this->operations as &$operation) {
+            if ($operation->id()->value() === $operationId->value()) {
+                $operation->delete();
+                return $operation;
             }
         }
         return null;
@@ -186,15 +253,21 @@ class operationAccount
     }
 
     /**
+     * @param OperationTypeEnum|null $type
+     * @param AmountVO|null $amount
      * @return void
      */
-    private function applyDeleteOperationSideEffects(): void
+    private function applyDeleteOperationSideEffects(
+        ?OperationTypeEnum $type = null,
+        ?AmountVO $amount= null,
+    ): void
     {
         $newBalanceValue = $this->balance->value();
         $totalExpensesValue = $this->totalExpenses->value();
         $totalIncomesValue = $this->totalIncomes->value();
-        $currentOperationAmountValue = $this->currentOperation->amount()->value();
-        if ($this->currentOperation->type() === OperationTypeEnum::EXPENSE) {
+        $currentOperationAmountValue = $amount ? $amount->value() :$this->currentOperation->amount()->value();
+        $currentOperationType = $type ?: $this->currentOperation->type();
+        if ($currentOperationType === OperationTypeEnum::EXPENSE) {
             $newBalanceValue += $currentOperationAmountValue;
             $newTotalExpenses = $totalExpensesValue - $currentOperationAmountValue;
             $this->totalExpenses = new AmountVO($newTotalExpenses);

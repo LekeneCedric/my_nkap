@@ -29,13 +29,25 @@ class makeOperationHandler
     {
         $operationAccount = $this->getOperationAccountOrThrowNotFoundException($command->accountId);
 
-        $operationAccount->makeOperation(
-            amount: new AmountVO($command->amount),
-            type: $command->type,
-            category: new StringVO($command->category),
-            detail: new StringVO($command->detail),
-            date: new DateVO($command->date)
-        );
+        if ($command->operationId) {
+            $operationAccount->updateOperation(
+              operationId: new Id($command->operationId),
+              amount: new AmountVO($command->amount),
+              type: $command->type,
+              category: new StringVO($command->category),
+              detail: new StringVO($command->detail),
+              date: new DateVO($command->date),
+            );
+        }
+        if (!$command->operationId) {
+            $operationAccount->makeOperation(
+                amount: new AmountVO($command->amount),
+                type: $command->type,
+                category: new StringVO($command->category),
+                detail: new StringVO($command->detail),
+                date: new DateVO($command->date)
+            );
+        }
 
         $this->repository->saveOperation($operationAccount);
 

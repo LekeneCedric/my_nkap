@@ -11,6 +11,10 @@ use Exception;
 class Operation
 {
     private ?DateVO $createdAt = null;
+    private ?DateVO $updatedAt = null;
+    private ?DateVO $deletedAt = null;
+    private OperationEventStateEnum $eventState;
+
     public function __construct(
         private Id                $operationId,
         private AmountVO          $amount,
@@ -30,7 +34,7 @@ class Operation
         StringVO          $detail,
         DateVO            $date,
         ?Id               $id = null,
-    )
+    ): Operation
     {
         $operation = new self(
             operationId: $id ?? new Id(),
@@ -42,9 +46,27 @@ class Operation
             isDeleted: false,
         );
         if (!$id) {
+            $operation->eventState = OperationEventStateEnum::onCreate;
             $operation->createdAt = new DateVO();
         }
         return $operation;
+    }
+
+    public function update(
+        AmountVO $amount,
+        OperationTypeEnum $type,
+        StringVO $category,
+        StringVO $detail,
+        DateVO $date
+    ): void
+    {
+        $this->eventState = OperationEventStateEnum::onUpdate;
+        $this->updatedAt = new DateVO();
+        $this->amount = $amount;
+        $this->type = $type;
+        $this->category = $category;
+        $this->detail = $detail;
+        $this->date = $date;
     }
 
     public function id(): Id
@@ -54,6 +76,8 @@ class Operation
 
     public function delete(): void
     {
+        $this->eventState = OperationEventStateEnum::onDelete;
+        $this->deletedAt = new DateVO();
         $this->isDeleted = true;
     }
 
@@ -72,12 +96,17 @@ class Operation
         return $this->amount;
     }
 
+    public function category(): StringVO
+    {
+        return $this->category;
+    }
+
     /**
      * @throws Exception
      */
-    public function toArray()
+    public function toArray(): array
     {
-        return [
+        $data = [
             'uuid' => $this->operationId->value(),
             'type' => $this->type->value,
             'amount' => $this->amount->value(),
@@ -85,7 +114,26 @@ class Operation
             'details' => $this->detail->value(),
             'date' => $this->date->formatYMDHIS(),
             'is_deleted' => $this->isDeleted ? 1 : 0,
-            'created_at' => $this->createdAt->formatYMDHIS(),
         ];
+        if ($this->eventState === OperationEventStateEnum::onCreate) {
+            $data['created_at'] = $this->createdAt->formatYMDHIS();
+        }
+        if ($this->eventState === OperationEventStateEnum::onUpdate) {
+            $data['updated_at'] = $this->updatedAt->formatYMDHIS();
+        }
+        return $data;
+    }
+
+    public function deletedAt(): ?DateVO
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @return OperationEventStateEnum
+     */
+    public function eventState(): OperationEventStateEnum
+    {
+        return $this->eventState;
     }
 }
