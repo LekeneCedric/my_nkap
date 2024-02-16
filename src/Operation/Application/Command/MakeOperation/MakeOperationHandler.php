@@ -11,7 +11,7 @@ use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
 
-class makeOperationHandler
+class MakeOperationHandler
 {
     public function __construct(
         private OperationAccountRepository $repository,
@@ -20,16 +20,17 @@ class makeOperationHandler
     }
 
     /**
-     * @param makeOperationCommand $command
+     * @param MakeOperationCommand $command
      * @return makeOperationResponse
      * @throws NotFoundAccountException
      * @throws OperationGreaterThanAccountBalanceException
      */
-    public function handle(makeOperationCommand $command): makeOperationResponse
+    public function handle(MakeOperationCommand $command): makeOperationResponse
     {
         $operationAccount = $this->getOperationAccountOrThrowNotFoundException($command->accountId);
 
         if ($command->operationId) {
+
             $operationAccount->updateOperation(
               operationId: new Id($command->operationId),
               amount: new AmountVO($command->amount),

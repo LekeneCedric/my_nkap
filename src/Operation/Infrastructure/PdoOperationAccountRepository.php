@@ -7,7 +7,11 @@ use App\Operation\Domain\Operation;
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
 use App\Operation\Domain\OperationEventStateEnum;
+use App\Operation\Domain\OperationTypeEnum;
+use App\Shared\VO\AmountVO;
+use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
+use App\Shared\VO\StringVO;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -26,7 +30,36 @@ class PdoOperationAccountRepository implements OperationAccountRepository
      */
     public function byId(Id $operationAccountId): ?operationAccount
     {
-        return null;
+        $sql = "
+            SELECT
+                id as id,
+                uuid as Id,
+                balance as Balance,
+                total_expenses as totalExpenses,
+                total_incomes as totalIncomes
+            FROM accounts
+            WHERE uuid=:accountId
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+        $stmt->execute([
+            'accountId' => $operationAccountId->value(),
+        ]);
+
+        $result = $stmt->fetch();
+
+        if (!$result) {
+            return null;
+        }
+        $account = operationAccount::create(
+            accountId: new Id($result['Id']),
+            balance: new AmountVO($result['Balance']),
+            totalIncomes: new AmountVO($result['totalIncomes']),
+            totalExpenses: new AmountVO($result['totalExpenses']),
+        );
+        $accountOperations = $this->getAccountOperations($result['id']);
+        $account->loadOperations($accountOperations);
+        return $account;
     }
 
     /**
@@ -171,5 +204,47 @@ class PdoOperationAccountRepository implements OperationAccountRepository
         return [
             'account_id' => Account::whereUuid($accountId)->whereIsDeleted(false)->first()->id,
         ];
+    }
+
+    /**
+     * @param int $account_id
+     * @return Operation[]
+     */
+    private function getAccountOperations(int $account_id): array
+    {
+        $sql = "
+            SELECT
+                uuid AS Id,
+                amount,
+                type,
+                category,
+                details,
+                date
+            FROM operations
+            WHERE account_id=:account_id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+        $stmt->execute([
+            'account_id' => $account_id,
+        ]);
+
+        $results = $stmt->fetchAll();
+        if (!$results) return [];
+
+        $operations = [];
+        foreach ($results as $result) {
+            $operations[$result['Id']] = Operation::create(
+                amount: new AmountVO($result['amount']),
+                type: OperationTypeEnum::from($result['type']),
+                category: new StringVO($result['category']),
+                detail: new StringVO($result['details']),
+                date: new DateVO($result['date']),
+                id: new Id($result['Id'])
+            );
+        }
+
+        return $operations;
     }
 }

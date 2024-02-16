@@ -3,8 +3,10 @@
 namespace App\Account\Infrastructure\Models;
 
 use App\Account\Infrastructure\database\factories\AccountFactory;
+use App\Operation\Infrastructure\Model\Operation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Account extends Model
 {
@@ -15,5 +17,10 @@ class Account extends Model
     protected static function newFactory(): AccountFactory
     {
         return AccountFactory::new();
+    }
+
+    public function operations(): HasMany
+    {
+        return $this->hasMany(Operation::class);
     }
 }

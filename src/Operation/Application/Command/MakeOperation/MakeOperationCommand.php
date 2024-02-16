@@ -4,7 +4,7 @@ namespace App\Operation\Application\Command\MakeOperation;
 
 use App\Operation\Domain\OperationTypeEnum;
 
-class makeOperationCommand
+class MakeOperationCommand
 {
     public ?string $operationId = null;
     public function __construct(

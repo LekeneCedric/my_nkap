@@ -2,7 +2,7 @@
 
 namespace App\Operation\Tests\Units\Builders;
 
-use App\Operation\Application\Command\MakeOperation\makeOperationCommand;
+use App\Operation\Application\Command\MakeOperation\MakeOperationCommand;
 use App\Operation\Domain\OperationTypeEnum;
 
 class makeOperationCommandBuilder
@@ -62,9 +62,9 @@ class makeOperationCommandBuilder
         return $this;
     }
 
-    public function build(): makeOperationCommand
+    public function build(): MakeOperationCommand
     {
-        $command =  new makeOperationCommand(
+        $command =  new MakeOperationCommand(
             accountId: $this->accountId,
             type: $this->type,
             amount: $this->amount,

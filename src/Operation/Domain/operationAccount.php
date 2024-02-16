@@ -108,6 +108,7 @@ class operationAccount
             type: $previousType,
             amount: $previousAmount,
         );
+
         $this->applyNewOperationSideEffects(
             type: $newType,
             amount: $newAmount,
@@ -277,6 +278,15 @@ class operationAccount
             $this->totalIncomes = new AmountVO($newtotalIncomes);
         }
         $this->balance = new AmountVO($newBalanceValue);
+    }
+
+    /**
+     * @param array $accountOperations
+     * @return void
+     */
+    public function loadOperations(array $accountOperations): void
+    {
+        $this->operations = $accountOperations;
     }
 
     /**

@@ -3,8 +3,8 @@
 namespace App\Operation\Tests\Units;
 
 use App\Account\Domain\Exceptions\NotFoundAccountException;
-use App\Operation\Application\Command\MakeOperation\makeOperationCommand;
-use App\Operation\Application\Command\MakeOperation\makeOperationHandler;
+use App\Operation\Application\Command\MakeOperation\MakeOperationCommand;
+use App\Operation\Application\Command\MakeOperation\MakeOperationHandler;
 use App\Operation\Application\Command\MakeOperation\makeOperationResponse;
 use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
 use App\Operation\Domain\operationAccount;
@@ -145,14 +145,14 @@ class MakeOperationTest extends TestCase
     }
 
     /**
-     * @param makeOperationCommand $command
+     * @param MakeOperationCommand $command
      * @return makeOperationResponse
      * @throws NotFoundAccountException
      * @throws OperationGreaterThanAccountBalanceException
      */
-    private function makeOperation(makeOperationCommand $command): makeOperationResponse
+    private function makeOperation(MakeOperationCommand $command): makeOperationResponse
     {
-        $handler = new makeOperationHandler(
+        $handler = new MakeOperationHandler(
             repository: $this->repository,
         );
         return $handler->handle($command);
