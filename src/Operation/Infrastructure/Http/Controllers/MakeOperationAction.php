@@ -30,10 +30,8 @@ class MakeOperationAction
             NotFoundAccountException|
             OperationGreaterThanAccountBalanceException $e
         ) {
-            dd($e);
             $httpJson['message'] = $e->getMessage();
         } catch (\Exception $e) {
-            dd($e);
             $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veillez réessayer ultérieurement !';
         }
 

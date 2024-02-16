@@ -18,6 +18,7 @@ class operationAccount
     private array $operations = [];
     private Operation $currentOperation;
     private ?DateVO $updatedAt = null;
+    private ?DateVO $createdAt = null;
 
     public function __construct(
         private readonly Id $accountId,
@@ -104,6 +105,7 @@ class operationAccount
         AmountVO          $newAmount
     ): void
     {
+
         $this->applyDeleteOperationSideEffects(
             type: $previousType,
             amount: $previousAmount,
@@ -179,18 +181,24 @@ class operationAccount
      * @return operationAccount
      */
     public static function create(
-        Id       $accountId,
         AmountVO $balance,
         AmountVO $totalIncomes,
         AmountVO $totalExpenses,
+        ?Id       $accountId = null,
     ): operationAccount
     {
-        return new self(
-            accountId: $accountId,
+        $self =  new self(
+            accountId: $accountId ?? new Id(),
             balance: $balance,
             totalIncomes: $totalIncomes,
             totalExpenses: $totalExpenses,
         );
+        if ($accountId) {
+            $self->updatedAt = new DateVO();
+        } else {
+            $self->createdAt = new DateVO();
+        }
+        return $self;
     }
 
     /**

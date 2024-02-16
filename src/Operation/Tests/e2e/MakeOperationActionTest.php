@@ -64,8 +64,11 @@ class MakeOperationActionTest extends TestCase
 
     private function buildSUT(bool $withExistingOperation = false): array
     {
+        $operationAmount = 20000;
         $result = [];
-        $account = Account::factory()->create();
+        $account = Account::factory()->create([
+            'balance' => $withExistingOperation ? $operationAmount : 0
+        ]);
         $result['accountId'] = $account->getAttribute('uuid');
 
         if ($withExistingOperation) {
