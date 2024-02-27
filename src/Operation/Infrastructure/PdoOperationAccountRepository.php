@@ -52,10 +52,10 @@ class PdoOperationAccountRepository implements OperationAccountRepository
             return null;
         }
         $account = operationAccount::create(
-            accountId: new Id($result['Id']),
             balance: new AmountVO($result['Balance']),
             totalIncomes: new AmountVO($result['totalIncomes']),
             totalExpenses: new AmountVO($result['totalExpenses']),
+            accountId: new Id($result['Id']),
         );
         $accountOperations = $this->getAccountOperations($result['id']);
         $account->loadOperations($accountOperations);
