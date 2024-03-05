@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Operation\Infrastructure\providers;
+namespace App\Operation\Infrastructure\provider;
 
 use App\Operation\Domain\OperationAccountRepository;
 use App\Operation\Infrastructure\PdoOperationAccountRepository;

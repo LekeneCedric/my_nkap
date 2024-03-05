@@ -126,13 +126,15 @@ class Account
           'color' => $this->color->value(),
           'balance' => $this->balance->value(),
           'is_include_in_total_balance' => $this->isIncludeInTotalBalance,
-          'is_deleted' => $this->isDeleted ? 1 : 0,
+          'is_deleted' => $this->isDeleted ? 1 : 0
         ];
         if ($this->eventState === AccountEventStateEnum::onUpdate) {
             $data['updated_at'] = $this->updatedAt->formatYMDHIS();
         }
         if ($this->eventState === AccountEventStateEnum::onCreate) {
             $data['created_at'] = $this->createdAt->formatYMDHIS();
+            $data['total_incomes'] = 0;
+            $data['total_expenses'] = 0;
         }
         return $data;
     }
