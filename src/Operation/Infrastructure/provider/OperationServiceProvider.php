@@ -40,9 +40,8 @@ class OperationServiceProvider extends ServiceProvider
 
     private function routeConfig(): array
     {
-        $defaultPrefix = '/operation';
         return [
-            'prefix' => 'api'.$defaultPrefix,
+            'prefix' => 'api/operation',
             'middleware' => []
         ];
     }

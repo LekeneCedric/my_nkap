@@ -1,6 +1,6 @@
 <?php
 
-namespace App\FinancialGoal\Application\Command;
+namespace App\FinancialGoal\Application\Command\Make;
 
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\FinancialGoal\Domain\FinancialGoal;
@@ -24,6 +24,7 @@ class MakeFinancialGoalHandler
      * @param MakeFinancialGoalCommand $command
      * @return MakeFinancialGoalResponse
      * @throws NotFoundAccountException
+     * @throws \Exception
      */
     public function handle(MakeFinancialGoalCommand $command): MakeFinancialGoalResponse
     {
@@ -42,12 +43,14 @@ class MakeFinancialGoalHandler
         $this->repository->save($financialGoal);
 
         $response = new  MakeFinancialGoalResponse(
+            status: true,
             isMake: true,
         );
 
         if (!$command->financialGoalId) {
             $response->message = "Objectif financié créer avec succès !";
             $response->financialGoalId = $financialGoal->id()->value();
+            $response->createdAt = $financialGoal->createdAt()->formatYMDHIS();
         }
         if ($command->financialGoalId) {
             $response->message = "Objectif financié modifié avec succès !";

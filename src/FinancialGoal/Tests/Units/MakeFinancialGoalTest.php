@@ -2,12 +2,11 @@
 
 namespace App\FinancialGoal\Tests\Units;
 
-use App\Account\Domain\Account;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Tests\Units\AccountSUT;
-use App\FinancialGoal\Application\Command\MakeFinancialGoalCommand;
-use App\FinancialGoal\Application\Command\MakeFinancialGoalHandler;
-use App\FinancialGoal\Application\Command\MakeFinancialGoalResponse;
+use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalCommand;
+use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalHandler;
+use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalResponse;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;

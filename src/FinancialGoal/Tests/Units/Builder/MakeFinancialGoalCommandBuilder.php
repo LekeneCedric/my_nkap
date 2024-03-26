@@ -2,7 +2,7 @@
 
 namespace App\FinancialGoal\Tests\Units\Builder;
 
-use App\FinancialGoal\Application\Command\MakeFinancialGoalCommand;
+use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalCommand;
 
 class MakeFinancialGoalCommandBuilder
 {

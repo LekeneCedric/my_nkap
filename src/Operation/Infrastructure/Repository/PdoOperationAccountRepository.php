@@ -2,7 +2,7 @@
 
 namespace App\Operation\Infrastructure\Repository;
 
-use App\Account\Infrastructure\Models\Account;
+use App\Account\Infrastructure\Model\Account;
 use App\Operation\Domain\Operation;
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;

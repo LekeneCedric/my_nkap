@@ -2,7 +2,7 @@
 
 namespace App\FinancialGoal\Infrastructure\Repository;
 
-use App\Account\Infrastructure\Models\Account;
+use App\Account\Infrastructure\Model\Account;
 use App\FinancialGoal\Domain\Enum\FinancialGoalEventStateEnum;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;

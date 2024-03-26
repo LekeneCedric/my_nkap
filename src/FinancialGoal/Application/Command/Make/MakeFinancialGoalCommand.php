@@ -1,6 +1,6 @@
 <?php
 
-namespace App\FinancialGoal\Application\Command;
+namespace App\FinancialGoal\Application\Command\Make;
 
 class MakeFinancialGoalCommand
 {

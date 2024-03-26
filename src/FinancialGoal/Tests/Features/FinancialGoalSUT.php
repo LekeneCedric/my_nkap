@@ -2,7 +2,7 @@
 
 namespace App\FinancialGoal\Tests\Features;
 
-use App\Account\Infrastructure\Models\Account;
+use App\Account\Infrastructure\Model\Account;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;

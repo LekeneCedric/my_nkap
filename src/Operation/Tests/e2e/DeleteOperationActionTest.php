@@ -2,7 +2,7 @@
 
 namespace App\Operation\Tests\e2e;
 
-use App\Account\Infrastructure\Models\Account;
+use App\Account\Infrastructure\Model\Account;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
 use Tests\TestCase;
