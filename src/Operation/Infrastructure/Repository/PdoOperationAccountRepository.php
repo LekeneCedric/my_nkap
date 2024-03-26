@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Operation\Infrastructure;
+namespace App\Operation\Infrastructure\Repository;
 
 use App\Account\Infrastructure\Models\Account;
 use App\Operation\Domain\Operation;

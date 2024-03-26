@@ -5,7 +5,7 @@ namespace App\Operation\Infrastructure\Http\Controllers;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Operation\Application\Command\DeleteOperation\DeleteOperationHandler;
 use App\Operation\Domain\Exceptions\NotFoundOperationException;
-use App\Operation\Infrastructure\Http\Factories\DeleteOperationCommandFactory;
+use App\Operation\Infrastructure\Factories\DeleteOperationCommandFactory;
 use App\Operation\Infrastructure\Http\Requests\DeleteOperationRequest;
 use Illuminate\Http\JsonResponse;
 

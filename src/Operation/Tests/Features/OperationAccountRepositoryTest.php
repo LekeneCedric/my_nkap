@@ -8,7 +8,7 @@ use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
-use App\Operation\Infrastructure\PdoOperationAccountRepository;
+use App\Operation\Infrastructure\Repository\PdoOperationAccountRepository;
 use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
