@@ -7,6 +7,7 @@ use App\Account\Tests\Units\AccountSUT;
 use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalCommand;
 use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalHandler;
 use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalResponse;
+use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;
@@ -32,7 +33,9 @@ class MakeFinancialGoalTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @return void
+     * @throws ErrorOnSaveFinancialGoalException
+     * @throws NotFoundAccountException
      */
     public function test_can_make_financial_goal()
     {
@@ -56,6 +59,8 @@ class MakeFinancialGoalTest extends TestCase
     }
 
     /**
+     * @return void
+     * @throws ErrorOnSaveFinancialGoalException
      * @throws NotFoundAccountException
      */
     public function test_can_update_financial_goal()
@@ -81,8 +86,10 @@ class MakeFinancialGoalTest extends TestCase
         $this->assertEquals((new DateVO())->formatYMDHIS(), $updatedFinancialGoal->updatedAt()->formatYMDHIS());
         $this->assertEquals(50000, $updatedFinancialGoal->desiredAmount()->value());
     }
+
     /**
      * @return void
+     * @throws ErrorOnSaveFinancialGoalException
      * @throws NotFoundAccountException
      */
     public function test_can_throw_not_found_account_exception()
@@ -131,6 +138,7 @@ class MakeFinancialGoalTest extends TestCase
      * @param MakeFinancialGoalCommand $command
      * @return MakeFinancialGoalResponse
      * @throws NotFoundAccountException
+     * @throws ErrorOnSaveFinancialGoalException
      */
     private function makeFinancialGoal(MakeFinancialGoalCommand $command): MakeFinancialGoalResponse
     {

@@ -81,4 +81,22 @@ class MakeFinancialGoalActionTest extends TestCase
         $this->assertEquals($updatedFinancialGoal->updated_at, (new DateVO())->formatYMDHIS());
     }
 
+    public function test_can_throw_error_message_when_not_found_account()
+    {
+        $data = [
+            'accountId' => 'wrong_account_id',
+            'startDate' =>  (new DateVO())->formatYMDHIS(),
+            'endDate' => (new DateVO())->formatYMDHIS(),
+            'desiredAmount' => 200000,
+            'details' => 'want to save --200000-- to buy my new home'
+        ];
+
+        $response = $this->postJson(self::MAKE_FINANCIAL_GOAL, $data);
+
+        $response->assertOk();
+        $this->assertArrayNotHasKey('isMake', $response);
+        $this->assertArrayNotHasKey('createdAt', $response);
+        $this->assertArrayNotHasKey('financialGoalId', $response);
+        $this->assertNotNull($response['message']);
+    }
 }

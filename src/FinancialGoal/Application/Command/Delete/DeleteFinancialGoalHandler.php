@@ -2,7 +2,7 @@
 
 namespace App\FinancialGoal\Application\Command\Delete;
 
-use App\FinancialGoal\Domain\Exception\NotFoundFinancialGoalException;
+use App\FinancialGoal\Domain\Exceptions\NotFoundFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\Shared\VO\Id;

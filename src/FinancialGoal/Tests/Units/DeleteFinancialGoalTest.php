@@ -6,7 +6,7 @@ use App\Account\Tests\Units\AccountSUT;
 use App\FinancialGoal\Application\Command\Delete\DeleteFinancialGoalCommand;
 use App\FinancialGoal\Application\Command\Delete\DeleteFinancialGoalHandler;
 use App\FinancialGoal\Application\Command\Delete\DeleteFinancialGoalResponse;
-use App\FinancialGoal\Domain\Exception\NotFoundFinancialGoalException;
+use App\FinancialGoal\Domain\Exceptions\NotFoundFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\FinancialGoal\Tests\Units\Builder\DeleteFinancialGoalCommandBuilder;

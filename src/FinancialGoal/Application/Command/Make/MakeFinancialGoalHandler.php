@@ -3,6 +3,7 @@
 namespace App\FinancialGoal\Application\Command\Make;
 
 use App\Account\Domain\Exceptions\NotFoundAccountException;
+use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;
@@ -24,7 +25,7 @@ class MakeFinancialGoalHandler
      * @param MakeFinancialGoalCommand $command
      * @return MakeFinancialGoalResponse
      * @throws NotFoundAccountException
-     * @throws \Exception
+     * @throws ErrorOnSaveFinancialGoalException
      */
     public function handle(MakeFinancialGoalCommand $command): MakeFinancialGoalResponse
     {

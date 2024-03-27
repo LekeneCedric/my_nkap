@@ -4,6 +4,7 @@ namespace App\FinancialGoal\Infrastructure\Repository;
 
 use App\Account\Infrastructure\Model\Account;
 use App\FinancialGoal\Domain\Enum\FinancialGoalEventStateEnum;
+use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\Shared\VO\AmountVO;
@@ -23,6 +24,11 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
         $this->pdo = DB::getPdo();
     }
 
+    /**
+     * @param FinancialGoal $financialGoal
+     * @return void
+     * @throws ErrorOnSaveFinancialGoalException
+     */
     public function save(FinancialGoal $financialGoal): void
     {
         $this->pdo->beginTransaction();
@@ -38,8 +44,9 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
                 $this->updateFinancialGoal($financialGoal);
             }
             $this->pdo->commit();
-        } catch (PDOException|Exception) {
+        } catch (PDOException|Exception $e) {
             $this->pdo->rollBack();
+            throw new ErrorOnSaveFinancialGoalException($e->getMessage());
         }
     }
 

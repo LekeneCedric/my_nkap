@@ -1,6 +1,6 @@
 <?php
 
-namespace App\FinancialGoal\Domain\Exception;
+namespace App\FinancialGoal\Domain\Exceptions;
 
 class NotFoundFinancialGoalException extends \Exception
 {
