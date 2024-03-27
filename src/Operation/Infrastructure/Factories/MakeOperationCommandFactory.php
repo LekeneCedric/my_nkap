@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Operation\Infrastructure\Http\Factories;
+namespace App\Operation\Infrastructure\Factories;
 
 use App\Operation\Application\Command\MakeOperation\MakeOperationCommand;
 use App\Operation\Domain\OperationTypeEnum;

@@ -5,7 +5,7 @@ namespace App\Operation\Infrastructure\Http\Controllers;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Operation\Application\Command\MakeOperation\MakeOperationHandler;
 use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
-use App\Operation\Infrastructure\Http\Factories\MakeOperationCommandFactory;
+use App\Operation\Infrastructure\Factories\MakeOperationCommandFactory;
 use App\Operation\Infrastructure\Http\Requests\MakeOperationRequest;
 use Illuminate\Http\JsonResponse;
 
