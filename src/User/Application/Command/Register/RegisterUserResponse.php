@@ -1,6 +1,6 @@
 <?php
 
-namespace App\User\Application\Command;
+namespace App\User\Application\Command\Register;
 
 class RegisterUserResponse
 {

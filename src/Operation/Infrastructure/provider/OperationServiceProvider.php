@@ -43,7 +43,7 @@ class OperationServiceProvider extends ServiceProvider
         $defaultPrefix = '/operation';
         return [
             'prefix' => 'api'.$defaultPrefix,
-            'middleware' => []
+            'middleware' => ['auth:sanctum']
         ];
     }
 }

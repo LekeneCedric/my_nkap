@@ -69,6 +69,7 @@ class SaveAccountHandler
     private function createAccount(SaveAccountCommand $command): Account
     {
         return Account::create(
+            userId: new Id($command->userId),
             name: new StringVO($command->name),
             type: new StringVO($command->type),
             icon: new StringVO($command->icon),

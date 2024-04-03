@@ -130,6 +130,7 @@ class PdoAccountRepository implements AccountRepository
         $sql = "
             SELECT
                 uuid as Id,
+                user_id as userId,
                 name,
                 type,
                 icon,
@@ -155,13 +156,13 @@ class PdoAccountRepository implements AccountRepository
     private function toAccountDomain(array $result): Account
     {
         return Account::create(
+            userId: new Id($result['userId']),
             name: new StringVO($result['name']),
             type: new StringVO($result['type']),
             icon: new StringVO($result['icon']),
             color: new StringVO($result['color']),
             balance: new AmountVO($result['balance']),
             isIncludeInTotalBalance: $result['isIncludeInTotalBalance'],
-            isDeleted: false,
             accountId: new Id(($result['Id']))
         );
     }

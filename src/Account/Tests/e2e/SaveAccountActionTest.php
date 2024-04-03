@@ -4,15 +4,41 @@ namespace App\Account\Tests\e2e;
 
 use App\Account\Infrastructure\Models\Account;
 use App\Shared\VO\DateVO;
+use App\Shared\VO\Id;
+use App\User\Infrastructure\Models\Profession;
+use App\User\Infrastructure\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class SaveAccountActionTest extends TestCase
 {
+    use RefreshDatabase;
     const SAVE_ACCOUNT_ROUTE = 'api/accounts/save';
+    const LOGIN = 'api/users/login';
+    private User $user;
+    private string $token;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create([
+            'uuid' => (new Id())->value(),
+            'email' => 'lekene@gmail.com',
+            'name' => 'lekene',
+            'password' => bcrypt('lekene@5144'),
+            'profession_id' => (Profession::factory()->create())->id,
+        ]);
+        $this->token = $this->postJson(self::LOGIN, [
+            'email' => 'lekene@gmail.com',
+            'password' => 'lekene@5144'
+        ])['token'];
+        DB::rollBack();
+    }
 
     public function test_can_create_account()
     {
         $data = [
+           'userId' => $this->user->uuid,
            'name' => 'compte epargne',
            'type' => 'epargne',
            'icon' => 'wallet_icon',
@@ -21,7 +47,9 @@ class SaveAccountActionTest extends TestCase
            'isIncludeInTotalBalance' => true,
         ];
 
-        $response = $this->post(self::SAVE_ACCOUNT_ROUTE, $data);
+        $response = $this->postJson(self::SAVE_ACCOUNT_ROUTE, $data, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
         $createdAccount = Account::whereUuid($response['accountId'])->whereIsDeleted(false)->first();
 
@@ -36,11 +64,12 @@ class SaveAccountActionTest extends TestCase
      */
     public function test_can_update_account()
     {
-        $initData = $this->buildSUT();
-        $accountId = $initData['accountId'];
+        $initSUT = AccountSUT::asSUT()->withExistingAccounts(1)->build();
+        $accountId = $initSUT->accounts[0]->uuid;
 
         $updatedData = [
             'accountId' => $accountId,
+            'userId' => $this->user->uuid,
             'name' => 'compte epargne',
             'type' => 'epargne',
             'icon' => 'wallet_icon',
@@ -71,13 +100,5 @@ class SaveAccountActionTest extends TestCase
 
         $this->assertNotNull($response['balance']);
         $this->assertNotNull($response['isIncludeInTotalBalance']);
-    }
-    private function buildSUT(): array
-    {
-        $account = Account::factory()->create();
-
-        return [
-            'accountId' => $account->uuid,
-        ];
     }
 }

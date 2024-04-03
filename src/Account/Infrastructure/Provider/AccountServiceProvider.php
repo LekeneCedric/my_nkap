@@ -45,7 +45,7 @@ class AccountServiceProvider extends ServiceProvider
         $defaultPrefix = '/accounts';
         return [
             'prefix' => 'api'.$defaultPrefix,
-            'middleware' => []
+            'middleware' => ['auth:sanctum']
         ];
     }
 }

@@ -7,6 +7,7 @@ class SaveAccountCommand
     public ?string $accountId = null;
 
     public function __construct(
+        public string $userId,
         public string $name,
         public string $type,
         public string $icon,

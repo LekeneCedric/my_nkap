@@ -16,6 +16,7 @@ class Account
     private ?AccountEventStateEnum $eventState;
 
     public function __construct(
+        private Id $userId,
         private Id $accountId,
         private StringVO $name,
         private StringVo $type,
@@ -29,6 +30,7 @@ class Account
     }
 
     public static function create(
+        Id $userId,
         StringVO $name,
         StringVO $type,
         StringVO $icon,
@@ -40,6 +42,7 @@ class Account
     )
     {
         $account = new self(
+            userId: $userId,
             accountId: $accountId ?? new Id(),
             name: $name,
             type: $type,
@@ -103,7 +106,7 @@ class Account
         return $this->isDeleted;
     }
 
-    public function eventState()
+    public function eventState(): ?AccountEventStateEnum
     {
         return $this->eventState;
     }
@@ -120,6 +123,7 @@ class Account
     {
         $data = [
           'uuid' => $this->id()->value(),
+          'user_id' => $this->userId->value(),
           'name' => $this->name->value(),
           'type' => $this->type->value(),
           'icon' => $this->icon->value(),

@@ -18,13 +18,13 @@ class UserSUT
         return $self;
     }
 
-    public function withExistingUser(string $email): static
+    public function withExistingUser(string $email, string $password = 'lekene@5134'): static
     {
         User::factory()->create([
             'uuid' => (new Id())->value(),
             'email' => $email,
             'name' => 'lekene',
-            'password' => 'lekene@455',
+            'password' => bcrypt($password),
             'profession_id' => $this->profession->id,
         ]);
         return $this;

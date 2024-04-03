@@ -2,7 +2,7 @@
 
 namespace App\User\Infrastructure\Http\Controllers;
 
-use App\User\Application\Command\RegisterUserHandler;
+use App\User\Application\Command\Register\RegisterUserHandler;
 use App\User\Domain\Exceptions\AlreadyUserExistWithSameEmailException;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Infrastructure\Factories\RegisterUserCommandFactory;
@@ -30,12 +30,11 @@ class RegisterUserAction
                 'message' => $response->message,
                 'token' => $user?->createToken('my_nkap_token')->plainTextToken,
             ];
-        } catch (ErrorOnSaveUserException $e) {
+        } catch (ErrorOnSaveUserException) {
             $httpResponse['message'] = 'Une érreur technique est survenue lors du traitement de votre opération !';
         } catch (AlreadyUserExistWithSameEmailException $e) {
             $httpResponse['message'] = $e->getMessage();
         }
-
 
         return response()->json($httpResponse);
     }

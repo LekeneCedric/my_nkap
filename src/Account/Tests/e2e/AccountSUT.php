@@ -4,6 +4,9 @@ namespace App\Account\Tests\e2e;
 
 use App\Account\Infrastructure\Models\Account;
 use App\Operation\Infrastructure\Model\Operation;
+use App\Shared\VO\Id;
+use App\User\Infrastructure\Models\Profession;
+use App\User\Infrastructure\Models\User;
 
 class AccountSUT
 {

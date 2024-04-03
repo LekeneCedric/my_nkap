@@ -12,6 +12,7 @@ class SaveAccountCommandFactory
     {
         $requestsValues = $request->all();
         $command = new SaveAccountCommand(
+            userId: $requestsValues['userId'],
             name: $requestsValues['name'],
             type: $requestsValues['type'],
             icon: $requestsValues['icon'],

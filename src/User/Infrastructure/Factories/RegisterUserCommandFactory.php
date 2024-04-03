@@ -2,7 +2,7 @@
 
 namespace App\User\Infrastructure\Factories;
 
-use App\User\Application\Command\RegisterUserCommand;
+use App\User\Application\Command\Register\RegisterUserCommand;
 use Illuminate\Http\Request;
 
 class RegisterUserCommandFactory
@@ -12,7 +12,7 @@ class RegisterUserCommandFactory
     {
         return new RegisterUserCommand(
             email: $request->get('email'),
-            password: $request->get('password'),
+            password: bcrypt($request->get('password')),
             username: $request->get('username'),
             birthday: $request->get('birthday'),
             professionId: $request->get('professionId'),

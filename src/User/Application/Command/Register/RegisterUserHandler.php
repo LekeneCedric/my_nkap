@@ -1,6 +1,6 @@
 <?php
 
-namespace App\User\Application\Command;
+namespace App\User\Application\Command\Register;
 
 use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
