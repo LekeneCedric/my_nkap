@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Account\Infrastructure\Http\Factories;
+namespace App\Account\Infrastructure\Factories;
 
 use App\Account\Application\Command\Save\SaveAccountCommand;
 use App\Account\Infrastructure\Http\Requests\SaveAccountRequest;

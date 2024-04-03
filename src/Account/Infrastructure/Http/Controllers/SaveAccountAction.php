@@ -4,7 +4,7 @@ namespace App\Account\Infrastructure\Http\Controllers;
 
 use App\Account\Application\Command\Save\SaveAccountHandler;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
-use App\Account\Infrastructure\Http\Factories\SaveAccountCommandFactory;
+use App\Account\Infrastructure\Factories\SaveAccountCommandFactory;
 use App\Account\Infrastructure\Http\Requests\SaveAccountRequest;
 use Illuminate\Http\JsonResponse;
 

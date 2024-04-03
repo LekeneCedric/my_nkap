@@ -3,6 +3,7 @@
 namespace App\Bootstrap\Infrastructure\Providers;
 
 use App\Account\Infrastructure\Provider\AccountServiceProvider;
+use App\FinancialGoal\Infrastructure\Provider\FinancialGoalServiceProvider;
 use App\Operation\Infrastructure\provider\OperationServiceProvider;
 use App\User\Infrastructure\Provider\UserProvider;
 use Illuminate\Support\ServiceProvider;
@@ -36,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(AccountServiceProvider::class);
         $this->app->register(OperationServiceProvider::class);
         $this->app->register(UserProvider::class);
+        $this->app->register(FinancialGoalServiceProvider::class);
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace App\Operation\Infrastructure\Http\Controllers;
 
 use App\Operation\Application\Queries\Filter\FilterAccountOperationsHandler;
-use App\Operation\Infrastructure\Http\Factories\FilterAccountOperationsCommandBuilder;
+use App\Operation\Infrastructure\Factories\FilterAccountOperationsCommandBuilder;
 use Illuminate\Http\Request;
 
 class FilterAccountOperationsAction

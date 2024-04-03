@@ -2,7 +2,7 @@
 
 namespace App\Account\Tests\e2e;
 
-use App\Account\Infrastructure\Models\Account;
+use App\Account\Infrastructure\Model\Account;
 use Tests\TestCase;
 
 class DeleteAccountActionTest extends TestCase

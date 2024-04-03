@@ -3,7 +3,7 @@
 namespace App\Operation\Infrastructure\provider;
 
 use App\Operation\Domain\OperationAccountRepository;
-use App\Operation\Infrastructure\PdoOperationAccountRepository;
+use App\Operation\Infrastructure\Repository\PdoOperationAccountRepository;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 

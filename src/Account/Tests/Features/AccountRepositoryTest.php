@@ -3,7 +3,7 @@
 namespace App\Account\Tests\Features;
 
 use App\Account\Domain\Repository\AccountRepository;
-use App\Account\Infrastructure\Models\Account;
+use App\Account\Infrastructure\Model\Account;
 use App\Account\Infrastructure\Repository\PdoAccountRepository;
 use App\Shared\VO\AmountVO;
 use App\Shared\VO\StringVO;

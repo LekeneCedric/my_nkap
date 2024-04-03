@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Account\Infrastructure\Models;
+namespace App\Account\Infrastructure\Model;
 
 use App\Account\Infrastructure\database\factories\AccountFactory;
 use App\Operation\Infrastructure\Model\Operation;

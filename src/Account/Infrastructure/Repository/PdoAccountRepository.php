@@ -92,6 +92,8 @@ class PdoAccountRepository implements AccountRepository
                 balance,
                 is_include_in_total_balance,
                 is_deleted,
+                total_incomes,
+                total_expenses,
                 created_at
              )
              VALUE
@@ -104,6 +106,8 @@ class PdoAccountRepository implements AccountRepository
                  :balance,
                  :is_include_in_total_balance,
                  :is_deleted,
+                 :total_incomes,
+                 :total_expenses,
                  :created_at
              )
         ";
