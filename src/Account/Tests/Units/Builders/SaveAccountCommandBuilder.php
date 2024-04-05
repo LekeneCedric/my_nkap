@@ -6,6 +6,7 @@ use App\Account\Application\Command\Save\SaveAccountCommand;
 
 class SaveAccountCommandBuilder
 {
+    private ?string $userId = null;
     private ?string $accountId = null;
     private ?string $name = null;
     private ?string $type = null;
@@ -61,9 +62,16 @@ class SaveAccountCommandBuilder
         return $this;
     }
 
+    public function withUserId(?string $userId): static
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
     public function build(): SaveAccountCommand
     {
         $command =  new SaveAccountCommand(
+            userId: $this->userId,
             name: $this->name,
             type: $this->type,
             icon: $this->icon,

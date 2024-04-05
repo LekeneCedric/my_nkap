@@ -21,18 +21,15 @@ class SaveAccountActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::rollBack();
         $this->user = User::factory()->create([
             'uuid' => (new Id())->value(),
-            'email' => 'lekene@gmail.com',
+            'email' => (new Id())->value().'@gmail.com',
             'name' => 'lekene',
             'password' => bcrypt('lekene@5144'),
             'profession_id' => (Profession::factory()->create())->id,
         ]);
-        $this->token = $this->postJson(self::LOGIN, [
-            'email' => 'lekene@gmail.com',
-            'password' => 'lekene@5144'
-        ])['token'];
-        DB::rollBack();
+        $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
     }
 
     public function test_can_create_account()
@@ -78,9 +75,11 @@ class SaveAccountActionTest extends TestCase
             'isIncludeInTotalBalance' => true,
         ];
 
-        $response = $this->post(self::SAVE_ACCOUNT_ROUTE, $updatedData);
-        $updatedAccount = Account::whereUuid($response['accountId'])->whereIsDeleted(false)->first();
+        $response = $this->post(self::SAVE_ACCOUNT_ROUTE, $updatedData,[
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
+        $updatedAccount = Account::whereUuid($response['accountId'])->whereIsDeleted(false)->first();
         $this->assertTrue($response['status']);
         $this->assertTrue($response['isSaved']);
         $this->assertNotNull($response['accountId']);
@@ -96,7 +95,9 @@ class SaveAccountActionTest extends TestCase
             'color' => 'green',
         ];
 
-        $response = $this->post(self::SAVE_ACCOUNT_ROUTE, $data);
+        $response = $this->post(self::SAVE_ACCOUNT_ROUTE, $data,[
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
         $this->assertNotNull($response['balance']);
         $this->assertNotNull($response['isIncludeInTotalBalance']);

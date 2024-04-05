@@ -7,4 +7,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/save', SaveAccountAction::class);
 Route::post('/delete', DeleteAccountAction::class);
-Route::get('/all', GetAllAccountAction::class);
+Route::get('/all/{userId}', GetAllAccountAction::class);

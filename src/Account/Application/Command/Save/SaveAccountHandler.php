@@ -3,6 +3,7 @@
 namespace App\Account\Application\Command\Save;
 
 use App\Account\Domain\Account;
+use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
 use App\Shared\VO\AmountVO;
@@ -21,6 +22,7 @@ class SaveAccountHandler
      * @param SaveAccountCommand $command
      * @return SaveAccountResponse
      * @throws NotFoundAccountException
+     * @throws ErrorOnSaveAccountException
      */
     public function handle(SaveAccountCommand $command): SaveAccountResponse
     {

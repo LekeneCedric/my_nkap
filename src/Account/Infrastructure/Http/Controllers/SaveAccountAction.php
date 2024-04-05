@@ -3,6 +3,7 @@
 namespace App\Account\Infrastructure\Http\Controllers;
 
 use App\Account\Application\Command\Save\SaveAccountHandler;
+use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Infrastructure\Factories\SaveAccountCommandFactory;
 use App\Account\Infrastructure\Http\Requests\SaveAccountRequest;
@@ -28,8 +29,11 @@ class SaveAccountAction
             $httpJson['message'] = $response->message;
         } catch (NotFoundAccountException $e){
             $httpJson['message'] = $e->getMessage();
-        } catch (\Exception $e) {
-            $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veillez réessayer ultérieurement !';
+        } catch (ErrorOnSaveAccountException) {
+            $httpJson['message'] = 'Une érreur critique est survenue lors du traitement de votre opération , veuillez réessayez plus târd !';
+        }
+        catch (\Exception $e) {
+            $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veuillez réessayer ultérieurement !';
         }
 
         return response()->json($httpJson);

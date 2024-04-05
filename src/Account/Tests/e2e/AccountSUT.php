@@ -14,17 +14,27 @@ class AccountSUT
      * @var Account[]
      */
     public array $accounts;
+    public User $user;
     public static function asSUT(): AccountSUT
     {
         $self = new self();
         $self->accounts = [];
+        $self->user = User::factory()->create([
+            'uuid' => (new Id())->value(),
+            'email' => (new Id())->value().'@gmail.com',
+            'name' => 'leke',
+            'password' => bcrypt('leke@5144'),
+            'profession_id' => (Profession::factory()->create())->id,
+        ]);
         return $self;
     }
 
-    public function withExistingAccounts(int $count): static
+    public function withExistingAccounts(int $count, ?int $userId = null): static
     {
         for($i=0; $i<$count; $i++){
-            $this->accounts[] = Account::factory()->create();
+            $this->accounts[] = Account::factory()->create([
+                'user_id' => $userId ?: $this->user->id
+            ]);
         }
 
         return $this;

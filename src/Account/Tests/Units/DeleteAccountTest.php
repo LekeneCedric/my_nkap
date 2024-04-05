@@ -4,6 +4,7 @@ namespace App\Account\Tests\Units;
 
 use App\Account\Application\Command\Delete\DeleteAccountHandler;
 use App\Account\Application\Command\Delete\DeleteAccountResponse;
+use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
 use App\Account\Tests\Units\Repositories\InMemoryAccountRepository;
@@ -20,6 +21,7 @@ class DeleteAccountTest extends TestCase
 
     /**
      * @return void
+     * @throws ErrorOnSaveAccountException
      */
     public function test_can_delete_account()
     {
@@ -38,6 +40,7 @@ class DeleteAccountTest extends TestCase
 
     /**
      * @return void
+     * @throws ErrorOnSaveAccountException
      */
     public function test_can_throw_exception_if_want_to_delete_not_existing_account()
     {

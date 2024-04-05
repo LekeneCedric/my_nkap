@@ -12,25 +12,31 @@ class GetAllAccountHanler
         $this->pdo = DB::getPdo();
     }
 
-    public function handle(): GetAllAccountResponse
+    public function handle(string $userId): GetAllAccountResponse
     {
         $sql = "
             SELECT
-                c.name as accountName,
-                c.type as accountType,
-                c.total_incomes as totalIncomes,
-                c.total_expenses as totalExpenses,
-                c.balance as accountBalance,
-                c.is_include_in_total_balance as isIncludeInTotalBalance,
-                c.color as accountColor,
-                c.icon as accountIcon
-            FROM accounts AS c
-            WHERE c.is_deleted = false
+                ac.name as accountName,
+                ac.type as accountType,
+                ac.total_incomes as totalIncomes,
+                ac.total_expenses as totalExpenses,
+                ac.balance as accountBalance,
+                ac.is_include_in_total_balance as isIncludeInTotalBalance,
+                ac.color as accountColor,
+                ac.icon as accountIcon
+            FROM accounts AS ac
+            INNER JOIN users AS u ON ac.user_id = u.id
+            WHERE ac.is_deleted = false AND
+                  u.is_deleted = false AND
+                  u.is_active = true AND
+                  u.uuid = :userId
         ";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->setFetchMode(\PDO::FETCH_ASSOC);
-        $stmt->execute();
+        $stmt->execute([
+            'userId' => $userId
+        ]);
 
         $accounts = $stmt->fetchAll();
 

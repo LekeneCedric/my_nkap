@@ -116,6 +116,11 @@ class Account
         return $this->deletedAt;
     }
 
+    public function userId(): Id
+    {
+        return $this->userId;
+    }
+
     /**
      * @throws \Exception
      */
@@ -123,7 +128,6 @@ class Account
     {
         $data = [
           'uuid' => $this->id()->value(),
-          'user_id' => $this->userId->value(),
           'name' => $this->name->value(),
           'type' => $this->type->value(),
           'icon' => $this->icon->value(),

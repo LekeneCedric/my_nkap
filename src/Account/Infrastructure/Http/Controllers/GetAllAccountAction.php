@@ -9,6 +9,7 @@ class GetAllAccountAction
 {
     public function __invoke(
         GetAllAccountHanler $handler,
+        string $userId,
     ): JsonResponse
     {
         $httpJson = [
@@ -17,7 +18,7 @@ class GetAllAccountAction
         ];
 
         try {
-             $response = $handler->handle();
+             $response = $handler->handle(userId: $userId);
 
              $httpJson = [
                  'status' => $response->status,

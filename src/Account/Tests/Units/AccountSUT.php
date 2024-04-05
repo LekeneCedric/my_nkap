@@ -3,8 +3,10 @@
 namespace App\Account\Tests\Units;
 
 use App\Account\Domain\Account;
+use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Repository\AccountRepository;
 use App\Shared\VO\AmountVO;
+use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
 
 class AccountSUT
@@ -18,6 +20,7 @@ class AccountSUT
     public function withExistingAccount(): static
     {
         $this->account = Account::create(
+            userId: new Id(),
             name: new StringVO("epargne"),
             type: new StringVO('epargne-maison'),
             icon: new StringVO('icon_name'),
@@ -31,6 +34,7 @@ class AccountSUT
     /**
      * @param AccountRepository $repository
      * @return $this
+     * @throws ErrorOnSaveAccountException
      */
     public function build(AccountRepository $repository): static
     {

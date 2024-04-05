@@ -4,6 +4,7 @@ namespace App\User\Tests\e2e;
 
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -16,7 +17,6 @@ class AuthenticationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        DB::rollBack();
     }
 
     public function test_can_register_user()
@@ -121,11 +121,12 @@ class AuthenticationTest extends TestCase
        $this->withHeaders([
             'Authorization' => 'Bearer '.$token
         ])->postJson('api/users/logout');
-
+       Artisan::call('cache:clear');
        $response = $this->withHeaders([
            'Authorization' => 'Bearer '.$token
        ])->postJson('api/users/logout');
 
+       $response->assertStatus(401);
        $this->assertNotNull($response['message']);
     }
 }

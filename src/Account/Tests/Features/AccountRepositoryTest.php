@@ -9,6 +9,7 @@ use App\Shared\VO\AmountVO;
 use App\Shared\VO\StringVO;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AccountRepositoryTest extends TestCase
@@ -18,6 +19,7 @@ class AccountRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::rollBack();
         $this->repository = new PdoAccountRepository();
     }
 

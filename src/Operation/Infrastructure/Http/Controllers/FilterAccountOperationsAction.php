@@ -29,7 +29,7 @@ class FilterAccountOperationsAction
               'operations' => $response->operations
             ];
         } catch (\Exception) {
-            $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veillez réessayer ultérieurement !';
+            $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veuillez réessayer ultérieurement !';
         }
 
         return response()->json($httpJson);
