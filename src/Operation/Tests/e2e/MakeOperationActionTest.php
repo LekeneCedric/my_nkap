@@ -5,11 +5,28 @@ namespace App\Operation\Tests\e2e;
 use App\Account\Infrastructure\Model\Account;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
+use App\Shared\VO\Id;
+use App\User\Infrastructure\Models\Profession;
+use App\User\Infrastructure\Models\User;
 use Tests\TestCase;
 
 class MakeOperationActionTest extends TestCase
 {
     const SAVE_OPERATION_ROUTE = 'api/operation/add';
+    private User $user;
+    private string $token;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create([
+            'uuid' => (new Id())->value(),
+            'email' => (new Id())->value().'@gmail.com',
+            'name' => 'lekene',
+            'password' => bcrypt('lekene@5144'),
+            'profession_id' => (Profession::factory()->create())->id,
+        ]);
+        $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
+    }
 
     public function test_can_make_operation()
     {
@@ -25,7 +42,9 @@ class MakeOperationActionTest extends TestCase
             'date' => '2023-09-30 15:00:00'
         ];
 
-        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data);
+        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
         $createdAccount = Account::whereUuid($initData['accountId'])->whereIsDeleted(false)->first();
         $createdOperation = Operation::whereAccountId($createdAccount->id)->whereIsDeleted(false)->first();
 
@@ -51,7 +70,9 @@ class MakeOperationActionTest extends TestCase
             'date' => '2023-09-30 15:00:00'
         ];
 
-        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data);
+        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
         $updatedAccount = Account::whereUuid($initData['accountId'])->whereIsDeleted(false)->first();
         $updatedOperation = Operation::whereUuid($initData['operationId'])->whereIsDeleted(false)->first();
 
@@ -67,6 +88,7 @@ class MakeOperationActionTest extends TestCase
         $operationAmount = 20000;
         $result = [];
         $account = Account::factory()->create([
+            'user_id' => $this->user->id,
             'balance' => $withExistingOperation ? $operationAmount : 0
         ]);
         $result['accountId'] = $account->getAttribute('uuid');

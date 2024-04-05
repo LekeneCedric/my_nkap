@@ -13,11 +13,26 @@ use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
+use App\User\Infrastructure\Models\Profession;
+use App\User\Infrastructure\Models\User;
 use Tests\TestCase;
 
 class OperationAccountRepositoryTest extends TestCase
 {
     private OperationAccountRepository $repository;
+    private User $user;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->repository = new PdoOperationAccountRepository();
+        $this->user = User::factory()->create([
+            'uuid' => (new Id())->value(),
+            'email' => (new Id())->value().'@gmail.com',
+            'name' => 'lekene',
+            'password' => bcrypt('lekene@5144'),
+            'profession_id' => (Profession::factory()->create())->id,
+        ]);
+    }
 
     /**
      * @throws OperationGreaterThanAccountBalanceException
@@ -114,10 +129,10 @@ class OperationAccountRepositoryTest extends TestCase
     private function buildSUT(int $operationAmount): array
     {
         $account = operationAccount::create(
-            accountId: new Id((Account::factory()->create())->uuid),
             balance: new AmountVO(0),
             totalIncomes: new AmountVO(0),
             totalExpenses: new AmountVO(0),
+            accountId: new Id((Account::factory()->create(['user_id' => $this->user->id]))->uuid),
         );
         $account->makeOperation(
             amount: new AmountVO($operationAmount),
@@ -131,11 +146,5 @@ class OperationAccountRepositoryTest extends TestCase
             'account' => $account,
             'operationId' => $account->currentOperation()->id()->value(),
         ];
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->repository = new PdoOperationAccountRepository();
     }
 }
