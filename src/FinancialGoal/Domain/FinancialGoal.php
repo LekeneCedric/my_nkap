@@ -19,6 +19,7 @@ class FinancialGoal
 
     public function __construct(
         private Id       $financialGoalId,
+        private Id       $userId,
         private Id       $accountId,
         private DateVO   $startDate,
         private DateVO   $endDate,
@@ -31,6 +32,7 @@ class FinancialGoal
     }
 
     public static function create(
+        Id        $userId,
         Id        $accountId,
         DateVO    $startDate,
         DateVO    $enDate,
@@ -43,6 +45,7 @@ class FinancialGoal
     {
         $self = new self(
             financialGoalId: $financialGoalId ?? new Id(),
+            userId: $userId,
             accountId: $accountId,
             startDate: $startDate,
             endDate: $enDate,

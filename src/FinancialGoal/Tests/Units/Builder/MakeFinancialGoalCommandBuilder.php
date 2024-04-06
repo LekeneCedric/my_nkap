@@ -12,6 +12,7 @@ class MakeFinancialGoalCommandBuilder
     private ?float $desiredAmount = null;
     private ?string $details = null;
     private ?string $financialGoalId = null;
+    public ?string $userId = null;
 
     public static function asCommand()
     {
@@ -54,9 +55,16 @@ class MakeFinancialGoalCommandBuilder
         return $this;
     }
 
+    public function withUserId(string $userId): static
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
     public function build(): MakeFinancialGoalCommand
     {
         $self = new MakeFinancialGoalCommand(
+            userId: $this->userId,
             accountId: $this->accountId,
             startDate: $this->startDate,
             endDate: $this->endDate,

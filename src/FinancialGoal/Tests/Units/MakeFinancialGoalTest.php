@@ -11,9 +11,12 @@ use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;
+use App\FinancialGoal\Domain\Service\CheckIfUserExistByIdService;
+use App\FinancialGoal\FinancialGoalUser;
 use App\FinancialGoal\Tests\Units\Builder\MakeFinancialGoalCommandBuilder;
 use App\FinancialGoal\Tests\Units\Repository\InMemoryFinancialGoalRepository;
 use App\FinancialGoal\Tests\Units\Service\InMemoryCheckIfAccountExitByIdService;
+use App\FinancialGoal\Tests\Units\Service\InMemoryCheckIfUserExistByIdService;
 use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
@@ -23,13 +26,15 @@ use Tests\TestCase;
 
 class MakeFinancialGoalTest extends TestCase
 {
-    private CheckIfAccountExitByIdService $getAccountByIdService;
+    private CheckIfAccountExitByIdService $checkIfAccountExitByIdService;
+    private CheckIfUserExistByIdService $checkIfUserExistByIdService;
     private FinancialGoalRepository $repository;
     public function __construct(string $name)
     {
         parent::__construct($name);
         $this->repository = new InMemoryFinancialGoalRepository();
-        $this->getAccountByIdService = new InMemoryCheckIfAccountExitByIdService();
+        $this->checkIfAccountExitByIdService = new InMemoryCheckIfAccountExitByIdService();
+        $this->checkIfUserExistByIdService = new InMemoryCheckIfUserExistByIdService();
     }
 
     /**
@@ -42,6 +47,7 @@ class MakeFinancialGoalTest extends TestCase
         $initSUT = $this->buildSUT();
 
         $command = MakeFinancialGoalCommandBuilder::asCommand()
+            ->withUserId($initSUT['userId'])
             ->withAccountId($initSUT['accountId'])
             ->withStartDate((new DateVO())->formatYMDHIS())
             ->withEndDate((new DateVO('2023-09-30 00:00:00'))->formatYMDHIS())
@@ -69,6 +75,7 @@ class MakeFinancialGoalTest extends TestCase
 
         $command = MakeFinancialGoalCommandBuilder::asCommand()
             ->withFinancialGoalId($initSUT['financialGoalId'])
+            ->withUserId($initSUT['userId'])
             ->withAccountId($initSUT['accountId'])
             ->withStartDate((new DateVO('2022-09-20 00:00:00'))->formatYMDHIS())
             ->withEndDate((new DateVO('2025-09-20 00:00:00'))->formatYMDHIS())
@@ -94,8 +101,11 @@ class MakeFinancialGoalTest extends TestCase
      */
     public function test_can_throw_not_found_account_exception()
     {
+        $initSUT = $this->buildSUT();
+
         $command = MakeFinancialGoalCommandBuilder::asCommand()
             ->withAccountId('wrong_account_id')
+            ->withUserId($initSUT['userId'])
             ->withStartDate((new DateVO())->formatYMDHIS())
             ->withEndDate((new DateVO('2023-09-30 00:00:00'))->formatYMDHIS())
             ->withDesiredAmount(1000000)
@@ -112,14 +122,17 @@ class MakeFinancialGoalTest extends TestCase
     {
         $accountSUT = AccountSUT::asSUT()
             ->withExistingAccount();
-
+        $user = new FinancialGoalUser(new Id());
         $financialGoal = null;
         $account = $accountSUT->account;
-        $this->getAccountByIdService->accounts[$account->id()->value()] = $account;
+
+        $this->checkIfAccountExitByIdService->accounts[$account->id()->value()] = $account;
+        $this->checkIfUserExistByIdService->users[$user->id()->value()] = $user;
 
         if ($withExistingFinancialGoal) {
           $financialGoal = FinancialGoal::create(
-              accountId: new Id($account->id()->value()),
+              userId: $user->id(),
+              accountId: $account->id(),
               startDate: new DateVO(),
               enDate: new DateVO('2024-09-30 00:00:00'),
               desiredAmount: new AmountVO(100000),
@@ -129,6 +142,7 @@ class MakeFinancialGoalTest extends TestCase
           $this->repository->financialsGoal[$financialGoal->id()->value()] = $financialGoal;
         }
         return [
+            'userId' => $user->id()->value(),
             'accountId' => $account->id()->value(),
             'financialGoalId' => $financialGoal?->id()->value(),
         ];
@@ -144,7 +158,8 @@ class MakeFinancialGoalTest extends TestCase
     {
         $handler = new MakeFinancialGoalHandler(
             repository: $this->repository,
-            checkIfAccountExistByIdService: $this->getAccountByIdService
+            checkIfAccountExistByIdService: $this->checkIfAccountExitByIdService,
+            checkIfUserExistByIdService: $this->checkIfUserExistByIdService,
         );
 
         return $handler->handle($command);

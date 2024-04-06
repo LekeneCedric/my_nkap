@@ -51,7 +51,7 @@ class FinancialGoalServiceProvider extends ServiceProvider
     {
         return [
             'prefix' => 'api/financial-goals',
-            'middleware' => []
+            'middleware' => ['auth:sanctum']
         ];
     }
 
