@@ -8,19 +8,31 @@ use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
+use App\User\Infrastructure\Models\Profession;
+use App\User\Infrastructure\Models\User;
 
 class FinancialGoalSUT
 {
     public FinancialGoal $financialGoal;
+    private User $user;
     public static function asSUT(): FinancialGoalSUT
     {
-        return new self();
+        $self = new self();
+        $self->user = User::factory()->create([
+            'uuid' => (new Id())->value(),
+            'email' => (new Id())->value().'@gmail.com',
+            'name' => 'lekene',
+            'password' => bcrypt('lekene@5144'),
+            'profession_id' => (Profession::factory()->create())->id,
+        ]);
+        return $self;
     }
 
     public function withFinancialGoal(): static
     {
-        $account = Account::factory()->create();
+        $account = Account::factory()->create(['user_id' => $this->user->id]);
         $this->financialGoal = FinancialGoal::create(
+            userId: new Id($this->user->uuid),
             accountId: new Id($account->uuid),
             startDate: new DateVO(),
             enDate: new DateVO('2022-09-30 10:00:00'),

@@ -11,6 +11,7 @@ use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
+use App\User\Infrastructure\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use PDO;
@@ -56,6 +57,7 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
             SELECT
                 fg.uuid AS Id,
                 ac.uuid AS accountId,
+                u.uuid AS userId,
                 start_date AS startDate,
                 end_date AS endDate,
                 desired_amount AS desiredAmount,
@@ -64,9 +66,12 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
                 is_complete AS isComplete
             FROM financial_goals AS fg
             INNER JOIN accounts AS ac ON fg.account_id=ac.id
+            INNER JOIN users AS u ON fg.user_id = u.id
             WHERE fg.uuid=:uuid AND
                   fg.is_deleted=false AND
-                  ac.is_deleted=false
+                  ac.is_deleted=false AND
+                  u.is_active=true AND
+                  u.is_deleted=false
         ";
 
         $stmt = $this->pdo->prepare($sql);
@@ -85,6 +90,7 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
     private function toFinancialGoalDomain(mixed $result): FinancialGoal
     {
         return FinancialGoal::create(
+            userId: new Id($result->userId),
             accountId: new Id($result->accountId),
             startDate: new DateVO($result->startDate),
             enDate: new DateVO($result->endDate),
@@ -121,7 +127,7 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
      */
     private function createFinancialGoal(FinancialGoal $financialGoal): void
     {
-        $data = array_merge($financialGoal->toArray(), $this->getForeignIds($financialGoal->accountId()->value()));
+        $data = array_merge($financialGoal->toArray(), $this->getForeignIds($financialGoal));
         $sql = $this->createFinancialGoalSql();
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($data);
@@ -155,6 +161,7 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
             INSERT INTO financial_goals
                 (
                     uuid,
+                    user_id,
                     account_id,
                     start_date,
                     end_date,
@@ -165,6 +172,7 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
                 )
             VALUES (
                     :uuid,
+                    :user_id,
                     :account_id,
                     :start_date,
                     :end_date,
@@ -177,13 +185,14 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
     }
 
     /**
-     * @param string $accountId
+     * @param FinancialGoal $financialGoal
      * @return array
      */
-    private function getForeignIds(string $accountId): array
+    private function getForeignIds(FinancialGoal $financialGoal): array
     {
         return [
-            'account_id' => Account::whereUuid($accountId)->whereIsDeleted(false)->first()->id,
+            'user_id' => User::where('uuid', $financialGoal->userId()->value())->where('is_deleted',false)->where('is_active', 1)->first()->id,
+            'account_id' => Account::whereUuid($financialGoal->accountId()->value())->whereIsDeleted(false)->first()->id,
         ];
     }
 }

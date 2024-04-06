@@ -1,6 +1,6 @@
 <?php
 
-namespace App\FinancialGoal;
+namespace App\FinancialGoal\Domain;
 
 use App\Shared\VO\Id;
 

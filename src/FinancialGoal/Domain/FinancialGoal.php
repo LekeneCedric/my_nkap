@@ -133,6 +133,19 @@ class FinancialGoal
         $this->details = $details;
     }
 
+    public function userId(): Id
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @return Id
+     */
+    public function accountId(): Id
+    {
+        return $this->accountId;
+    }
+
     /**
      * @return array
      * @throws Exception
@@ -156,13 +169,5 @@ class FinancialGoal
         }
 
         return $data;
-    }
-
-    /**
-     * @return Id
-     */
-    public function accountId(): Id
-    {
-        return $this->accountId;
     }
 }

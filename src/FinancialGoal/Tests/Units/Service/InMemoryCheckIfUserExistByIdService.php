@@ -2,14 +2,14 @@
 
 namespace App\FinancialGoal\Tests\Units\Service;
 
+use App\FinancialGoal\Domain\FinancialGoalUser;
 use App\FinancialGoal\Domain\Service\CheckIfUserExistByIdService;
-use App\FinancialGoal\FinancialGoalUser;
 use App\Shared\VO\Id;
 
 class InMemoryCheckIfUserExistByIdService implements CheckIfUserExistByIdService
 {
     /**
-     * @var FinancialGoalUser[]
+     * @var Id[]
      */
     public array $users = [];
 

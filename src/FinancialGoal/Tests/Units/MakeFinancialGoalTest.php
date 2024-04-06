@@ -10,9 +10,9 @@ use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalResponse;
 use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
+use App\FinancialGoal\Domain\FinancialGoalUser;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;
 use App\FinancialGoal\Domain\Service\CheckIfUserExistByIdService;
-use App\FinancialGoal\FinancialGoalUser;
 use App\FinancialGoal\Tests\Units\Builder\MakeFinancialGoalCommandBuilder;
 use App\FinancialGoal\Tests\Units\Repository\InMemoryFinancialGoalRepository;
 use App\FinancialGoal\Tests\Units\Service\InMemoryCheckIfAccountExitByIdService;
@@ -21,7 +21,6 @@ use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
-use Exception;
 use Tests\TestCase;
 
 class MakeFinancialGoalTest extends TestCase
@@ -122,16 +121,16 @@ class MakeFinancialGoalTest extends TestCase
     {
         $accountSUT = AccountSUT::asSUT()
             ->withExistingAccount();
-        $user = new FinancialGoalUser(new Id());
+        $userId = new Id();
         $financialGoal = null;
         $account = $accountSUT->account;
 
         $this->checkIfAccountExitByIdService->accounts[$account->id()->value()] = $account;
-        $this->checkIfUserExistByIdService->users[$user->id()->value()] = $user;
+        $this->checkIfUserExistByIdService->users[$userId->value()] = $userId;
 
         if ($withExistingFinancialGoal) {
           $financialGoal = FinancialGoal::create(
-              userId: $user->id(),
+              userId: $userId,
               accountId: $account->id(),
               startDate: new DateVO(),
               enDate: new DateVO('2024-09-30 00:00:00'),
@@ -142,7 +141,7 @@ class MakeFinancialGoalTest extends TestCase
           $this->repository->financialsGoal[$financialGoal->id()->value()] = $financialGoal;
         }
         return [
-            'userId' => $user->id()->value(),
+            'userId' => $userId->value(),
             'accountId' => $account->id()->value(),
             'financialGoalId' => $financialGoal?->id()->value(),
         ];

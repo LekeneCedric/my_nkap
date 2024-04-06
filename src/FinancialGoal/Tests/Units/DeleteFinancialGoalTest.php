@@ -80,6 +80,7 @@ class DeleteFinancialGoalTest extends TestCase
         $account = $accountSUT->account;
 
         $financialGoal = FinancialGoal::create(
+            userId: new Id(),
             accountId: new Id($account->id()->value()),
             startDate: new DateVO(),
             enDate: new DateVO('2025-09-30 08:00:00'),
