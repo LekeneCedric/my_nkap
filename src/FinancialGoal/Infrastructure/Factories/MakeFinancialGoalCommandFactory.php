@@ -12,6 +12,7 @@ class MakeFinancialGoalCommandFactory
     {
         self::validate($request);
         $command = new MakeFinancialGoalCommand(
+            userId: $request->get('userId'),
             accountId: $request->get('accountId'),
             startDate: $request->get('startDate'),
             endDate: $request->get('endDate'),
@@ -25,6 +26,7 @@ class MakeFinancialGoalCommandFactory
     private static function validate(Request $request): void
     {
         if (
+            empty($request->get('userId')) ||
             empty($request->get('accountId')) ||
             empty($request->get('startDate')) ||
             empty($request->get('endDate')) ||

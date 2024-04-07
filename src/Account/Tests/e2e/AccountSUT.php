@@ -33,6 +33,7 @@ class AccountSUT
     {
         for($i=0; $i<$count; $i++){
             $this->accounts[] = Account::factory()->create([
+                'icon' => 'icon',
                 'user_id' => $userId ?: $this->user->id
             ]);
         }

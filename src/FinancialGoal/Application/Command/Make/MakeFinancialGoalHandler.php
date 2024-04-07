@@ -27,8 +27,9 @@ class MakeFinancialGoalHandler
     /**
      * @param MakeFinancialGoalCommand $command
      * @return MakeFinancialGoalResponse
-     * @throws NotFoundAccountException
      * @throws ErrorOnSaveFinancialGoalException
+     * @throws NotFoundAccountException
+     * @throws NotFoundUserException
      */
     public function handle(MakeFinancialGoalCommand $command): MakeFinancialGoalResponse
     {

@@ -4,8 +4,10 @@ namespace App\FinancialGoal\Infrastructure\Provider;
 
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;
+use App\FinancialGoal\Domain\Service\CheckIfUserExistByIdService;
 use App\FinancialGoal\Infrastructure\Repository\PdoFinancialGoalRepository;
 use App\FinancialGoal\Infrastructure\Services\PdoCheckIfAccountExitByIdService;
+use App\FinancialGoal\Infrastructure\Services\PdoCheckIfUserExistByIdService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +33,7 @@ class FinancialGoalServiceProvider extends ServiceProvider
     private function bindModulesServices(): void
     {
         $this->app->singleton(CheckIfAccountExitByIdService::class, PdoCheckIfAccountExitByIdService::class);
+        $this->app->singleton(CheckIfUserExistByIdService::class, PdoCheckIfUserExistByIdService::class);
     }
 
     private function loadMigrations(): void

@@ -2,6 +2,7 @@
 
 namespace App\Account\Application\Command\Delete;
 
+use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
 use App\Shared\VO\Id;
@@ -19,6 +20,7 @@ class DeleteAccountHandler
      * @param string $accountToDeleteId
      * @return DeleteAccountResponse
      * @throws NotFoundAccountException
+     * @throws ErrorOnSaveAccountException
      */
     public function handle(string $accountToDeleteId): DeleteAccountResponse
     {

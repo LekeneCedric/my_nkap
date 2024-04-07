@@ -7,6 +7,7 @@ use App\Shared\VO\DateVO;
 use App\Shared\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -57,7 +58,7 @@ class SaveAccountActionTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function test_can_update_account()
     {
@@ -65,8 +66,8 @@ class SaveAccountActionTest extends TestCase
         $accountId = $initSUT->accounts[0]->uuid;
 
         $updatedData = [
-            'accountId' => $accountId,
             'userId' => $this->user->uuid,
+            'accountId' => $accountId,
             'name' => 'compte epargne',
             'type' => 'epargne',
             'icon' => 'wallet_icon',

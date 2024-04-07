@@ -29,6 +29,7 @@ class RegisterUserAction
                 'isCreated' => $response->isCreated,
                 'message' => $response->message,
                 'token' => $user?->createToken('my_nkap_token')->plainTextToken,
+                'user' => $user,
             ];
         } catch (ErrorOnSaveUserException) {
             $httpResponse['message'] = 'Une érreur technique est survenue lors du traitement de votre opération !';

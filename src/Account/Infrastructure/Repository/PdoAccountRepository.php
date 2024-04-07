@@ -161,6 +161,7 @@ class PdoAccountRepository implements AccountRepository
             'accountId' => $accountId->value()
         ]);
         $result = $stmt->fetch();
+
         if (!$result) {
             return null;
         }

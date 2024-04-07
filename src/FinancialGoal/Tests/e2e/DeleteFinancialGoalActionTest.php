@@ -3,6 +3,9 @@
 namespace App\FinancialGoal\Tests\e2e;
 
 use App\FinancialGoal\Infrastructure\Model\FinancialGoal;
+use App\Shared\VO\Id;
+use App\User\Infrastructure\Models\Profession;
+use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -12,11 +15,20 @@ class DeleteFinancialGoalActionTest extends TestCase
     use RefreshDatabase;
 
     const DELETE_FINANCIAL_GOAL = 'api/financial-goals/delete';
-
+    private User $user;
+    private string $token;
     protected function setUp(): void
     {
         parent::setUp();
         DB::rollBack();
+        $this->user = User::factory()->create([
+            'uuid' => (new Id())->value(),
+            'email' => (new Id())->value().'@gmail.com',
+            'name' => 'lekene',
+            'password' => bcrypt('lekene@5144'),
+            'profession_id' => (Profession::factory()->create())->id,
+        ]);
+        $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
     }
 
     public function test_can_delete_financial_goal()
@@ -30,7 +42,9 @@ class DeleteFinancialGoalActionTest extends TestCase
             'financialGoalId' => $initSUT->financialGoal->uuid,
         ];
 
-        $response = $this->postJson(self::DELETE_FINANCIAL_GOAL, $data);
+        $response = $this->postJson(self::DELETE_FINANCIAL_GOAL, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
         $deletedFinancailGoal = FinancialGoal::whereUuid($initSUT->financialGoal->uuid)
             ->whereIsDeleted(true)->first();
 
@@ -51,7 +65,9 @@ class DeleteFinancialGoalActionTest extends TestCase
             'financialGoalId' => 'wrong_financial_goal_id',
         ];
 
-        $response = $this->postJson(self::DELETE_FINANCIAL_GOAL, $data);
+        $response = $this->postJson(self::DELETE_FINANCIAL_GOAL, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
         $deletedFinancailGoal = FinancialGoal::whereUuid($initSUT->financialGoal->uuid)
             ->whereIsDeleted(true)->first();
 

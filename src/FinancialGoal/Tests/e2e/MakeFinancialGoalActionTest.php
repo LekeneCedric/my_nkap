@@ -4,6 +4,9 @@ namespace App\FinancialGoal\Tests\e2e;
 
 use App\FinancialGoal\Infrastructure\Model\FinancialGoal;
 use App\Shared\VO\DateVO;
+use App\Shared\VO\Id;
+use App\User\Infrastructure\Models\Profession;
+use App\User\Infrastructure\Models\User;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -14,11 +17,21 @@ class MakeFinancialGoalActionTest extends TestCase
     use RefreshDatabase;
 
     const MAKE_FINANCIAL_GOAL = 'api/financial-goals/save';
+    private User $user;
+    private string $token;
 
     protected function setUp(): void
     {
         parent::setUp();
         DB::rollBack();
+        $this->user = User::factory()->create([
+            'uuid' => (new Id())->value(),
+            'email' => (new Id())->value().'@gmail.com',
+            'name' => 'lekene',
+            'password' => bcrypt('lekene@5144'),
+            'profession_id' => (Profession::factory()->create())->id,
+        ]);
+        $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
     }
 
     /**
@@ -32,6 +45,7 @@ class MakeFinancialGoalActionTest extends TestCase
             ->build();
 
         $data = [
+           'userId' => $initSUT->user->uuid,
            'accountId' => $initSUT->account->uuid,
            'startDate' =>  (new DateVO())->formatYMDHIS(),
            'endDate' => (new DateVO())->formatYMDHIS(),
@@ -39,7 +53,10 @@ class MakeFinancialGoalActionTest extends TestCase
            'details' => 'want to save --200000-- to buy my new home'
         ];
 
-        $response = $this->postJson(self::MAKE_FINANCIAL_GOAL, $data);
+        $response = $this->postJson(self::MAKE_FINANCIAL_GOAL, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
+
         $createdFinancialGoal = FinancialGoal::whereUuid($response['financialGoalId'])
             ->whereIsDeleted(false)->first();
 
@@ -64,6 +81,7 @@ class MakeFinancialGoalActionTest extends TestCase
 
         $data = [
             'financialGoalId' => $initSUT->financialGoal->uuid,
+            'userId' => $initSUT->user->uuid,
             'accountId' => $initSUT->account->uuid,
             'startDate' =>  (new DateVO())->formatYMDHIS(),
             'endDate' => (new DateVO())->formatYMDHIS(),
@@ -71,7 +89,9 @@ class MakeFinancialGoalActionTest extends TestCase
             'details' => 'want to save --200000-- to buy my new home'
         ];
 
-        $response = $this->postJson(self::MAKE_FINANCIAL_GOAL, $data);
+        $response = $this->postJson(self::MAKE_FINANCIAL_GOAL, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
         $updatedFinancialGoal = FinancialGoal::whereUuid($initSUT->financialGoal->uuid)
             ->whereIsDeleted(false)->first();
 
@@ -84,6 +104,7 @@ class MakeFinancialGoalActionTest extends TestCase
     public function test_can_throw_error_message_when_not_found_account()
     {
         $data = [
+            'userId' => 'wrong_user_id',
             'accountId' => 'wrong_account_id',
             'startDate' =>  (new DateVO())->formatYMDHIS(),
             'endDate' => (new DateVO())->formatYMDHIS(),
@@ -91,7 +112,9 @@ class MakeFinancialGoalActionTest extends TestCase
             'details' => 'want to save --200000-- to buy my new home'
         ];
 
-        $response = $this->postJson(self::MAKE_FINANCIAL_GOAL, $data);
+        $response = $this->postJson(self::MAKE_FINANCIAL_GOAL, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
 
         $response->assertOk();
         $this->assertArrayNotHasKey('isMake', $response);

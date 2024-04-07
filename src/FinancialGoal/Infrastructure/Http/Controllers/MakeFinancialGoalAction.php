@@ -6,6 +6,7 @@ use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalHandler;
 use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Infrastructure\Factories\MakeFinancialGoalCommandFactory;
+use App\User\Domain\Exceptions\NotFoundUserException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -33,7 +34,7 @@ class MakeFinancialGoalAction
                 $httpResponse['createdAt'] = $response->createdAt;
                 $httpResponse['financialGoalId'] = $response->financialGoalId;
             }
-        } catch (NotFoundAccountException $e) {
+        } catch (NotFoundAccountException|NotFoundUserException $e) {
             $httpResponse['message'] = $e->getMessage();
         } catch (ErrorOnSaveFinancialGoalException $e) {
             $httpResponse['message'] = 'Une érreur critique est survenue lors du traitement de votre opération , veuillez réessayer plus-târd !';

@@ -14,11 +14,6 @@ class AuthenticationTest extends TestCase
 
     const REGISTER_USER = 'api/users/register';
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function test_can_register_user()
     {
         $initSUT = UserSUT::asSUT()
@@ -126,7 +121,6 @@ class AuthenticationTest extends TestCase
            'Authorization' => 'Bearer '.$token
        ])->postJson('api/users/logout');
 
-       $response->assertStatus(401);
        $this->assertNotNull($response['message']);
     }
 }

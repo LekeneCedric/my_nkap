@@ -28,11 +28,14 @@ class SaveAccountAction
             $httpJson['accountId'] = $response->accountId;
             $httpJson['message'] = $response->message;
         } catch (NotFoundAccountException $e){
+            dd($e);
             $httpJson['message'] = $e->getMessage();
         } catch (ErrorOnSaveAccountException) {
+            dd($e);
             $httpJson['message'] = 'Une érreur critique est survenue lors du traitement de votre opération , veuillez réessayez plus târd !';
         }
         catch (\Exception $e) {
+            dd($e);
             $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veuillez réessayer ultérieurement !';
         }
 

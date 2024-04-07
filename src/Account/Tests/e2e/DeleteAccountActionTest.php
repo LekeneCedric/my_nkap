@@ -32,7 +32,7 @@ class DeleteAccountActionTest extends TestCase
 
     public function test_can_delete_account()
     {
-        $accountId = (Account::factory()->create(['user_id' => $this->user->id]))->uuid;
+        $accountId = (Account::factory()->create(['user_id' => $this->user->id, 'icon' => 'icon']))->uuid;
 
         $data = [
             'accountId' => $accountId,
