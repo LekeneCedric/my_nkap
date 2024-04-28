@@ -9,8 +9,9 @@ use App\User\Infrastructure\Factories\RegisterUserCommandFactory;
 use App\User\Infrastructure\Http\Requests\RegisterUserRequest;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
-class RegisterUserAction
+class RegisterAction
 {
     public function __invoke(
         RegisterUserHandler $handler,
@@ -21,6 +22,7 @@ class RegisterUserAction
             'status' => false,
         ];
         try {
+            DB::beginTransaction();
             $command = RegisterUserCommandFactory::buildFromRequest($request);
             $response = $handler->handle($command);
             $user = User::where('uuid', $response->userId)->first();
@@ -29,11 +31,14 @@ class RegisterUserAction
                 'isCreated' => $response->isCreated,
                 'message' => $response->message,
                 'token' => $user?->createToken('my_nkap_token')->plainTextToken,
-                'user' => $user,
+                'user' => $response->user,
             ];
+            DB::commit();
         } catch (ErrorOnSaveUserException) {
+            DB::rollBack();
             $httpResponse['message'] = 'Une érreur technique est survenue lors du traitement de votre opération !';
         } catch (AlreadyUserExistWithSameEmailException $e) {
+            DB::rollBack();
             $httpResponse['message'] = $e->getMessage();
         }
 

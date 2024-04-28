@@ -24,7 +24,8 @@ class LoginAction
               'status' => true,
               'isLogged' => $response->isLogged,
               'user' => $response->user,
-              'token' => $response->token
+              'token' => $response->token,
+              'message' => 'Bienvenue , '.$response->user['name'],
             ];
         } catch (NotFoundUserException $e) {
             $httpResponse['message'] = $e->getMessage();

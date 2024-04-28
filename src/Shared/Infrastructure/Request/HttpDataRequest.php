@@ -19,7 +19,10 @@ class HttpDataRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(
-          response()->json($validator->errors()),
+          response()->json([
+              'status' => false,
+              'message' => $validator->errors()->first()
+          ]),
           200
         );
     }
