@@ -2,14 +2,14 @@
 
 namespace App\Account\Infrastructure\Http\Controllers;
 
-use App\Account\Application\Queries\All\GetAllAccountHanler;
+use App\Account\Application\Queries\All\GetAllAccountHandler;
 use Illuminate\Http\JsonResponse;
 
 class GetAllAccountAction
 {
     public function __invoke(
-        GetAllAccountHanler $handler,
-        string $userId,
+        GetAllAccountHandler $handler,
+        string               $userId,
     ): JsonResponse
     {
         $httpJson = [

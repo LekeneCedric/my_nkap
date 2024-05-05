@@ -25,7 +25,7 @@ class RegisterAction
             DB::beginTransaction();
             $command = RegisterUserCommandFactory::buildFromRequest($request);
             $response = $handler->handle($command);
-            $user = User::where('uuid', $response->userId)->first();
+            $user = User::where('uuid', $response->userId)->first(['id']);
             $httpResponse = [
                 'status' => true,
                 'isCreated' => $response->isCreated,

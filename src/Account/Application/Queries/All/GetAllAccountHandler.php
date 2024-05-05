@@ -4,7 +4,7 @@ namespace App\Account\Application\Queries\All;
 
 use Illuminate\Support\Facades\DB;
 
-class GetAllAccountHanler
+class GetAllAccountHandler
 {
     private \PDO $pdo;
     public function __construct()
