@@ -17,7 +17,6 @@ class InitializeDefaultUserAccount implements ShouldQueue
 
     public function __construct(
         private string $user_id,
-        
     )
     {
     }
