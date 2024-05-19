@@ -14,6 +14,7 @@ class GetAllProfessionActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::rollBack();
     }
 
     public function test_can_get_all_professions()
