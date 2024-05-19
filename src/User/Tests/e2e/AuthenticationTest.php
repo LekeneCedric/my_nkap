@@ -2,10 +2,11 @@
 
 namespace App\User\Tests\e2e;
 
+use App\Account\Infrastructure\Model\Account;
+use App\User\Infrastructure\Job\InitializeDefaultUserAccount;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -122,5 +123,33 @@ class AuthenticationTest extends TestCase
        ])->postJson('api/users/logout');
 
        $this->assertNotNull($response['message']);
+    }
+
+    public function test_can_dispatch_creation_of_two_accounts_after_user_creation()
+    {
+        $initSUT = UserSUT::asSUT()
+            ->build();
+
+        $data = [
+            'email' => 'lekene@gmail.com',
+            'password' => 'Password1234',
+            'username' => 'Lekene Cedric',
+            'birthday' => '30-09-2002',
+            'professionId' => $initSUT->profession->uuid,
+        ];
+
+        $response = $this->postJson(self::REGISTER_USER, $data);
+        $createdUser = User::whereEmail('lekene@gmail.com')->whereIsDeleted(false)
+            ->first();
+        $createdAccounts = Account::whereUserId($createdUser->id)->whereIsDeleted(false)
+            ->get();
+        InitializeDefaultUserAccount::dispatch($createdUser->id);
+        $response->assertOk();
+        $this->assertTrue($response['status']);
+        $this->assertTrue($response['isCreated']);
+        $this->assertNotNull($response['token']);
+        $this->assertNotNull($response['user']);
+        $this->assertNotNull($createdUser);
+        $this->assertCount(2, $createdAccounts);
     }
 }

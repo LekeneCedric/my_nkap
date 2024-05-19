@@ -2,7 +2,9 @@
 
 namespace App\Account\Application\Queries\All;
 
+use App\Account\Domain\Exceptions\ErrorOnGetAllAccountException;
 use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 class GetAllAccountHandler
 {
@@ -12,6 +14,11 @@ class GetAllAccountHandler
         $this->pdo = DB::getPdo();
     }
 
+    /**
+     * @param string $userId
+     * @return GetAllAccountResponse
+     * @throws ErrorOnGetAllAccountException
+     */
     public function handle(string $userId): GetAllAccountResponse
     {
         $sql = "
@@ -32,17 +39,21 @@ class GetAllAccountHandler
                   u.uuid = :userId
         ";
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
-        $stmt->execute([
-            'userId' => $userId
-        ]);
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+            $stmt->execute([
+                'userId' => $userId
+            ]);
 
-        $accounts = $stmt->fetchAll();
+            $accounts = $stmt->fetchAll();
 
-        return new GetAllAccountResponse(
-            status: true,
-            accounts: $accounts,
-        );
+            return new GetAllAccountResponse(
+                status: true,
+                accounts: $accounts,
+            );
+        } catch (Exception $e) {
+           throw new ErrorOnGetAllAccountException($e->getMessage());
+        }
     }
 }

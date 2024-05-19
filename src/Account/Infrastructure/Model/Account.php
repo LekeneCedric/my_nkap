@@ -13,7 +13,7 @@ class Account extends Model
     use HasFactory;
 
     protected $table = 'accounts';
-
+    protected $guarded = [];
     protected static function newFactory(): AccountFactory
     {
         return AccountFactory::new();
