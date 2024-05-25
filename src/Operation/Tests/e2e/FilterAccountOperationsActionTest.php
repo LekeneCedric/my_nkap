@@ -38,6 +38,8 @@ class FilterAccountOperationsActionTest extends TestCase
 
         $data = [
             'accountId' => $initData->accounts[0]->getAttributeValue('uuid'),
+            'page' => 1,
+            'limit' => 10
         ];
 
         $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
@@ -47,5 +49,29 @@ class FilterAccountOperationsActionTest extends TestCase
         $response->assertOk();
         $this->assertTrue($response['status']);
         $this->assertCount(10, $response['operations']);
+    }
+
+    public function test_can_filter_accounts_operations()
+    {
+        AccountSUT::asSUT()
+            ->withExistingAccounts(count: 2, userId: $this->user->id)
+            ->withExistingOperationsPerAccounts(count: 10)
+            ->build();
+
+        $data = [
+          'userId' => $this->user->uuid,
+          'page' => 1,
+          'limit' => 5,
+        ];
+
+        $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
+            'Authorization' => 'Bearer '.$this->token
+        ]);
+
+        $response->assertOk();
+        $this->assertTrue($response['status']);
+        $this->assertCount(5, $response['operations']);
+        $this->assertEquals(20, $response['total']);
+        $this->assertEquals(4, $response['numberOfPages']);
     }
 }
