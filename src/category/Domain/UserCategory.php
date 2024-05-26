@@ -2,6 +2,7 @@
 
 namespace App\category\Domain;
 
+use App\category\Domain\Enums\EventState\CategoryEventStateEnum;
 use App\category\Domain\Exceptions\AlreadyExistsCategoryException;
 use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\Shared\VO\DateVO;
@@ -11,7 +12,6 @@ use App\Shared\VO\StringVO;
 class UserCategory
 {
     private ?Category $currentCategory;
-    private ?DateVO $updatedAt;
 
     /**
      * @param Id $id
@@ -23,7 +23,6 @@ class UserCategory
     )
     {
         $this->currentCategory = null;
-        $this->updatedAt = null;
     }
 
     public function currentCategory(): ?Category
@@ -50,7 +49,6 @@ class UserCategory
             name: $name,
             description: $description
         );
-        $this->updatedAt = new DateVO();
     }
 
     /**
@@ -75,7 +73,24 @@ class UserCategory
             description: $description,
             id: $id
         );
-        $this->updatedAt = new DateVO();
+    }
+
+    /**
+     * @param Id $categoryId
+     * @return void
+     * @throws NotFoundCategoryException
+     */
+    public function deleteCategory(Id $categoryId): void
+    {
+        array_map(function(Category $category) use ($categoryId) {
+            if ($category->categoryId->value() === $categoryId->value()) {
+                $this->currentCategory = $category;
+                $this->currentCategory->changeEventState(CategoryEventStateEnum::onDelete);
+            }
+        }, $this->categories);
+        if (is_null($this->currentCategory)) {
+            throw new NotFoundCategoryException();
+        }
     }
 
     /**

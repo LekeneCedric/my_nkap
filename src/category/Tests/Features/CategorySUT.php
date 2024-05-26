@@ -19,7 +19,7 @@ class CategorySUT
      * @var Category[]
      */
     private array $categories;
-    private ?CategoryModel $existingCategory;
+    public ?CategoryModel $existingCategory;
     private ?Category $toAddCategory;
     private ?Category $toUpdateCategory;
     public ?UserCategory $userCategory;

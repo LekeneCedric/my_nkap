@@ -1,6 +1,6 @@
 <?php
 
-namespace App\category\Tests\Units\Builder;
+namespace App\category\Tests\Units\Builders;
 
 use App\category\Application\Command\Save\SaveCategoryCommand;
 

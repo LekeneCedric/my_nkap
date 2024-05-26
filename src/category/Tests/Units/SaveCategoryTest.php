@@ -10,7 +10,7 @@ use App\category\Domain\Exceptions\AlreadyExistsCategoryException;
 use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\category\Domain\Exceptions\NotFoundUserCategoryException;
 use App\category\Domain\UserCategoryRepository;
-use App\category\Tests\Units\Builder\SaveCategoryCommandBuilder;
+use App\category\Tests\Units\Builders\SaveCategoryCommandBuilder;
 use Tests\TestCase;
 
 class SaveCategoryTest extends TestCase

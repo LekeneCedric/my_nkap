@@ -59,4 +59,9 @@ class Category
             'description' => $this->description->value(),
         ];
     }
+
+    public function changeEventState(CategoryEventStateEnum $eventState): void
+    {
+        $this->eventState = $eventState;
+    }
 }

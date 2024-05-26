@@ -40,6 +40,7 @@ class EloquentUserCategoryRepository implements UserCategoryRepository
                 match ($category->eventState()) {
                     CategoryEventStateEnum::onCreate => $this->createCategory($user_id, $category),
                     CategoryEventStateEnum::onUpdate => $this->updateCategory($category),
+                    CategoryEventStateEnum::onDelete => $this->deleteCategory($category),
                 };
             });
         } catch (Exception $e) {
@@ -58,5 +59,11 @@ class EloquentUserCategoryRepository implements UserCategoryRepository
         $categoryId = $category->categoryId->value();
         $data = $category->toArray();
         CategoryModel::whereUuid($categoryId)->first()->fill($data)->save();
+    }
+
+    private function deleteCategory(Category $category): void
+    {
+        CategoryModel::whereUuid($category->categoryId->value())
+            ->delete();
     }
 }
