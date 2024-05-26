@@ -46,4 +46,17 @@ class Category
     {
         return $this->eventState;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'uuid' => $this->categoryId->value(),
+            'icon' => $this->icon->value(),
+            'name' => $this->name->value(),
+            'description' => $this->description->value(),
+        ];
+    }
 }

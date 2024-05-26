@@ -3,12 +3,19 @@
 namespace App\User\Infrastructure\Models;
 
 use App\Bootstrap\Infrastructure\database\factories\UserFactory;
+use App\category\Infrastructure\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property mixed $uuid
+ * @property mixed $id
+ * @method static whereUuid(string|null $value)
+ */
 class User extends Model
 {
     use Notifiable, HasFactory, HasApiTokens;
@@ -45,5 +52,10 @@ class User extends Model
     protected static function newFactory(): UserFactory|Factory
     {
         return UserFactory::new();
+    }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
     }
 }

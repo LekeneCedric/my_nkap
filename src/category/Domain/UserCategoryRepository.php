@@ -2,6 +2,7 @@
 
 namespace App\category\Domain;
 
+use App\category\Domain\Exceptions\ErrorOnSaveCategoryException;
 use App\Shared\VO\Id;
 
 interface UserCategoryRepository
@@ -13,8 +14,8 @@ interface UserCategoryRepository
     public function ofId(Id $id): ?UserCategory;
 
     /**
-     * @param UserCategory|null $user
+     * @param UserCategory $user
      * @return void
      */
-    public function save(?UserCategory $user): void;
+    public function save(UserCategory $user): void;
 }

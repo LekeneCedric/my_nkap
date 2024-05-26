@@ -18,7 +18,11 @@ class InMemoryUserCategoryRepository implements UserCategoryRepository
         return $this->users[$id->value()] ?? null;
     }
 
-    public function save(?UserCategory $user): void
+    /**
+     * @param UserCategory $user
+     * @return void
+     */
+    public function save(UserCategory $user): void
     {
         $this->users[$user->id->value()] = $user;
     }
