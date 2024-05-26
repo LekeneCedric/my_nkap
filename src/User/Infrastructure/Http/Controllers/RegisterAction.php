@@ -31,7 +31,7 @@ class RegisterAction
                 'status' => true,
                 'isCreated' => $response->isCreated,
                 'message' => $response->message,
-                'token' => $user?->createToken('my_nkap_token')->plainTextToken,
+                'token' => $user?->createToken(env('TOKEN_KEY'))->plainTextToken,
                 'user' => $response->user,
             ];
             $this->createDefaultAccounts($user->id);

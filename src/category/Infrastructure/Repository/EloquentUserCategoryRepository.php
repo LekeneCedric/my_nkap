@@ -18,7 +18,12 @@ class EloquentUserCategoryRepository implements UserCategoryRepository
 
     public function ofId(Id $id): ?UserCategory
     {
-        return null;
+        $user = User::whereUuid($id->value())->first();
+        if (!$user) return null;
+        $categories = $user->categories
+            ->map(fn(CategoryModel $category) => $category->toDomain())
+            ->toArray();
+        return new UserCategory(id: new Id($user->uuid), categories: $categories);
     }
 
     /**
