@@ -34,6 +34,7 @@ class UserCategoryRepositoryTest extends TestCase
             ->withToAddCategory(
                 icon: 'taxi',
                 name: 'transport',
+                color: 'green',
                 description: 'Category for my transport expenses'
             )->build();
 
@@ -60,11 +61,13 @@ class UserCategoryRepositoryTest extends TestCase
             ->withExistingCategory(
                 icon: 'taxi',
                 name: 'taxi',
+                color: 'green',
                 description: 'TransportExpense'
             )
             ->withToUpdateCategory(
                 icon: 'taxi',
                 name: 'transport',
+                color: 'green',
                 description: 'Category for my transport expenses'
             )->build();
 
@@ -91,6 +94,7 @@ class UserCategoryRepositoryTest extends TestCase
             ->withExistingCategory(
                 icon: 'taxi',
                 name: 'taxi',
+                color: 'green',
                 description: 'TransportExpense'
             )->build();
         $userCategory = $initSUT->userCategory;

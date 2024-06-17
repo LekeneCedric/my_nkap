@@ -33,6 +33,7 @@ class UserCategory
     /**
      * @param StringVO $icon
      * @param StringVO $name
+     * @param StringVO $color
      * @param StringVO $description
      * @return void
      * @throws AlreadyExistsCategoryException
@@ -40,6 +41,7 @@ class UserCategory
     public function addCategory(
         StringVO $icon,
         StringVO $name,
+        StringVO $color,
         StringVO $description
     ): void
     {
@@ -47,6 +49,7 @@ class UserCategory
         $this->currentCategory = Category::create(
             icon: $icon,
             name: $name,
+            color: $color,
             description: $description
         );
     }
@@ -54,6 +57,7 @@ class UserCategory
     /**
      * @param StringVO $icon
      * @param StringVO $name
+     * @param StringVO $color
      * @param StringVO $description
      * @param Id $id
      * @return void
@@ -62,6 +66,7 @@ class UserCategory
     public function updateCategory(
         StringVO $icon,
         StringVO $name,
+        StringVO $color,
         StringVO $description,
         Id $id
     ): void
@@ -70,6 +75,7 @@ class UserCategory
         $this->currentCategory = Category::create(
             icon: $icon,
             name: $name,
+            color: $color,
             description: $description,
             id: $id
         );

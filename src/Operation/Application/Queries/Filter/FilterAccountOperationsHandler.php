@@ -20,10 +20,14 @@ class FilterAccountOperationsHandler
         $page = $command->page;
         $limit = $command->limit;
         $accountId = $command->accountId;
+        $date = $command->date;
+        $categoryId = $command->categoryId;
 
         $whereFilter = WhereFilter::asFilter()
-            ->withStringParameter('ac.uuid', $accountId)
-            ->withStringParameter('u.uuid', $userId)
+            ->withParameter('ac.uuid', $accountId)
+            ->withParameter('u.uuid', $userId)
+            ->withDateParameter('op.date', $date)
+            ->withParameter('c.uuid', $categoryId)
             ->build();
 
         $offset = $this->getCorrespondingOffset($page, $limit);
@@ -31,14 +35,18 @@ class FilterAccountOperationsHandler
 
         $sql = "
             SELECT
-                op.type as operationType,
-                op.uuid as operationId,
+                op.type as type,
+                op.uuid as id,
                 ac.uuid as accountId,
-                op.date as operationDate,
-                op.details as operationDetails,
-                op.category as operationCategory,
-                op.amount as operationAmount
+                op.date as date,
+                op.details as details,
+                op.category_id as categoryId,
+                op.amount as amount,
+                c.name as categoryName,
+                c.icon as categoryIcon,
+                c.color as categoryColor
             FROM operations AS op
+            INNER JOIN categories AS c ON op.category_id = c.id
             INNER JOIN accounts AS ac ON op.account_id = ac.id
             INNER JOIN users AS u ON ac.user_id = u.id
             WHERE ac.is_deleted = false AND
@@ -80,6 +88,7 @@ class FilterAccountOperationsHandler
         $sql = "
             SELECT COUNT(op.id)
             FROM operations AS op
+            INNER JOIN categories AS c ON op.category_id = c.id
             INNER JOIN accounts AS ac ON op.account_id = ac.id
             INNER JOIN users AS u ON ac.user_id = u.id
             WHERE ac.is_deleted = false AND

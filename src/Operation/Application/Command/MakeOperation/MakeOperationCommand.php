@@ -11,7 +11,7 @@ class MakeOperationCommand
         public string            $accountId,
         public OperationTypeEnum $type,
         public float             $amount,
-        public string            $category,
+        public string            $categoryId,
         public string            $detail,
         public string            $date
     )

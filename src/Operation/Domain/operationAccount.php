@@ -33,7 +33,7 @@ class operationAccount
      * @param Id $operationId
      * @param AmountVO $amount
      * @param OperationTypeEnum $type
-     * @param StringVO $category
+     * @param Id $categoryId
      * @param StringVO $detail
      * @param DateVO $date
      * @return void
@@ -43,7 +43,7 @@ class operationAccount
         Id                $operationId,
         AmountVO          $amount,
         OperationTypeEnum $type,
-        StringVO          $category,
+        Id          $categoryId,
         StringVO          $detail,
         DateVO            $date
     ): void
@@ -58,7 +58,7 @@ class operationAccount
         $operation->update(
             amount: $amount,
             type: $type,
-            category: $category,
+            categoryId: $categoryId,
             detail: $detail,
             date: $date
         );
@@ -84,9 +84,7 @@ class operationAccount
     {
         if ($operationType === OperationTypeEnum::EXPENSE) {
             if ($amount->value() > $this->balance->value()) {
-                throw new OperationGreaterThanAccountBalanceException("
-                    Le solde du compte est insuffisant pour cette transaction !
-                ");
+                throw new OperationGreaterThanAccountBalanceException("Le solde du compte est insuffisant pour cette transaction !");
             }
         }
     }
@@ -140,7 +138,7 @@ class operationAccount
     /**
      * @param AmountVO $amount
      * @param OperationTypeEnum $type
-     * @param StringVO $category
+     * @param Id $categoryId
      * @param StringVO $detail
      * @param DateVO $date
      * @return void
@@ -149,7 +147,7 @@ class operationAccount
     public function makeOperation(
         AmountVO          $amount,
         OperationTypeEnum $type,
-        StringVO          $category,
+        Id          $categoryId,
         StringVO          $detail,
         DateVO            $date
     ): void
@@ -161,7 +159,7 @@ class operationAccount
         $operation = Operation::create(
             amount: $amount,
             type: $type,
-            category: $category,
+            categoryId: $categoryId,
             detail: $detail,
             date: $date
         );
@@ -174,10 +172,10 @@ class operationAccount
     }
 
     /**
-     * @param Id $accountId
      * @param AmountVO $balance
      * @param AmountVO $totalIncomes
      * @param AmountVO $totalExpenses
+     * @param Id|null $accountId
      * @return operationAccount
      */
     public static function create(

@@ -15,7 +15,7 @@ class OperationFactory extends Factory
           'uuid' => $this->faker->uuid,
           'type' => $this->faker->numberBetween(1,2),
           'amount' => $this->faker->numberBetween(1000, 100000),
-          'category' => $this->faker->name,
+          'category_id' => 1,
           'details' => $this->faker->text,
           'date' => $this->faker->date('Y-m-d H:i:s'),
           'is_deleted' => false

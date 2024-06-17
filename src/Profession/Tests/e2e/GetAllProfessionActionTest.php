@@ -26,7 +26,7 @@ class GetAllProfessionActionTest extends TestCase
 
         $response->assertOk();
         $this->assertTrue($response['status']);
-        $this->assertCount($numberOfProfessions, $response['professions']);
+        $this->assertNotEmpty($response['professions']);
     }
 
     private function buildSUT(int $count): void

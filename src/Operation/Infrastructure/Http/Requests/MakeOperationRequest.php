@@ -12,7 +12,7 @@ class MakeOperationRequest extends HttpDataRequest
             'accountId' => 'required|string',
             'type' => 'required|integer',
             'amount' => 'required|decimal:0,4',
-            'category' => 'required|string',
+            'categoryId' => 'required|string',
             'detail' => 'required|string',
             'date' => 'required|string',
         ];

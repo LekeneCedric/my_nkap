@@ -2,6 +2,8 @@
 
 namespace App\Shared\VO;
 
+use Exception;
+
 class DateVO
 {
     private string $value;
@@ -18,17 +20,17 @@ class DateVO
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function formatYMDHIS(): string
     {
         if (!$this->value) {
-            throw new \Exception(' La date n\'est pas valide !');
+            throw new Exception(' La date n\'est pas valide !');
         }
-        return (new \DateTime($this->value))->format('Y-m-d H:i:s');
+            return (new \DateTime($this->value))->format('Y-m-d H:i:s');
     }
 
-    private function validate()
+    private function validate(): void
     {
         $d = \DateTime::createFromFormat($this->format, $this->value);
         if (!$d || $d->format($this->format) != $this->value) {

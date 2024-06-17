@@ -11,6 +11,7 @@ use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
+use Illuminate\Support\Str;
 
 class CategorySUT
 {
@@ -45,12 +46,14 @@ class CategorySUT
     public function withToAddCategory(
         string $icon,
         string $name,
+        string $color,
         string $description
     ): static
     {
         $this->toAddCategory = Category::create(
             icon: new StringVO($icon),
             name: new StringVO($name),
+            color: new StringVO($color),
             description: new StringVO($description),
         );
         return $this;
@@ -59,6 +62,7 @@ class CategorySUT
     public function withExistingCategory(
         string $icon,
         string $name,
+        string $color,
         string $description
     ): static
     {
@@ -72,6 +76,7 @@ class CategorySUT
             categoryId: new Id($this->existingCategory->uuid),
             icon: new StringVO($this->existingCategory->icon),
             name: new StringVO($this->existingCategory->name),
+            color: new StringVO($this->existingCategory->color),
             description: new StringVO($this->existingCategory->description),
         );
         return $this;
@@ -80,12 +85,14 @@ class CategorySUT
     public function withToUpdateCategory(
         string $icon,
         string $name,
+        string $color,
         string $description
     ): static
     {
         $this->toUpdateCategory = Category::create(
             icon: new StringVO($icon),
             name: new StringVO($name),
+            color: new StringVO($color),
             description: new StringVO($description),
             id: new Id($this->existingCategory->uuid)
         );
@@ -107,6 +114,7 @@ class CategorySUT
             $this->userCategory->addCategory(
                 icon: $this->toAddCategory->icon,
                 name: $this->toAddCategory->name,
+                color: $this->toAddCategory->color,
                 description: $this->toAddCategory->description,
             );
         }
@@ -114,6 +122,7 @@ class CategorySUT
             $this->userCategory->updateCategory(
                 icon: $this->toUpdateCategory->icon,
                 name: $this->toUpdateCategory->name,
+                color: $this->toUpdateCategory->color,
                 description: $this->toUpdateCategory->description,
                 id: $this->toUpdateCategory->categoryId,
             );

@@ -17,6 +17,7 @@ use App\category\Domain\Category AS CategoryDomain;
  * @property mixed $icon
  * @property mixed $name
  * @property mixed $description
+ * @property mixed $color
  */
 class Category extends Model
 {
@@ -38,6 +39,7 @@ class Category extends Model
             categoryId: new Id($this->uuid),
             icon: new StringVO($this->icon),
             name: new StringVO($this->name),
+            color: new StringVO($this->color),
             description: new StringVO($this->description),
         );
     }

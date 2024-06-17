@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('uuid')->index();
             $table->string('icon');
             $table->string('name');
+            $table->string('color');
             $table->string('description');
             $table->timestamps();
         });

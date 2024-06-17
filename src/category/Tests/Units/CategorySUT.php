@@ -31,6 +31,7 @@ class CategorySUT
     public function withExistingCategory(
         string $icon,
         string $name,
+        string $color,
         string $description
     ): static
     {
@@ -38,6 +39,7 @@ class CategorySUT
             categoryId: new Id(),
             icon: new StringVO($icon),
             name: new StringVO($name),
+            color: new StringVO($color),
             description: new StringVO($description)
         );
         return $this;

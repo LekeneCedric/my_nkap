@@ -10,7 +10,7 @@ class makeOperationCommandBuilder
     private string $accountId;
     private ?string $operationId = null;
     private OperationTypeEnum $type;
-    private string $category;
+    private string $categoryId;
     private string $detail;
     private float $amount;
     private string $date;
@@ -44,9 +44,9 @@ class makeOperationCommandBuilder
         return $this;
     }
 
-    public function withCategory(string $category): static
+    public function withCategoryId(string $categoryId): static
     {
-        $this->category = $category;
+        $this->categoryId = $categoryId;
         return $this;
     }
 
@@ -68,7 +68,7 @@ class makeOperationCommandBuilder
             accountId: $this->accountId,
             type: $this->type,
             amount: $this->amount,
-            category: $this->category,
+            categoryId: $this->categoryId,
             detail: $this->detail,
             date: $this->date,
         );

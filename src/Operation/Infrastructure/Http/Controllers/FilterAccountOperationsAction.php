@@ -5,10 +5,12 @@ namespace App\Operation\Infrastructure\Http\Controllers;
 use App\Operation\Application\Queries\Filter\FilterAccountOperationsHandler;
 use App\Operation\Infrastructure\Factories\FilterAccountOperationsCommandFactory;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
+use App\Operation\Infrastructure\ViewModels\FilterAccountOperationsViewModel;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 class FilterAccountOperationsAction
 {
@@ -28,7 +30,7 @@ class FilterAccountOperationsAction
             $command = FilterAccountOperationsCommandFactory::buildFromRequest($request);
 
             $response = $handler->handle($command);
-
+//            $operations = (new FilterAccountOperationsViewModel($response))->toArray();
             $httpJson = [
               'status' => $response->status,
               'operations' => $response->operations,
@@ -37,10 +39,11 @@ class FilterAccountOperationsAction
             ];
             $logger->Log(
                 message: 'filter account',
-                level: LogLevelEnum::ERROR,
+                level: LogLevelEnum::INFO,
                 description: 'filter ',
             );
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
+            dd($e);
             $logger->Log(
                 message: $e->getMessage(),
                 level: LogLevelEnum::ALERT,
@@ -54,6 +57,7 @@ class FilterAccountOperationsAction
             $httpJson['message'] = $e->getMessage();
         }
         catch (Exception $e) {
+            dd($e);
             $logger->Log(
                 message: $e->getMessage(),
                 level: LogLevelEnum::ERROR,

@@ -17,12 +17,16 @@ class FilterAccountOperationsCommandFactory
         self::validate($request);
         $userId = $request->get('userId');
         $accountId = $request->get('accountId');
+        $date = $request->get('date');
+        $categoryId = $request->get('categoryId');
         $command = new FilterAccountOperationsCommand(
             page: $request->get('page'),
             limit: $request->get('limit'),
         );
         $command->userId = $userId;
         $command->accountId = $accountId;
+        $command->date = $date;
+        $command->categoryId = $categoryId;
 
         return $command;
     }

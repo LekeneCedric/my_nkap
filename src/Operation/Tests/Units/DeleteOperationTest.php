@@ -96,16 +96,16 @@ class DeleteOperationTest extends TestCase
     private function buildSUT(): array
     {
         $account = operationAccount::create(
-            accountId: new Id(),
             balance: new AmountVO(0),
             totalIncomes: new AmountVO(0),
             totalExpenses: new AmountVO(0),
+            accountId: new Id(),
         );
 
         $account->makeOperation(
             amount: new AmountVO(20000),
             type: OperationTypeEnum::INCOME,
-            category: new StringVO('category'),
+            categoryId: new Id('categoryId'),
             detail: new StringVO('achat banquaire'),
             date: new DateVO('2002-09-30 00:00:00')
         );

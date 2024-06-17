@@ -28,6 +28,7 @@ class MakeOperationAction
             $httpJson = [
                 'status' => true,
                 'operationSaved' => $response->operationSaved,
+                'operationId' => $response->operationId,
             ];
         } catch (
             NotFoundAccountException|

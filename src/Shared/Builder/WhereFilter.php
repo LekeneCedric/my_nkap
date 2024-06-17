@@ -17,16 +17,30 @@ class WhereFilter
      * @param mixed $value
      * @return $this
      */
-    public function withStringParameter(string $property, mixed $value): static
+    public function withParameter(string $property, mixed $value): static
     {
         if (empty($value)) {
             return $this;
         }
+        $clause = $property.'='."'".$value."'";
         if (!empty($this->whereClause)) {
-            $this->whereClause .= 'AND'. $property . '=' ."'".$value."'";
+            $this->whereClause .= ' AND '. $clause;
         }
         if (empty($this->whereClause)) {
-            $this->whereClause = $property.'='."'".$value."'";
+            $this->whereClause = $clause;
+        }
+        return $this;
+    }
+
+    public function withDateParameter(string $property, ?string $date): static
+    {
+        if (empty($date)) return $this;
+        $clause = 'DATE('.$property.')'. '=' . "'".$date."'";
+        if (!empty($this->whereClause)) {
+            $this->whereClause .= ' AND '. $clause;
+        }
+        if (empty($this->whereClause)) {
+            $this->whereClause = $clause;
         }
         return $this;
     }

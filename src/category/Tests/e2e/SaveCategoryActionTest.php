@@ -33,6 +33,7 @@ class SaveCategoryActionTest extends TestCase
             'userId' => $this->user->uuid,
             'icon' => 'car',
             'name' => 'transport',
+            'color' => 'green',
             'description' => 'Transport fees'
         ];
 
@@ -60,6 +61,7 @@ class SaveCategoryActionTest extends TestCase
             'categoryId' => $initSUT->category->uuid,
             'icon' => 'music',
             'name' => 'music',
+            'color' => 'green',
             'description' => 'Music equipment fees'
         ];
 

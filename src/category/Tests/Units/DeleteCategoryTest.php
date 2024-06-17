@@ -33,6 +33,7 @@ class DeleteCategoryTest extends TestCase
             ->withExistingCategory(
                 icon: 'car',
                 name: 'Transport',
+                color: 'green',
                 description: 'Transport'
             )->build();
         $this->saveInitDataInMemory($initSUT);
@@ -80,6 +81,7 @@ class DeleteCategoryTest extends TestCase
             ->withExistingCategory(
                 icon: 'car',
                 name: 'Transport',
+                color: 'green',
                 description: 'Transport'
             )->build();
         $this->saveInitDataInMemory($initSUT);

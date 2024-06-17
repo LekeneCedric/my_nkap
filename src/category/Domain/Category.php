@@ -13,6 +13,7 @@ class Category
         public readonly Id       $categoryId,
         public readonly StringVO $icon,
         public readonly StringVO $name,
+        public readonly StringVO $color,
         public readonly StringVO $description,
     )
     {
@@ -22,6 +23,7 @@ class Category
     public static function create(
         StringVO $icon,
         StringVO $name,
+        StringVO $color,
         StringVO $description,
         Id $id = null,
     ): Category
@@ -31,6 +33,7 @@ class Category
             categoryId: $id ?? new Id(),
             icon: $icon,
             name: $name,
+            color: $color,
             description: $description
         );
         $self->eventState = $isCreation
@@ -56,6 +59,7 @@ class Category
             'uuid' => $this->categoryId->value(),
             'icon' => $this->icon->value(),
             'name' => $this->name->value(),
+            'color' => $this->color->value(),
             'description' => $this->description->value(),
         ];
     }

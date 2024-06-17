@@ -10,6 +10,7 @@ class SaveCategoryCommandBuilder
     private ?string $categoryId;
     private ?string $categoryIcon;
     private ?string $categoryName;
+    private ?string $categoryColor;
     private ?string $categoryDescription;
     public static function asCommand(): SaveCategoryCommandBuilder
     {
@@ -19,6 +20,7 @@ class SaveCategoryCommandBuilder
         $self->categoryIcon = null;
         $self->categoryName = null;
         $self->categoryDescription = null;
+        $self->categoryColor = null;
         return $self;
     }
 
@@ -72,10 +74,17 @@ class SaveCategoryCommandBuilder
         return $this;
     }
 
+    public function withCategoryColor(string $categoryColor): static
+    {
+        $this->categoryColor = $categoryColor;
+        return $this;
+    }
+
     public function build(): SaveCategoryCommand
     {
         return new SaveCategoryCommand(
             userId: $this->userId,
+            categoryColor: $this->categoryColor,
             categoryIcon: $this->categoryIcon,
             categoryName: $this->categoryName,
             categoryDescription: $this->categoryDescription,

@@ -40,6 +40,7 @@ class SaveCategoryTest extends TestCase
             ->withUserId($userId)
             ->withCategoryIcon('car')
             ->withCategoryName('transport')
+            ->withCategoryColor('green')
             ->withCategoryDescription('This category is for transport')
             ->build();
 
@@ -66,9 +67,10 @@ class SaveCategoryTest extends TestCase
         $initSUT = CategorySUT::asSUT()
             ->withExistingUser()
             ->withExistingCategory(
-                'ball',
-                'sport',
-                'This category is for my sport equipment !'
+                icon: 'ball',
+                name: 'sport',
+                color: 'green',
+                description: 'This category is for my sport equipment !'
             )
             ->build();
         $this->saveDataInMemory($initSUT);
@@ -79,6 +81,7 @@ class SaveCategoryTest extends TestCase
             ->withUserId($userId)
             ->withCategoryId($categoryId)
             ->withCategoryIcon('car')
+            ->withCategoryColor('green')
             ->withCategoryName('transport')
             ->withCategoryDescription('This category is for transport')
             ->build();
@@ -107,6 +110,7 @@ class SaveCategoryTest extends TestCase
             ->withExistingCategory(
                 icon: 'car',
                 name: 'transport',
+                color: 'green',
                 description: 'This category is for transport'
             )->build();
         $this->saveDataInMemory($initSUT);
@@ -116,6 +120,7 @@ class SaveCategoryTest extends TestCase
             ->withUserId($userId)
             ->withCategoryIcon('car')
             ->withCategoryName('transport')
+            ->withCategoryColor('green')
             ->withCategoryDescription('This category is for transport')
             ->build();
 
@@ -135,6 +140,7 @@ class SaveCategoryTest extends TestCase
             ->withUserId('not_existing_user_id')
             ->withCategoryIcon('car')
             ->withCategoryName('transport')
+            ->withCategoryColor('green')
             ->withCategoryDescription('This category is for transport')
             ->build();
 
@@ -155,6 +161,7 @@ class SaveCategoryTest extends TestCase
             ->withExistingCategory(
                 icon: 'car',
                 name: 'transport',
+                color: 'green',
                 description: 'This category is for transport'
             )->build();
         $this->saveDataInMemory($initSUT);
@@ -164,6 +171,7 @@ class SaveCategoryTest extends TestCase
         $command = SaveCategoryCommandBuilder::asCommand()
             ->withUserId($userId)
             ->withCategoryId($categoryId)
+            ->withCategoryColor('green')
             ->withCategoryIcon('music')
             ->withCategoryName('music')
             ->withCategoryDescription('For music equipments')

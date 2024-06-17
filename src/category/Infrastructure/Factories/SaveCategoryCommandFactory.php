@@ -14,9 +14,10 @@ class SaveCategoryCommandFactory
         self::validate($request);
         $command = new SaveCategoryCommand(
             userId: $request->get('userId'),
+            categoryColor: $request->get('color'),
             categoryIcon: $request->get('icon'),
             categoryName: $request->get('name'),
-            categoryDescription: $request->get('description')
+            categoryDescription: $request->get('description') ?? $request->get('name'),
         );
         $command->categoryId = $request->get('categoryId');
         return $command;
@@ -28,7 +29,7 @@ class SaveCategoryCommandFactory
             empty($request->get('userId')) ||
             empty($request->get('icon')) ||
             empty($request->get('name')) ||
-            empty($request->get('description'))
+            empty($request->get('color'))
         ) throw new InvalidArgumentException('Commande invalide !');
     }
 }

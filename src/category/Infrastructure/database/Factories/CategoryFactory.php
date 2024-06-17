@@ -16,6 +16,7 @@ class CategoryFactory extends Factory
             'user_id' => 1,
             'icon' => $this->faker->name,
             'name' => $this->faker->name,
+            'color' => $this->faker->colorName,
             'description' => $this->faker->text(100)
         ];
     }

@@ -21,6 +21,7 @@ class GetAllCategoryHandler
                 c.uuid AS categoryId,
                 c.icon AS icon,
                 c.name AS name,
+                c.color AS color,
                 c.description AS description
             FROM categories AS c
             INNER JOIN users AS u ON c.user_id = u.id

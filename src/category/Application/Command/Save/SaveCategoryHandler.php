@@ -34,13 +34,15 @@ class SaveCategoryHandler
             $user->addCategory(
                 icon: new StringVO($command->categoryIcon),
                 name: new StringVO($command->categoryName),
-                description: new StringVO($command->categoryDescription)
+                color: new StringVO($command->categoryColor),
+                description: new StringVO($command->categoryDescription),
             );
         }
         if ($command->categoryId) {
             $user->updateCategory(
                 icon: new StringVO($command->categoryIcon),
                 name: new StringVO($command->categoryName),
+                color: new StringVO($command->categoryColor),
                 description: new StringVO($command->categoryDescription),
                 id: new Id($command->categoryId)
             );

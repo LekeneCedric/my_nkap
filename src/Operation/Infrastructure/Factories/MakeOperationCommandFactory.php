@@ -15,7 +15,7 @@ class MakeOperationCommandFactory
         $operationId = $request->get('operationId');
         $type = $request->get('type');
         $amount = $request->get('amount');
-        $category = $request->get('category');
+        $categoryId = $request->get('categoryId');
         $detail = $request->get('detail');
         $date = $request->get('date');
 
@@ -23,7 +23,7 @@ class MakeOperationCommandFactory
           accountId: $accountId,
           type: OperationTypeEnum::from($type),
           amount: $amount,
-          category: $category,
+            categoryId: $categoryId,
           detail: $detail,
           date: $date
         );

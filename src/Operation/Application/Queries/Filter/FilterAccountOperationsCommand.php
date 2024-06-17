@@ -5,6 +5,9 @@ namespace App\Operation\Application\Queries\Filter;
 class FilterAccountOperationsCommand
 {
     public ?string $userId;
+    public ?string $date;
+    public ?string $categoryId;
+
     /**
      *
      */
@@ -15,5 +18,7 @@ class FilterAccountOperationsCommand
     {
         $this->accountId = null;
         $this->userId = null;
+        $this->date = null;
+        $this->categoryId = null;
     }
 }

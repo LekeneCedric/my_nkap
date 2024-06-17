@@ -3,6 +3,7 @@
 namespace App\Operation\Tests\e2e;
 
 use App\Account\Tests\e2e\AccountSUT;
+use App\category\Infrastructure\Models\Category;
 use App\Shared\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
@@ -74,4 +75,72 @@ class FilterAccountOperationsActionTest extends TestCase
         $this->assertEquals(20, $response['total']);
         $this->assertEquals(4, $response['numberOfPages']);
     }
+
+    public function test_can_filter_operations_by_date()
+    {
+        $date = '2002-09-30';
+
+        $nbAccount = 2;
+        AccountSUT::asSUT()
+            ->withExistingAccounts(count: $nbAccount, userId: $this->user->id)
+            ->withExistingOperationsPerAccounts(
+                count: 10,
+                date: $date,
+            )->withExistingOperationsPerAccounts(
+                count: 10,
+                date: '2023-09-30'
+            )
+            ->build();
+
+        $data = [
+            'userId' => $this->user->uuid,
+            'date' => $date,
+            'page' => 1,
+            'limit' => 5,
+        ];
+
+        $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
+            'Authorization' => 'Bearer '.$this->token
+        ]);
+
+        $response->assertOk();
+        $this->assertTrue($response['status']);
+        $this->assertCount(5, $response['operations']);
+        $this->assertEquals(10*$nbAccount, $response['total']);
+        $this->assertEquals(4, $response['numberOfPages']);
+    }
+
+    public function test_can_filter_operations_by_category()
+    {
+        $nbAccount = 2;
+        $category = Category::factory()->create();
+        AccountSUT::asSUT()
+            ->withExistingAccounts(count: $nbAccount, userId: $this->user->id)
+            ->withExistingOperationsPerAccounts(
+                count: 10,
+                category_id: $category->id,
+            )->withExistingOperationsPerAccounts(
+                count: 10,
+                category_id: Category::factory()->create()->id,
+            )
+            ->build();
+
+        $data = [
+            'userId' => $this->user->uuid,
+            'categoryId' => $category->uuid,
+            'page' => 1,
+            'limit' => 5,
+        ];
+
+        $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
+            'Authorization' => 'Bearer '.$this->token
+        ]);
+
+        $response->assertOk();
+        $this->assertTrue($response['status']);
+        $this->assertCount(5, $response['operations']);
+        $this->assertEquals(10*$nbAccount, $response['total']);
+        $this->assertEquals(4, $response['numberOfPages']);
+    }
+
 }
