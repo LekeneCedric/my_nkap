@@ -16,8 +16,8 @@ class FilterAccountOperationsAction
 {
     public function __invoke(
         FilterAccountOperationsHandler $handler,
-        Request $request,
-        OperationsLogger $logger,
+        Request                        $request,
+        OperationsLogger               $logger,
     ): JsonResponse
     {
 
@@ -30,20 +30,22 @@ class FilterAccountOperationsAction
             $command = FilterAccountOperationsCommandFactory::buildFromRequest($request);
 
             $response = $handler->handle($command);
-//            $operations = (new FilterAccountOperationsViewModel($response))->toArray();
             $httpJson = [
-              'status' => $response->status,
-              'operations' => $response->operations,
-              'total' => $response->total,
-              'numberOfPages' => $response->numberOfPages
+                'status' => $response->status,
+                'operations' => $response->operations,
+                'total' => $response->total,
+                'numberOfPages' => $response->numberOfPages
             ];
+            if ($command->month) {
+                $operationsByDate = (new FilterAccountOperationsViewModel($response))->toArray();
+                $httpJson['operationsByDate'] = $operationsByDate;
+            }
             $logger->Log(
                 message: 'filter account',
                 level: LogLevelEnum::INFO,
                 description: 'filter ',
             );
         } catch (InvalidArgumentException $e) {
-            dd($e);
             $logger->Log(
                 message: $e->getMessage(),
                 level: LogLevelEnum::ALERT,
@@ -55,9 +57,7 @@ class FilterAccountOperationsAction
                 ],
             );
             $httpJson['message'] = $e->getMessage();
-        }
-        catch (Exception $e) {
-            dd($e);
+        } catch (Exception $e) {
             $logger->Log(
                 message: $e->getMessage(),
                 level: LogLevelEnum::ERROR,

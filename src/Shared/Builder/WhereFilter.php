@@ -39,7 +39,7 @@ class WhereFilter
         if (!empty($this->whereClause)) {
             $this->whereClause .= ' AND '. $clause;
         }
-        if (empty($this->whereClause)) {
+        if (empty($this->whereClause)){
             $this->whereClause = $clause;
         }
         return $this;
@@ -51,5 +51,18 @@ class WhereFilter
     public function build(): string
     {
         return $this->whereClause;
+    }
+
+    public function withFunctionParameter(string $function, string $field, ?int $value): static
+    {
+        if (empty($value)) return $this;
+        $clause = $function."(".$field.")=".$value;
+        if (!empty($this->whereClause)){
+            $this->whereClause.= ' AND '.$clause;
+        }
+        if (empty($this->whereClause)){
+            $this->whereClause = $clause;
+        }
+        return $this;
     }
 }

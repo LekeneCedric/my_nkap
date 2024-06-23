@@ -4,10 +4,11 @@ namespace App\Operation\Application\Queries\Filter;
 
 use App\Shared\Builder\WhereFilter;
 use Illuminate\Support\Facades\DB;
+use PDO;
 
 class FilterAccountOperationsHandler
 {
-    private \PDO $pdo;
+    private PDO $pdo;
 
     public function __construct()
     {
@@ -22,17 +23,27 @@ class FilterAccountOperationsHandler
         $accountId = $command->accountId;
         $date = $command->date;
         $categoryId = $command->categoryId;
+        $type = $command->operationType;
+        $year = $command->year;
+        $month = $command->month;
 
         $whereFilter = WhereFilter::asFilter()
             ->withParameter('ac.uuid', $accountId)
             ->withParameter('u.uuid', $userId)
             ->withDateParameter('op.date', $date)
             ->withParameter('c.uuid', $categoryId)
+            ->withParameter('op.type', $type)
+            ->withFunctionParameter('YEAR', 'op.date', $year)
+            ->withFunctionParameter('MONTH', 'op.date', $month)
             ->build();
 
         $offset = $this->getCorrespondingOffset($page, $limit);
         list($total, $numberOfPages) = $this->count($limit, $whereFilter);
 
+        if (!empty($month)) {
+            $limit = 10000000;
+            $offset = 1;
+        }
         $sql = "
             SELECT
                 op.type as type,
@@ -40,8 +51,8 @@ class FilterAccountOperationsHandler
                 ac.uuid as accountId,
                 op.date as date,
                 op.details as details,
-                op.category_id as categoryId,
                 op.amount as amount,
+                c.uuid as categoryId,
                 c.name as categoryName,
                 c.icon as categoryIcon,
                 c.color as categoryColor
@@ -58,7 +69,7 @@ class FilterAccountOperationsHandler
         ";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $stmt->execute([
             'limit' => $limit,
             'offset' => $offset,
@@ -97,7 +108,7 @@ class FilterAccountOperationsHandler
                   $whereFilter
         ";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->setFetchMode(\PDO::FETCH_OBJ);
+        $stmt->setFetchMode(PDO::FETCH_OBJ);
         $stmt->execute();
 
         $count = $stmt->fetchColumn();

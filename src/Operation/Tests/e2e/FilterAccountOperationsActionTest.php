@@ -4,6 +4,7 @@ namespace App\Operation\Tests\e2e;
 
 use App\Account\Tests\e2e\AccountSUT;
 use App\category\Infrastructure\Models\Category;
+use App\Operation\Domain\OperationTypeEnum;
 use App\Shared\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
@@ -12,17 +13,18 @@ use Tests\TestCase;
 
 class FilterAccountOperationsActionTest extends TestCase
 {
-    use RefreshDatabase;
+//    use RefreshDatabase;
 
     const FILTER_ACCOUNT_OPERATION = 'api/operation/filter';
     private User $user;
     private string $token;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create([
             'uuid' => (new Id())->value(),
-            'email' => (new Id())->value().'@gmail.com',
+            'email' => (new Id())->value() . '@gmail.com',
             'name' => 'lekene',
             'password' => bcrypt('lekene@5144'),
             'profession_id' => (Profession::factory()->create())->id,
@@ -44,7 +46,7 @@ class FilterAccountOperationsActionTest extends TestCase
         ];
 
         $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
-            'Authorization' => 'Bearer '.$this->token
+            'Authorization' => 'Bearer ' . $this->token
         ]);
 
         $response->assertOk();
@@ -60,13 +62,13 @@ class FilterAccountOperationsActionTest extends TestCase
             ->build();
 
         $data = [
-          'userId' => $this->user->uuid,
-          'page' => 1,
-          'limit' => 5,
+            'userId' => $this->user->uuid,
+            'page' => 1,
+            'limit' => 5,
         ];
 
         $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
-            'Authorization' => 'Bearer '.$this->token
+            'Authorization' => 'Bearer ' . $this->token
         ]);
 
         $response->assertOk();
@@ -100,13 +102,13 @@ class FilterAccountOperationsActionTest extends TestCase
         ];
 
         $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
-            'Authorization' => 'Bearer '.$this->token
+            'Authorization' => 'Bearer ' . $this->token
         ]);
 
         $response->assertOk();
         $this->assertTrue($response['status']);
         $this->assertCount(5, $response['operations']);
-        $this->assertEquals(10*$nbAccount, $response['total']);
+        $this->assertEquals(10 * $nbAccount, $response['total']);
         $this->assertEquals(4, $response['numberOfPages']);
     }
 
@@ -133,14 +135,78 @@ class FilterAccountOperationsActionTest extends TestCase
         ];
 
         $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
-            'Authorization' => 'Bearer '.$this->token
+            'Authorization' => 'Bearer ' . $this->token
         ]);
 
         $response->assertOk();
         $this->assertTrue($response['status']);
         $this->assertCount(5, $response['operations']);
-        $this->assertEquals(10*$nbAccount, $response['total']);
+        $this->assertEquals(10 * $nbAccount, $response['total']);
         $this->assertEquals(4, $response['numberOfPages']);
+    }
+
+    public function test_can_filter_operation_by_type()
+    {
+        AccountSUT::asSUT()
+            ->withExistingAccounts(count: 1, userId: $this->user->id)
+            ->withExistingOperationsPerAccounts(
+                count: 10,
+                operationType: OperationTypeEnum::INCOME
+            )->withExistingOperationsPerAccounts(
+                count: 10,
+                operationType: OperationTypeEnum::EXPENSE
+            )
+            ->build();
+
+        $data = [
+            'userId' => $this->user->uuid,
+            'operationType' => OperationTypeEnum::INCOME->value,
+            'page' => 1,
+            'limit' => 5,
+        ];
+
+        $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertOk();
+        $this->assertTrue($response['status']);
+        $this->assertCount(5, $response['operations']);
+        $this->assertEquals(10, $response['total']);
+        $this->assertEquals(4, $response['numberOfPages']);
+    }
+
+    public function test_can_filter_operations_by_month()
+    {
+        AccountSUT::asSUT()
+            ->withExistingAccounts(count: 1, userId: $this->user->id)
+            ->withExistingOperationsPerAccounts(
+                count: 5,
+                date: '2002-09-05',
+            )
+            ->withExistingOperationsPerAccounts(
+                count: 5,
+                date: '2002-09-10',
+                operationType: OperationTypeEnum::INCOME
+            )
+            ->withExistingOperationsPerAccounts(
+                count: 5,
+                date: '2002-09-13'
+            )
+            ->build();
+        $data = [
+            'userId' => $this->user->uuid,
+            'page' => 1,
+            'limit' => 100,
+            'year' => 2002,
+            'month' => 9
+        ];
+
+        $response = $this->postJson(self::FILTER_ACCOUNT_OPERATION, $data, [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertOk();
     }
 
 }

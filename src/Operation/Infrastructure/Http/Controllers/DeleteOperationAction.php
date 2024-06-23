@@ -30,6 +30,7 @@ class DeleteOperationAction
                 'status' => true,
                 'isDeleted' => $response->isDeleted,
                 'message' => $response->message,
+                'operationId' => $command->operationId,
             ];
         } catch (
         NotFoundAccountException|

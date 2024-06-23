@@ -19,6 +19,9 @@ class FilterAccountOperationsCommandFactory
         $accountId = $request->get('accountId');
         $date = $request->get('date');
         $categoryId = $request->get('categoryId');
+        $operationType = $request->get('operationType');
+        $month = $request->get('month');
+        $year = $request->get('year');
         $command = new FilterAccountOperationsCommand(
             page: $request->get('page'),
             limit: $request->get('limit'),
@@ -27,6 +30,9 @@ class FilterAccountOperationsCommandFactory
         $command->accountId = $accountId;
         $command->date = $date;
         $command->categoryId = $categoryId;
+        $command->operationType = $operationType;
+        $command->month = $month;
+        $command->year = $year;
 
         return $command;
     }
