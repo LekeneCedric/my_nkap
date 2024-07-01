@@ -24,6 +24,7 @@ class DeleteAccountAction
 
             $response = $handler->handle(accountToDeleteId: $accountId);
 
+            $httpJson['accountId'] = $accountId;
             $httpJson['status'] = true;
             $httpJson['isDeleted'] = $response->isDeleted;
         } catch (NotFoundAccountException $e) {

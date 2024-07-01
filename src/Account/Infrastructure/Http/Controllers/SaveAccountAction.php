@@ -7,6 +7,7 @@ use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Infrastructure\Factories\SaveAccountCommandFactory;
 use App\Account\Infrastructure\Http\Requests\SaveAccountRequest;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 class SaveAccountAction
@@ -32,7 +33,7 @@ class SaveAccountAction
         } catch (ErrorOnSaveAccountException) {
             $httpJson['message'] = 'Une érreur critique est survenue lors du traitement de votre opération , veuillez réessayez plus târd !';
         }
-        catch (\Exception $e) {
+        catch (Exception) {
             $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veuillez réessayer ultérieurement !';
         }
 

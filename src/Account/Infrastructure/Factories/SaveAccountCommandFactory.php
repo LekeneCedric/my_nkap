@@ -8,7 +8,7 @@ use App\Account\Infrastructure\Http\Requests\SaveAccountRequest;
 class SaveAccountCommandFactory
 {
 
-    public static function buildFromRequest(SaveAccountRequest $request): SaveAccountCommand
+    public static function  buildFromRequest(SaveAccountRequest $request): SaveAccountCommand
     {
         $requestsValues = $request->all();
         $command = new SaveAccountCommand(
