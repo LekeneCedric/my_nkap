@@ -19,7 +19,7 @@ services:
             - DB_USERNAME=my_nkap
             - DB_PASSWORD=my_nkap
         ports:
-            -   "8001:8000"
+            -   "8000:8000"
 
     webserver:
         image: nginx:alpine
