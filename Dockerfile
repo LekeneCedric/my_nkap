@@ -46,11 +46,6 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Expose port 9000 and start PHP-FPM server
 EXPOSE 9000
-CMD ["sh", "-c", "composer install --ignore-platform-req=ext-http && \
-                 php artisan key:generate && \
-                 php artisan db:seed --class=ProfessionsSeed && \
-                 php artisan queue:work --queue=user_accounts && \
-                 php artisan serve --host=0.0.0.0 --port=8000 & \
-                 php-fpm"]
+CMD ["php-fpm"]
 
 
