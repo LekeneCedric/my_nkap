@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('uuid');
             $table->integer('type');
             $table->decimal('amount',15,2);
-            $table->string('category');
+            $table->integer('category_id')->index();
             $table->text('details');
             $table->dateTime('date');
             $table->boolean('is_deleted')->default(false);
