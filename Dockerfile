@@ -1,51 +1,42 @@
 # Use an official PHP runtime as a parent image
-FROM php:8.2-fpm-alpine
+FROM php:8.3-fpm
 
 # Install system dependencies
-RUN apk update && apk add --no-cache \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    libpng-dev \
-    libzip-dev \
-    libxml2-dev \
-    oniguruma-dev \
-    linux-headers \
-    $PHPIZE_DEPS
+RUN apt-get update && apt-get install -y \
+    libcurl4-openssl-dev \
+    pkg-config \
+    libssl-dev \
+    libev-dev \
+    libevent-dev \
+    libjansson-dev \
+    libjemalloc-dev \
+    libc-ares-dev \
+    autoconf \
+    automake \
+    libtool \
+    make \
+    g++
 
-# Clear the APK cache
-RUN rm -rf /var/cache/apk/*
+# Install pecl/http extension
+RUN pecl install http
 
-# Set environment variables for Oniguruma
-ENV ONIG_CFLAGS="-I/usr/include/oniguruma"
-ENV ONIG_LIBS="-L/usr/lib/"
+# Enable PHP extension
+RUN echo "extension=http.so" > /usr/local/etc/php/conf.d/docker-php-ext-http.ini
 
-# Configure and install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    zip \
-    sockets \
-    opcache
+# Clean up
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
-COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
+# Set working directory
+WORKDIR /var/www
 
-# Copy existing application directory contents
+# Copy application files
 COPY . /var/www
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# Set permissions (if needed)
+# RUN chown -R www-data:www-data /var/www
 
-# Set permissions for Laravel
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-
-# Expose port 9000 and start PHP-FPM server
+# Expose port 9000 (PHP-FPM default)
 EXPOSE 9000
+
+# Start PHP-FPM server
 CMD ["php-fpm"]
-
-
