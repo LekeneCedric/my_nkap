@@ -3,6 +3,7 @@
 namespace App\Operation\Infrastructure\Repository;
 
 use App\Account\Infrastructure\Model\Account;
+use App\category\Infrastructure\Models\Category;
 use App\Operation\Domain\Operation;
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
@@ -73,7 +74,8 @@ class PdoOperationAccountRepository implements OperationAccountRepository
             $this->updateOperationAccount($operationAccount);
             $this->saveCurrentOperation($operationAccount);
             $this->pdo->commit();
-        } catch (\PDOException|Exception) {
+        } catch (\PDOException|Exception $e) {
+            dd($e);
             $this->pdo->rollBack();
         }
     }
@@ -124,7 +126,11 @@ class PdoOperationAccountRepository implements OperationAccountRepository
      */
     private function createOperation(operationAccount $account): void
     {
-        $data = array_merge($account->currentOperation()->toArray(), $this->getForeignIds($account->id()->value()));
+        $currentOperation = $account->currentOperation();
+        $data = array_merge($currentOperation->toArray(), $this->getForeignIds(
+            accountId: $account->id()->value(),
+            categoryId: $currentOperation->categoryId()->value(),
+        ));
         $sql = "
             INSERT INTO operations
             (
@@ -132,7 +138,7 @@ class PdoOperationAccountRepository implements OperationAccountRepository
              account_id,
              type,
              amount,
-             category,
+             category_id,
              details,
              date,
              is_deleted,
@@ -143,7 +149,7 @@ class PdoOperationAccountRepository implements OperationAccountRepository
                 :account_id,
                 :type,
                 :amount,
-                :category,
+                :category_id,
                 :details,
                 :date,
                 :is_deleted,
@@ -154,16 +160,25 @@ class PdoOperationAccountRepository implements OperationAccountRepository
         $stmt->execute($data);
     }
 
+    /**
+     * @param operationAccount $account
+     * @return void
+     * @throws Exception
+     */
     private function updateOperation(operationAccount $account): void
     {
-        $data = array_merge($account->currentOperation()->toArray(), $this->getForeignIds($account->id()->value()));
+        $currentOperation = $account->currentOperation();
+        $data = array_merge($currentOperation->toArray(), $this->getForeignIds(
+            accountId: $account->id()->value(),
+            categoryId: $currentOperation->categoryId()->value(),
+        ));
         $sql = "
             UPDATE operations
             SET
              account_id=:account_id,
              type=:type,
              amount=:amount,
-             category=:category,
+             category_id=:category_id,
              details=:details,
              date=:date,
              updated_at=:updated_at,
@@ -197,12 +212,14 @@ class PdoOperationAccountRepository implements OperationAccountRepository
 
     /**
      * @param string $accountId
+     * @param string $categoryId
      * @return array
      */
-    private function getForeignIds(string $accountId): array
+    private function getForeignIds(string $accountId, string $categoryId): array
     {
         return [
             'account_id' => Account::whereUuid($accountId)->whereIsDeleted(false)->first()->id,
+            'category_id' => Category::whereUuid($categoryId)->first()->id,
         ];
     }
 
@@ -217,7 +234,7 @@ class PdoOperationAccountRepository implements OperationAccountRepository
                 uuid AS Id,
                 amount,
                 type,
-                category,
+                category_id,
                 details,
                 date
             FROM operations
@@ -238,7 +255,7 @@ class PdoOperationAccountRepository implements OperationAccountRepository
             $operations[$result['Id']] = Operation::create(
                 amount: new AmountVO($result['amount']),
                 type: OperationTypeEnum::from($result['type']),
-                category: new StringVO($result['category']),
+                categoryId: new Id($result['category_id']),
                 detail: new StringVO($result['details']),
                 date: new DateVO($result['date']),
                 id: new Id($result['Id'])

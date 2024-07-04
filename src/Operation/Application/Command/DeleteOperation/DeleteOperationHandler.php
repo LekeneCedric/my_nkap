@@ -31,7 +31,7 @@ class DeleteOperationHandler
 
         return new DeleteOperationResponse(
             message: 'Operation supprimée avec succès !',
-          isDeleted: true,
+            isDeleted: true,
         );
     }
 

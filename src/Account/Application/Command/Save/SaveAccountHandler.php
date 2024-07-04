@@ -33,7 +33,7 @@ class SaveAccountHandler
             $account->update(
                 name: new StringVO($command->name),
                 type: new StringVO($command->type),
-                icon: new StringVO($command->type),
+                icon: new StringVO($command->icon),
                 color: new StringVO($command->color),
                 balance: new AmountVO($command->balance),
                 isIncludeInTotalBalance: $command->isIncludeInTotalBalance,

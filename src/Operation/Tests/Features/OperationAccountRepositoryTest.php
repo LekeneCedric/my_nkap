@@ -3,6 +3,7 @@
 namespace App\Operation\Tests\Features;
 
 use App\Account\Infrastructure\Model\Account;
+use App\category\Infrastructure\Models\Category;
 use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
@@ -15,16 +16,20 @@ use App\Shared\VO\Id;
 use App\Shared\VO\StringVO;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class OperationAccountRepositoryTest extends TestCase
 {
+    use RefreshDatabase;
     private OperationAccountRepository $repository;
     private User $user;
     protected function setUp(): void
     {
         parent::setUp();
         $this->repository = new PdoOperationAccountRepository();
+        DB::rollBack();
         $this->user = User::factory()->create([
             'uuid' => (new Id())->value(),
             'email' => (new Id())->value().'@gmail.com',
@@ -72,7 +77,7 @@ class OperationAccountRepositoryTest extends TestCase
             operationId: new Id($operationId),
             amount: new AmountVO(30000),
             type: OperationTypeEnum::EXPENSE,
-            category: new StringVO('danse'),
+            categoryId: new Id(Category::factory()->create()->uuid),
             detail: new StringVO('$command->detail'),
             date: new DateVO('2002-09-30 00:00:00'),
         );
@@ -137,7 +142,7 @@ class OperationAccountRepositoryTest extends TestCase
         $account->makeOperation(
             amount: new AmountVO($operationAmount),
             type: OperationTypeEnum::INCOME,
-            category: new StringVO('operation'),
+            categoryId: new Id(Category::factory()->create()->uuid),
             detail: new StringVO('Detail transaction'),
             date: new DateVO('2024-09-30 00:00:00')
         );

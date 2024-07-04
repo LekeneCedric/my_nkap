@@ -100,7 +100,7 @@ class SaveAccountActionTest extends TestCase
             'Authorization' => 'Bearer ' . $this->token,
         ]);
 
-        $this->assertNotNull($response['balance']);
-        $this->assertNotNull($response['isIncludeInTotalBalance']);
+        $this->assertFalse($response['status']);
+        $this->assertNotNull($response['message']);
     }
 }

@@ -23,6 +23,7 @@ class GetAllAccountHandler
     {
         $sql = "
             SELECT
+                ac.uuid as accountId,
                 ac.name as accountName,
                 ac.type as accountType,
                 ac.total_incomes as totalIncomes,

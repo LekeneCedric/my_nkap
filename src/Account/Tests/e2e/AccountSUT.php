@@ -3,6 +3,8 @@
 namespace App\Account\Tests\e2e;
 
 use App\Account\Infrastructure\Model\Account;
+use App\category\Infrastructure\Models\Category;
+use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
 use App\Shared\VO\Id;
 use App\User\Infrastructure\Models\Profession;
@@ -41,12 +43,21 @@ class AccountSUT
         return $this;
     }
 
-    public function withExistingOperationsPerAccounts(int $count): static
+    public function withExistingOperationsPerAccounts(
+        int     $count,
+        string  $date = '2002-09-30',
+        ?string $category_id = null,
+        ?OperationTypeEnum $operationType = null,
+    ): static
     {
         foreach ($this->accounts as $account) {
+
             for($i=0; $i<$count; $i++) {
                 Operation::factory()->create([
-                    'account_id' => $account->getAttributeValue('id')
+                    'account_id' => $account->getAttributeValue('id'),
+                    'category_id' => $category_id ?: (Category::factory()->create())->id,
+                    'date' => $date,
+                    'type' => $operationType ? $operationType->value : OperationTypeEnum::EXPENSE->value
                 ]);
             }
         }

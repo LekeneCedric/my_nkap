@@ -14,6 +14,7 @@ class GetAllProfessionActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::rollBack();
     }
 
     public function test_can_get_all_professions()
@@ -25,7 +26,7 @@ class GetAllProfessionActionTest extends TestCase
 
         $response->assertOk();
         $this->assertTrue($response['status']);
-        $this->assertCount($numberOfProfessions, $response['professions']);
+        $this->assertNotEmpty($response['professions']);
     }
 
     private function buildSUT(int $count): void

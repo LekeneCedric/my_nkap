@@ -31,7 +31,7 @@ class LoginHandler
           'name' => $user->name,
           'profession' => Profession::where('id', $user->profession_id)->first()->name,
         ];
-        $token = $user->createToken('my_nkap_token')->plainTextToken;
+        $token = $user->createToken(env('TOKEN_KEY'))->plainTextToken;
 
         $response->isLogged = true;
         $response->user  = $userData;

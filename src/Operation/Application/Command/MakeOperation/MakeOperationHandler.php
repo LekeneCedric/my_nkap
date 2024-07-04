@@ -35,7 +35,7 @@ class MakeOperationHandler
               operationId: new Id($command->operationId),
               amount: new AmountVO($command->amount),
               type: $command->type,
-              category: new StringVO($command->category),
+                categoryId: new Id($command->categoryId),
               detail: new StringVO($command->detail),
               date: new DateVO($command->date),
             );
@@ -44,7 +44,7 @@ class MakeOperationHandler
             $operationAccount->makeOperation(
                 amount: new AmountVO($command->amount),
                 type: $command->type,
-                category: new StringVO($command->category),
+                categoryId: new Id($command->categoryId),
                 detail: new StringVO($command->detail),
                 date: new DateVO($command->date)
             );

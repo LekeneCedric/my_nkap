@@ -133,7 +133,7 @@ class Account
           'icon' => $this->icon->value(),
           'color' => $this->color->value(),
           'balance' => $this->balance->value(),
-          'is_include_in_total_balance' => $this->isIncludeInTotalBalance,
+          'is_include_in_total_balance' => $this->isIncludeInTotalBalance ? 1 : 0,
           'is_deleted' => $this->isDeleted ? 1 : 0
         ];
         if ($this->eventState === AccountEventStateEnum::onUpdate) {

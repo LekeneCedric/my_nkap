@@ -3,21 +3,26 @@
 namespace App\Operation\Tests\e2e;
 
 use App\Account\Infrastructure\Model\Account;
+use App\category\Infrastructure\Models\Category;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
 use App\Shared\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class MakeOperationActionTest extends TestCase
 {
+    use RefreshDatabase;
     const SAVE_OPERATION_ROUTE = 'api/operation/add';
     private User $user;
     private string $token;
     protected function setUp(): void
     {
         parent::setUp();
+        DB::rollBack();
         $this->user = User::factory()->create([
             'uuid' => (new Id())->value(),
             'email' => (new Id())->value().'@gmail.com',
@@ -36,7 +41,7 @@ class MakeOperationActionTest extends TestCase
             'accountId' => $initData['accountId'],
             'type' => OperationTypeEnum::INCOME,
             'amount' => 20000,
-            'category' => 'salary',
+            'categoryId' => Category::factory()->create()->uuid,
             'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
             'date' => '2023-09-30 15:00:00'
@@ -64,7 +69,7 @@ class MakeOperationActionTest extends TestCase
           'operationId' => $initData['operationId'],
             'type' => OperationTypeEnum::INCOME,
             'amount' => 30000,
-            'category' => 'salary',
+            'categoryId' => Category::factory()->create()->uuid,
             'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
             'date' => '2023-09-30 15:00:00'

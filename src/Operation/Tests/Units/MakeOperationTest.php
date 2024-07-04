@@ -40,7 +40,7 @@ class MakeOperationTest extends TestCase
             ->withAccountId($initData['accountId'])
             ->withType(OperationTypeEnum::INCOME)
             ->withAmount($operationAmount)
-            ->withCategory('salary')
+            ->withCategoryId((new Id())->value())
             ->withDetail("Lorem Ipsum is simply dummy text of the printing and typesetting industry.
              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s")
             ->withDate((new DateVO())->formatYMDHIS())
@@ -69,7 +69,7 @@ class MakeOperationTest extends TestCase
             ->withOperationId($initData['operationId'])
             ->withType(OperationTypeEnum::EXPENSE)
             ->withAmount($updatedOperationAmount)
-            ->withCategory('earning')
+            ->withCategoryId((new Id())->value())
             ->withDetail("Lorem Ipsum is simply dummy text of the printing and typesetting industry.
              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s")
             ->withDate((new DateVO())->formatYMDHIS())
@@ -81,7 +81,6 @@ class MakeOperationTest extends TestCase
         $this->assertTrue($response->operationSaved);
         $this->assertEquals($initData['operationId'], $updatedAccount->currentOperation()->id()->value());
         $this->assertEquals(30000, $updatedAccount->currentOperation()->amount()->value());
-        $this->assertEquals('earning', $updatedAccount->currentOperation()->category()->value());
         $this->assertEquals(OperationTypeEnum::EXPENSE, $updatedAccount->currentOperation()->type());
         $this->assertEquals(-30000, $updatedAccount->balance()->value());
         $this->assertEquals(30000, $updatedAccount->totalExpenses()->value());
@@ -100,7 +99,7 @@ class MakeOperationTest extends TestCase
             ->withAccountId($initData['accountId'])
             ->withType(OperationTypeEnum::EXPENSE)
             ->withAmount($operationAmount)
-            ->withCategory('salary')
+            ->withCategoryId((new Id())->value())
             ->withDetail("Lorem Ipsum is simply dummy text of the printing and typesetting industry.
              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s")
             ->withDate((new DateVO())->formatYMDHIS())
@@ -118,17 +117,17 @@ class MakeOperationTest extends TestCase
     private function buildSUT(bool $withExistingOperation = false): array
     {
         $account = operationAccount::create(
-            accountId: new Id(),
             balance: new AmountVO(0),
             totalIncomes: new AmountVO(0),
             totalExpenses: new AmountVO(0),
+            accountId: new Id(),
         );
 
         if ($withExistingOperation) {
             $account->makeOperation(
                 amount: new AmountVO(100000),
                 type: OperationTypeEnum::INCOME,
-                category: new StringVO('operation'),
+                categoryId: new Id(),
                 detail: new StringVO('Detail transaction'),
                 date: new DateVO('2024-09-30 00:00:00')
             );

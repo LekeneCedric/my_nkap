@@ -19,7 +19,7 @@ class Operation
         private Id                $operationId,
         private AmountVO          $amount,
         private OperationTypeEnum $type,
-        private StringVO          $category,
+        private Id          $categoryId,
         private StringVO          $detail,
         private DateVO            $date,
         private bool              $isDeleted,
@@ -30,7 +30,7 @@ class Operation
     public static function create(
         AmountVO          $amount,
         OperationTypeEnum $type,
-        StringVO          $category,
+        Id          $categoryId,
         StringVO          $detail,
         DateVO            $date,
         ?Id               $id = null,
@@ -40,7 +40,7 @@ class Operation
             operationId: $id ?? new Id(),
             amount: $amount,
             type: $type,
-            category: $category,
+            categoryId: $categoryId,
             detail: $detail,
             date: $date,
             isDeleted: false,
@@ -53,18 +53,18 @@ class Operation
     }
 
     public function update(
-        AmountVO $amount,
+        AmountVO          $amount,
         OperationTypeEnum $type,
-        StringVO $category,
-        StringVO $detail,
-        DateVO $date
+        Id          $categoryId,
+        StringVO          $detail,
+        DateVO            $date
     ): void
     {
         $this->eventState = OperationEventStateEnum::onUpdate;
         $this->updatedAt = new DateVO();
         $this->amount = $amount;
         $this->type = $type;
-        $this->category = $category;
+        $this->categoryId = $categoryId;
         $this->detail = $detail;
         $this->date = $date;
     }
@@ -96,9 +96,9 @@ class Operation
         return $this->amount;
     }
 
-    public function category(): StringVO
+    public function categoryId(): Id
     {
-        return $this->category;
+        return $this->categoryId;
     }
 
     /**
@@ -110,7 +110,6 @@ class Operation
             'uuid' => $this->operationId->value(),
             'type' => $this->type->value,
             'amount' => $this->amount->value(),
-            'category' => $this->category->value(),
             'details' => $this->detail->value(),
             'date' => $this->date->formatYMDHIS(),
             'is_deleted' => $this->isDeleted ? 1 : 0,
