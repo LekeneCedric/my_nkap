@@ -11,17 +11,30 @@ RUN apt-get update && apt-get install -y \
     libjansson-dev \
     libjemalloc-dev \
     libc-ares-dev \
+    libnghttp2-dev \
+    zlib1g-dev \
+    libpcre3-dev \
     autoconf \
     automake \
     libtool \
     make \
-    g++
+    g++ \
+    && docker-php-ext-install curl json
+
+# Install pecl/http extension dependencies
+RUN apt-get update && apt-get install -y \
+    libcurl4-openssl-dev \
+    libevent-dev \
+    libssl-dev \
+    libpcre3-dev
 
 # Install pecl/http extension
-RUN pecl install http
+RUN pecl install raphf \
+    && pecl install propro \
+    && pecl install http
 
-# Enable PHP extension
-RUN echo "extension=http.so" > /usr/local/etc/php/conf.d/docker-php-ext-http.ini
+# Enable PHP extensions
+RUN docker-php-ext-enable raphf propro http
 
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
