@@ -1,55 +1,51 @@
 # Use an official PHP runtime as a parent image
-FROM php:8.3-fpm
+FROM php:8.2-fpm-alpine
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libcurl4-openssl-dev \
-    pkg-config \
-    libssl-dev \
-    libev-dev \
-    libevent-dev \
-    libjansson-dev \
-    libjemalloc-dev \
-    libc-ares-dev \
-    libnghttp2-dev \
-    zlib1g-dev \
-    libpcre3-dev \
-    autoconf \
-    automake \
-    libtool \
-    make \
-    g++ \
-    && docker-php-ext-install curl json
+RUN apk update && apk add --no-cache \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libzip-dev \
+    libxml2-dev \
+    oniguruma-dev \
+    linux-headers \
+    $PHPIZE_DEPS
 
-# Install pecl/http extension dependencies
-RUN apt-get update && apt-get install -y \
-    libcurl4-openssl-dev \
-    libevent-dev \
-    libssl-dev \
-    libpcre3-dev
+# Clear the APK cache
+RUN rm -rf /var/cache/apk/*
 
-# Install pecl/http extension
-RUN pecl install raphf \
-    && pecl install propro \
-    && pecl install http
+# Set environment variables for Oniguruma
+ENV ONIG_CFLAGS="-I/usr/include/oniguruma"
+ENV ONIG_LIBS="-L/usr/lib/"
 
-# Enable PHP extensions
-RUN docker-php-ext-enable raphf propro http
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    sockets \
+    opcache
 
-# Clean up
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install Composer
+COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /var/www
-
-# Copy application files
+# Copy existing application directory contents
 COPY . /var/www
 
-# Set permissions (if needed)
-# RUN chown -R www-data:www-data /var/www
+# Copy existing application directory permissions
+COPY --chown=www-data:www-data . /var/www
 
-# Expose port 9000 (PHP-FPM default)
+# Set permissions for Laravel
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# Expose port 9000 and start PHP-FPM server
 EXPOSE 9000
-
-# Start PHP-FPM server
 CMD ["php-fpm"]
+
+
