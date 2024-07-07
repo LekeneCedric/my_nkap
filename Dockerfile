@@ -44,8 +44,6 @@ COPY --chown=www-data:www-data . /var/www
 # Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-RUN php artisan key:generate \
-    && php artisan db:seed --class=ProfessionsSeed
 # Expose port 9000 and start PHP-FPM server
 EXPOSE 9000
 CMD ["php-fpm"]

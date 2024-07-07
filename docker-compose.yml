@@ -20,6 +20,11 @@ services:
             - DB_PASSWORD=my_nkap
         ports:
             - "8000:8000"
+        command: >
+            sh -c "composer install --ignore-platform-req=ext-http &&
+                   php artisan key:generate &&
+                   php artisan db:seed --class=ProfessionsSeed &&
+                   php-fpm"
 
     webserver:
         image: nginx:alpine
