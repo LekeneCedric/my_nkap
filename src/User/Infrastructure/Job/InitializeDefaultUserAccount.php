@@ -24,35 +24,7 @@ class InitializeDefaultUserAccount implements ShouldQueue
     public function handle(): void
     {
         try {
-            $accounts = [
-                [
-                    'uuid' => Uuid::uuid4()->toString(),
-                    'name' => 'Compte épargne',
-                    'type' => 'épargne',
-                    'icon' => 'balance',
-                    'color' => 'green',
-                    'balance' => 0.0,
-                    'is_include_in_total_balance' => true,
-                    'total_incomes' => 0.0,
-                    'total_expenses' => 0.0,
-                    'user_id' => $this->user_id
-                ],
-                [
-                    'uuid' => Uuid::uuid4()->toString(),
-                    'name' => 'Compte courant',
-                    'type' => 'courant',
-                    'icon' => 'balance',
-                    'color' => 'green',
-                    'balance' => 0.0,
-                    'is_include_in_total_balance' => true,
-                    'total_incomes' => 0.0,
-                    'total_expenses' => 0.0,
-                    'user_id' => $this->user_id
-                ],
-            ];
-            foreach ($accounts as $account) {
-                Account::create($account);
-            }
+
         } catch (Exception $e) {
             return;
         }

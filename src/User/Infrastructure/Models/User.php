@@ -2,8 +2,11 @@
 
 namespace App\User\Infrastructure\Models;
 
+use App\Account\Infrastructure\Model\Account;
 use App\Bootstrap\Infrastructure\database\factories\UserFactory;
 use App\category\Infrastructure\Models\Category;
+use App\User\Infrastructure\Observers\UserObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +19,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property mixed $id
  * @method static whereUuid(string|null $value)
  */
+#[ObservedBy([UserObserver::class])]
 class User extends Model
 {
     use Notifiable, HasFactory, HasApiTokens;

@@ -34,7 +34,6 @@ class RegisterAction
                 'token' => $user?->createToken(env('TOKEN_KEY'))->plainTextToken,
                 'user' => $response->user,
             ];
-            $this->createDefaultAccounts($user->id);
             DB::commit();
         } catch (ErrorOnSaveUserException) {
             DB::rollBack();
@@ -45,11 +44,5 @@ class RegisterAction
         }
 
         return response()->json($httpResponse);
-    }
-
-    private function createDefaultAccounts(string $user_id): void
-    {
-        InitializeDefaultUserAccount::dispatch($user_id)
-        ->onQueue('user_accounts');
     }
 }
