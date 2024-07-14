@@ -35,12 +35,14 @@ class FinancialGoalSUT
         return $this;
     }
 
-    public function withExistingFinancialGoal(): static
+    public function withExistingFinancialGoal(int $count = 1): static
     {
-        $this->financialGoal = FinancialGoal::factory()->create([
-           'user_id' => $this->user->id,
-           'account_id' => $this->account->id,
-        ]);
+        for($i = 0; $i<$count; $i++){
+            $this->financialGoal = FinancialGoal::factory()->create([
+                'user_id' => $this->user->id,
+                'account_id' => $this->account->id,
+            ]);
+        }
         return $this;
     }
 
