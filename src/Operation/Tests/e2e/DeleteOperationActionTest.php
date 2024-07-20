@@ -8,15 +8,18 @@ use App\Operation\Infrastructure\Model\Operation;
 use App\Shared\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class DeleteOperationActionTest extends TestCase
 {
+    use RefreshDatabase;
 
     const DELETE_OPERATION = 'api/operation/delete';
     private User $user;
     private string $token;
-    protected function setUp(): void
+
+    public function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create([
@@ -64,8 +67,8 @@ class DeleteOperationActionTest extends TestCase
         ]);
 
         return [
-            'accountId' => $account->getAttribute('uuid'),
-            'operationId' => $operation->getAttribute('uuid')
+            'accountId' => $account->uuid,
+            'operationId' => $operation->uuid,
         ];
     }
 }

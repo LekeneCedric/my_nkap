@@ -11,7 +11,7 @@ class GetAllProfessionActionTest extends TestCase
 {
     use RefreshDatabase;
     const GET_PROFESSIONS_ROUTES = 'api/professions/all';
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();

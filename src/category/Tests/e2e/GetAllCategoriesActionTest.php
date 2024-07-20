@@ -12,9 +12,11 @@ use Tests\TestCase;
 class GetAllCategoriesActionTest extends TestCase
 {
     use RefreshDatabase;
+
     const GET_ALL_CATEGORIES_ROUTE = 'api/category/all';
     private User $user;
     private string $token;
+
     public function setUp(): void
     {
         parent::setUp();

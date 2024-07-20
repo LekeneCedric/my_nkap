@@ -19,4 +19,16 @@ interface FinancialGoalRepository
      * @return FinancialGoal|null
      */
     public function byId(Id $financialGoalId): ?FinancialGoal;
+
+    /**
+     * @param string $accountId
+     * @return FinancialGoal[]
+     */
+    public function ofsAccountId(string $accountId): array;
+
+    /**
+     * @param array $financialGoals
+     * @return void
+     */
+    public function updateMany(array $financialGoals): void;
 }

@@ -23,7 +23,6 @@ class HttpDataRequest extends FormRequest
               'status' => false,
               'message' => $validator->errors()->first()
           ]),
-          200
         );
     }
 }

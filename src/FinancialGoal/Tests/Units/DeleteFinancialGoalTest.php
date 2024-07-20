@@ -21,7 +21,7 @@ class DeleteFinancialGoalTest extends TestCase
 {
     private FinancialGoalRepository $repository;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
         $this->repository = new InMemoryFinancialGoalRepository();

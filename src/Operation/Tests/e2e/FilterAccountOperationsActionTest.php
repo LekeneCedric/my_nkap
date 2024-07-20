@@ -13,13 +13,13 @@ use Tests\TestCase;
 
 class FilterAccountOperationsActionTest extends TestCase
 {
-//    use RefreshDatabase;
+    use RefreshDatabase;
 
     const FILTER_ACCOUNT_OPERATION = 'api/operation/filter';
     private User $user;
     private string $token;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create([
@@ -173,7 +173,7 @@ class FilterAccountOperationsActionTest extends TestCase
         $this->assertTrue($response['status']);
         $this->assertCount(5, $response['operations']);
         $this->assertEquals(10, $response['total']);
-        $this->assertEquals(4, $response['numberOfPages']);
+        $this->assertEquals(2, $response['numberOfPages']);
     }
 
     public function test_can_filter_operations_by_month()

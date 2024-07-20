@@ -15,11 +15,13 @@ use Tests\TestCase;
 class SaveAccountActionTest extends TestCase
 {
     use RefreshDatabase;
+
     const SAVE_ACCOUNT_ROUTE = 'api/accounts/save';
     const LOGIN = 'api/users/login';
     private User $user;
     private string $token;
-    protected function setUp(): void
+
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();

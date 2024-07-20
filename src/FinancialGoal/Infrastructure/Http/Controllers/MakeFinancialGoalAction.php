@@ -6,7 +6,10 @@ use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalHandler;
 use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Infrastructure\Factories\MakeFinancialGoalCommandFactory;
+use App\FinancialGoal\Infrastructure\Logs\FinancialGoalLogger;
+use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
 use App\User\Domain\Exceptions\NotFoundUserException;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,6 +18,7 @@ class MakeFinancialGoalAction
     public function __invoke(
         MakeFinancialGoalHandler $handler,
         Request $request,
+        FinancialGoalLogger $logger,
     ): JsonResponse
     {
         $httpResponse = [
@@ -35,10 +39,25 @@ class MakeFinancialGoalAction
                 $httpResponse['financialGoalId'] = $response->financialGoalId;
             }
         } catch (NotFoundAccountException|NotFoundUserException $e) {
+            $logger->Log(
+                message: $e->getMessage(),
+                level: LogLevelEnum::WARNING,
+                description: $e,
+            );
             $httpResponse['message'] = $e->getMessage();
         } catch (ErrorOnSaveFinancialGoalException $e) {
+            $logger->Log(
+                message: $e->getMessage(),
+                level: LogLevelEnum::CRITICAL,
+                description: $e,
+            );
             $httpResponse['message'] = 'Une érreur critique est survenue lors du traitement de votre opération , veuillez réessayer plus-târd !';
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            $logger->Log(
+                message: $e->getMessage(),
+                level: LogLevelEnum::ERROR,
+                description: $e,
+            );
             $httpResponse['message'] = 'Une érreur est survenue lors du traitement de votre requête , veuillez réessayer !';
         }
 

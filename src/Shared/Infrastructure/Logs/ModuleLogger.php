@@ -25,7 +25,7 @@ abstract class ModuleLogger
 
     private function buildDescription(mixed $description): string
     {
-        return json_encode($description) ?: $this->message;
+        return json_encode($description, JSON_PRETTY_PRINT) ?: $this->message;
     }
 
     private function dispatch(): void

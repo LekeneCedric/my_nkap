@@ -33,4 +33,14 @@ class InMemoryFinancialGoalRepository implements FinancialGoalRepository
         }
         return $this->financialsGoal[$financialGoalId->value()];
     }
+
+    public function ofsAccountId(string $accountId): array
+    {
+        return [];
+    }
+
+    public function updateMany(array $financialGoals): void
+    {
+        //
+    }
 }

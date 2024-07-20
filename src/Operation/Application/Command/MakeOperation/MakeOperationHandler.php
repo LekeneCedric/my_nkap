@@ -27,17 +27,18 @@ class MakeOperationHandler
      */
     public function handle(MakeOperationCommand $command): makeOperationResponse
     {
+        $response = new makeOperationResponse();
+
         $operationAccount = $this->getOperationAccountOrThrowNotFoundException($command->accountId);
-
         if ($command->operationId) {
-
+            $response->previousOperationAmount = $operationAccount->operation($command->operationId)->amount()->value();
             $operationAccount->updateOperation(
-              operationId: new Id($command->operationId),
-              amount: new AmountVO($command->amount),
-              type: $command->type,
+                operationId: new Id($command->operationId),
+                amount: new AmountVO($command->amount),
+                type: $command->type,
                 categoryId: new Id($command->categoryId),
-              detail: new StringVO($command->detail),
-              date: new DateVO($command->date),
+                detail: new StringVO($command->detail),
+                date: new DateVO($command->date),
             );
         }
         if (!$command->operationId) {
@@ -53,10 +54,11 @@ class MakeOperationHandler
         $this->repository->saveOperation($operationAccount);
 
         $currentOperation = $operationAccount->currentOperation();
-        return new makeOperationResponse(
-            operationSaved: true,
-            operationId: $currentOperation->id()->value(),
-        );
+
+        $response->operationSaved = true;
+        $response->operationId = $currentOperation->id()->value();
+
+        return $response;
     }
 
     /**

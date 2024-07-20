@@ -16,7 +16,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use PDO;
 use PDOException;
-
+use App\FinancialGoal\Infrastructure\Model\FinancialGoal AS FinancialGoalModel;
 class PdoFinancialGoalRepository implements FinancialGoalRepository
 {
     private PDO $pdo;
@@ -194,5 +194,32 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
             'user_id' => User::where('uuid', $financialGoal->userId()->value())->where('is_deleted',false)->where('is_active', 1)->first()->id,
             'account_id' => Account::whereUuid($financialGoal->accountId()->value())->whereIsDeleted(false)->first()->id,
         ];
+    }
+
+    public function ofsAccountId(string $accountId): array
+    {
+        $account_id = Account::whereUuid($accountId)->first()->id;
+        return FinancialGoalModel::whereAccountId($account_id)
+            ->get()
+            ->map(function(FinancialGoalModel $item) {
+                return $item->toDomain();
+            })
+            ->toArray();
+    }
+
+    /**
+     * @param FinancialGoal[] $financialGoals
+     * @return void
+     */
+    public function updateMany(array $financialGoals): void
+    {
+        DB::transaction(
+            function() use ($financialGoals){
+                foreach ($financialGoals as $financialGoal) {
+                    FinancialGoalModel::whereUuid($financialGoal->id()->value())
+                        ->update($financialGoal->toDto()->toUpdateArray());
+                }
+            }
+        );
     }
 }

@@ -13,10 +13,12 @@ use Tests\TestCase;
 class DeleteAccountActionTest extends TestCase
 {
     use RefreshDatabase;
+
     const DELETE_ACCOUNT_ROUTE = 'api/accounts/delete';
     private User $user;
     private string $token;
-    protected function setUp(): void
+
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();

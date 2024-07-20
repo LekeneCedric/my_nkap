@@ -3,6 +3,8 @@
 namespace App\Operation\Infrastructure\Http\Controllers;
 
 use App\Account\Domain\Exceptions\NotFoundAccountException;
+use App\FinancialGoal\Application\Command\Update\UpdateFinancialGoalCommand;
+use App\FinancialGoal\Application\Command\Update\UpdateFinancialGoalHandler;
 use App\Operation\Application\Command\MakeOperation\MakeOperationHandler;
 use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
 use App\Operation\Infrastructure\Factories\MakeOperationCommandFactory;
@@ -15,6 +17,7 @@ class MakeOperationAction
 {
     public function __invoke(
         MakeOperationHandler $handler,
+        UpdateFinancialGoalHandler $updateFinancialGoalHandler,
         MakeOperationRequest $request,
         OperationsLogger $logger,
     ): JsonResponse
@@ -24,6 +27,14 @@ class MakeOperationAction
         try {
             $command = MakeOperationCommandFactory::buildFromRequest($request);
             $response = $handler->handle($command);
+
+            $updateFinancialGoalCommand = new UpdateFinancialGoalCommand(
+                accountId: $command->accountId,
+                previousAmount: $response->previousOperationAmount,
+                amount: $command->amount,
+                operationDate: $command->date
+            );
+            $updateFinancialGoalHandler->handle($updateFinancialGoalCommand);
 
             $httpJson = [
                 'status' => true,

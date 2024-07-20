@@ -75,7 +75,6 @@ class PdoOperationAccountRepository implements OperationAccountRepository
             $this->saveCurrentOperation($operationAccount);
             $this->pdo->commit();
         } catch (\PDOException|Exception $e) {
-            dd($e);
             $this->pdo->rollBack();
         }
     }

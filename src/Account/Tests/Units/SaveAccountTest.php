@@ -15,7 +15,7 @@ use Tests\TestCase;
 class SaveAccountTest extends TestCase
 {
     private InMemoryAccountRepository $repository;
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
         $this->repository = new InMemoryAccountRepository();

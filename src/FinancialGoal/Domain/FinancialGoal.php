@@ -2,6 +2,7 @@
 
 namespace App\FinancialGoal\Domain;
 
+use App\FinancialGoal\Domain\Dto\FinancialGoalDto;
 use App\FinancialGoal\Domain\Enum\FinancialGoalEventStateEnum;
 use App\Shared\VO\AmountVO;
 use App\Shared\VO\DateVO;
@@ -169,5 +170,39 @@ class FinancialGoal
         }
 
         return $data;
+    }
+
+    public function toDto(): FinancialGoalDto
+    {
+        return new FinancialGoalDto(
+          id: $this->financialGoalId->value(),
+          accountId: $this->accountId->value(),
+          currentAmount: $this->currentAmount->value(),
+          isComplete: $this->isComplete,
+        );
+    }
+
+    public function retrieveAmount(float $previousAmount): void
+    {
+        $updatedAmount = $this->currentAmount->value() - $previousAmount;
+        $this->currentAmount = new AmountVO($updatedAmount);
+        $this->updateIsCompleteStatus();
+    }
+
+    public function addAmount(float $amount): void
+    {
+        $updatedAmount = $this->currentAmount->value() + $amount;
+        $this->currentAmount = new AmountVO($updatedAmount);
+        $this->updateIsCompleteStatus();
+    }
+    private function updateIsCompleteStatus(): void
+    {
+        if ($this->currentAmount >= $this->desiredAmount)
+            $this->isComplete = true;
+    }
+
+    public function startDate(): DateVO
+    {
+        return $this->startDate;
     }
 }

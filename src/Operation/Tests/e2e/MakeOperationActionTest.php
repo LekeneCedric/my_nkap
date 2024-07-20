@@ -4,6 +4,7 @@ namespace App\Operation\Tests\e2e;
 
 use App\Account\Infrastructure\Model\Account;
 use App\category\Infrastructure\Models\Category;
+use App\FinancialGoal\Infrastructure\Model\FinancialGoal;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
 use App\Shared\VO\Id;
@@ -16,10 +17,12 @@ use Tests\TestCase;
 class MakeOperationActionTest extends TestCase
 {
     use RefreshDatabase;
+
     const SAVE_OPERATION_ROUTE = 'api/operation/add';
     private User $user;
     private string $token;
-    protected function setUp(): void
+
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();
@@ -88,7 +91,42 @@ class MakeOperationActionTest extends TestCase
         $this->assertEquals(30000, $updatedAccount->balance);
     }
 
-    private function buildSUT(bool $withExistingOperation = false): array
+    public function test_can_update_financial_goal_after_save_job()
+    {
+        $initData = $this->buildSUT(
+            withExistingOperation: true,
+            withExistingFinancialGoal: true
+        );
+
+        $data = [
+            'accountId' => $initData['accountId'],
+            'operationId' => $initData['operationId'],
+            'type' => OperationTypeEnum::INCOME,
+            'amount' => 30000,
+            'categoryId' => Category::factory()->create()->uuid,
+            'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+            'date' => '2023-09-30 15:00:00'
+        ];
+
+        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
+        $updatedAccount = Account::whereUuid($initData['accountId'])->whereIsDeleted(false)->first();
+        $updatedOperation = Operation::whereUuid($initData['operationId'])->whereIsDeleted(false)->first();
+        $updatedFinancialGoal = FinancialGoal::whereUuid($initData['financialGoalId'])->whereIsDeleted(false)->first();
+
+        $response->assertOk();
+        $this->assertTrue($response['status']);
+        $this->assertTrue($response['operationSaved']);
+        $this->assertEquals(30000, $updatedOperation->amount);
+        $this->assertEquals(30000, $updatedAccount->balance);
+        $this->assertEquals(30000, $updatedFinancialGoal->current_amount);
+    }
+    private function buildSUT(
+        bool $withExistingOperation = false,
+        bool $withExistingFinancialGoal = false,
+    ): array
     {
         $operationAmount = 20000;
         $result = [];
@@ -105,6 +143,16 @@ class MakeOperationActionTest extends TestCase
                 'amount' => 20000,
             ]);
             $result['operationId'] = $operation->getAttribute('uuid');
+            if ($withExistingFinancialGoal) {
+                $financialGoal = FinancialGoal::factory()->create([
+                    'account_id' => $account->id,
+                    'user_id' => $this->user->id,
+                    'current_amount' => 0,
+                    'desired_amount' => 100000,
+                    'is_complete' => false
+                ]);
+                $result['financialGoalId'] = $financialGoal->uuid;
+            }
         }
 
         return $result;

@@ -12,10 +12,12 @@ use Tests\TestCase;
 class GetAllAccountActionTest extends TestCase
 {
     use RefreshDatabase;
+
     const GET_ALL_ACCOUNT_ROUTE = 'api/accounts/all';
     private User $user;
     private string $token;
-    protected function setUp(): void
+
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();
@@ -43,6 +45,7 @@ class GetAllAccountActionTest extends TestCase
 
         $response->assertOk();
         $this->assertTrue($response['status']);
-        $this->assertCount($numberOfAccount, $response['accounts']);
+        // +2 because the creation of user include creation of 2 default accouns
+        $this->assertCount($numberOfAccount + 2, $response['accounts']);
     }
 }

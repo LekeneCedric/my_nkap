@@ -15,8 +15,10 @@ use Tests\TestCase;
 class AccountRepositoryTest extends TestCase
 {
     use RefreshDatabase;
+
     private AccountRepository $repository;
-    protected function setUp(): void
+
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();

@@ -22,7 +22,7 @@ use Tests\TestCase;
 class MakeOperationTest extends TestCase
 {
     private OperationAccountRepository $repository;
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
         $this->repository = new InMemoryOperationAccountRepository();

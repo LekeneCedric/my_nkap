@@ -23,9 +23,11 @@ use Tests\TestCase;
 class OperationAccountRepositoryTest extends TestCase
 {
     use RefreshDatabase;
+
     private OperationAccountRepository $repository;
     private User $user;
-    protected function setUp(): void
+
+    public function setUp(): void
     {
         parent::setUp();
         $this->repository = new PdoOperationAccountRepository();

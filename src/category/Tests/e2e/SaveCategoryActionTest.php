@@ -5,14 +5,18 @@ namespace App\category\Tests\e2e;
 use App\Shared\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class SaveCategoryActionTest extends TestCase
 {
+    use RefreshDatabase;
+
     const SAVE_CATEGORY_ROUTE = 'api/category/save';
     private User $user;
     private string $token;
+
     public function setUp(): void
     {
         parent::setUp();

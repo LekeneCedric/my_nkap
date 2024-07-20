@@ -309,4 +309,9 @@ class operationAccount
             'updated_at' => $this->updatedAt->formatYMDHIS(),
         ];
     }
+
+    public function operation(string $operationId): Operation
+    {
+        return $this->operations[$operationId];
+    }
 }

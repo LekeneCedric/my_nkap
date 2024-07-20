@@ -4,12 +4,8 @@ namespace App\Operation\Application\Command\MakeOperation;
 
 class makeOperationResponse
 {
-    public function __construct(
-        public bool   $operationSaved = false,
-        public string $operationId = '',
-    )
-    {
-    }
-
+    public float $previousOperationAmount = 0.0;
+    public bool $operationSaved = false;
+    public string $operationId = '';
 
 }

@@ -17,7 +17,8 @@ class DeleteFinancialGoalActionTest extends TestCase
     const DELETE_FINANCIAL_GOAL = 'api/financial-goals/delete';
     private User $user;
     private string $token;
-    protected function setUp(): void
+
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();

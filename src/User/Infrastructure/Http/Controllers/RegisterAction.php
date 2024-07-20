@@ -7,7 +7,6 @@ use App\User\Domain\Exceptions\AlreadyUserExistWithSameEmailException;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Infrastructure\Factories\RegisterUserCommandFactory;
 use App\User\Infrastructure\Http\Requests\RegisterUserRequest;
-use App\User\Infrastructure\Job\InitializeDefaultUserAccount;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;

@@ -23,7 +23,8 @@ class GetAllFinancialGoalHandler
 
         $sql = "
             SELECT
-                fg.account_id as accountId,
+                fg.uuid as id,
+                ac.uuid as accountId,
                 fg.start_date as startDate,
                 fg.end_date as endDate,
                 fg.details as title,
@@ -32,6 +33,7 @@ class GetAllFinancialGoalHandler
                 fg.is_complete as isComplete
             FROM financial_goals fg
             INNER JOIN users AS u ON fg.user_id = u.id
+            INNER JOIN accounts AS ac ON fg.account_id = ac.id
             WHERE fg.is_deleted = false AND u.uuid=:userId
         ";
         $st = $this->pdo->prepare($sql);

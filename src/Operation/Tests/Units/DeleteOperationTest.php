@@ -23,7 +23,7 @@ class DeleteOperationTest extends TestCase
 {
     private OperationAccountRepository $repository;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 

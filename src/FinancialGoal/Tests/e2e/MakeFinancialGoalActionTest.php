@@ -20,7 +20,7 @@ class MakeFinancialGoalActionTest extends TestCase
     private User $user;
     private string $token;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();

@@ -12,9 +12,11 @@ use Tests\TestCase;
 class GetAllFinancialGoatActionTest extends TestCase
 {
     use RefreshDatabase;
+
     const GET_ALL_FINANCIAL_GOAL = 'api/financial-goals/all';
     private User $user;
     private string $token;
+
     public function setUp(): void
     {
         parent::setUp();

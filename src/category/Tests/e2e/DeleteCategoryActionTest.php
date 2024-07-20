@@ -6,11 +6,14 @@ use App\category\Infrastructure\Models\Category;
 use App\Shared\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DeleteCategoryActionTest extends TestCase
 {
+    use RefreshDatabase;
+
     const DELETE_CATEGORY_ROUTE = 'api/category/delete';
     private User $user;
     private string $token;
