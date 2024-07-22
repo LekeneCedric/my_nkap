@@ -197,12 +197,27 @@ class FinancialGoal
     }
     private function updateIsCompleteStatus(): void
     {
-        if ($this->currentAmount >= $this->desiredAmount)
+        if ($this->currentAmount >= $this->desiredAmount) {
             $this->isComplete = true;
+        }
+        if ($this->currentAmount < $this->desiredAmount) {
+            $this->isComplete = false;
+        }
     }
 
+    /**
+     * @return DateVO
+     */
     public function startDate(): DateVO
     {
         return $this->startDate;
+    }
+
+    /**
+     * @return DateVO
+     */
+    public function endDate(): DateVO
+    {
+        return $this->endDate;
     }
 }

@@ -91,7 +91,36 @@ class MakeOperationActionTest extends TestCase
         $this->assertEquals(30000, $updatedAccount->balance);
     }
 
-    public function test_can_update_financial_goal_after_save_job()
+    public function test_can_update_financial_goal_after_create_operation()
+    {
+        $initData = $this->buildSUT(
+            withExistingFinancialGoal: true
+        );
+
+        $data = [
+            'accountId' => $initData['accountId'],
+            'type' => OperationTypeEnum::INCOME,
+            'amount' => 30000,
+            'categoryId' => Category::factory()->create()->uuid,
+            'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+            'date' => '2024-09-30 15:00:00'
+        ];
+
+        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
+            'Authorization' => 'Bearer '.$this->token,
+        ]);
+        $updatedAccount = Account::whereUuid($initData['accountId'])->whereIsDeleted(false)->first();
+        $updatedFinancialGoal = FinancialGoal::whereUuid($initData['financialGoalId'])->whereIsDeleted(false)->first();
+
+        $response->assertOk();
+        $this->assertTrue($response['status']);
+        $this->assertTrue($response['operationSaved']);
+        $this->assertEquals(30000, $updatedAccount->balance);
+        $this->assertEquals(30000, $updatedFinancialGoal->current_amount);
+    }
+
+    public function test_can_update_financial_goal_after_update_operation()
     {
         $initData = $this->buildSUT(
             withExistingOperation: true,
@@ -106,7 +135,7 @@ class MakeOperationActionTest extends TestCase
             'categoryId' => Category::factory()->create()->uuid,
             'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-            'date' => '2023-09-30 15:00:00'
+            'date' => '2024-09-30 15:00:00'
         ];
 
         $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
@@ -121,7 +150,7 @@ class MakeOperationActionTest extends TestCase
         $this->assertTrue($response['operationSaved']);
         $this->assertEquals(30000, $updatedOperation->amount);
         $this->assertEquals(30000, $updatedAccount->balance);
-        $this->assertEquals(30000, $updatedFinancialGoal->current_amount);
+        $this->assertEquals(10000, $updatedFinancialGoal->current_amount);
     }
     private function buildSUT(
         bool $withExistingOperation = false,
@@ -141,18 +170,21 @@ class MakeOperationActionTest extends TestCase
                 'account_id' => $account->id,
                 'type' => OperationTypeEnum::INCOME,
                 'amount' => 20000,
+                'date' => '2024-09-30 00:00:00'
             ]);
             $result['operationId'] = $operation->getAttribute('uuid');
-            if ($withExistingFinancialGoal) {
-                $financialGoal = FinancialGoal::factory()->create([
-                    'account_id' => $account->id,
-                    'user_id' => $this->user->id,
-                    'current_amount' => 0,
-                    'desired_amount' => 100000,
-                    'is_complete' => false
-                ]);
-                $result['financialGoalId'] = $financialGoal->uuid;
-            }
+        }
+        if ($withExistingFinancialGoal) {
+            $financialGoal = FinancialGoal::factory()->create([
+                'account_id' => $account->id,
+                'user_id' => $this->user->id,
+                'current_amount' => 0,
+                'desired_amount' => 100000,
+                'is_complete' => false,
+                'start_date' => '2024-09-10 00:00:00',
+                'end_date' =>  '2024-10-10 00:00:00'
+            ]);
+            $result['financialGoalId'] = $financialGoal->uuid;
         }
 
         return $result;

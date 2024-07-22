@@ -135,4 +135,9 @@ class Operation
     {
         return $this->eventState;
     }
+
+    public function date(): DateVO
+    {
+        return $this->date;
+    }
 }

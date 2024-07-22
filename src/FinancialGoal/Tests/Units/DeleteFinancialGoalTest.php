@@ -39,7 +39,7 @@ class DeleteFinancialGoalTest extends TestCase
 
         $this->assertTrue($response->status);
         $this->assertTrue($response->isDeleted);
-        $this->assertTrue($this->repository->financialsGoal[$initSUT['financialGoalId']]->isDeleted());
+        $this->assertTrue($this->repository->financialsGoals[$initSUT['financialGoalId']]->isDeleted());
     }
 
     // test can throw not found financial goal exception
@@ -88,7 +88,7 @@ class DeleteFinancialGoalTest extends TestCase
             details: new StringVO('Epargner 100 000 F avant septembre')
         );
 
-        $this->repository->financialsGoal[$financialGoal->id()->value()] = $financialGoal;
+        $this->repository->financialsGoals[$financialGoal->id()->value()] = $financialGoal;
 
         return [
             'financialGoalId' => $financialGoal->id()->value(),

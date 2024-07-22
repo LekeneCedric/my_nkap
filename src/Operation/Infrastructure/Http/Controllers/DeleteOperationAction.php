@@ -3,6 +3,8 @@
 namespace App\Operation\Infrastructure\Http\Controllers;
 
 use App\Account\Domain\Exceptions\NotFoundAccountException;
+use App\FinancialGoal\Application\Command\Update\UpdateFinancialGoalCommand;
+use App\FinancialGoal\Application\Command\Update\UpdateFinancialGoalHandler;
 use App\Operation\Application\Command\DeleteOperation\DeleteOperationHandler;
 use App\Operation\Domain\Exceptions\NotFoundOperationException;
 use App\Operation\Infrastructure\Factories\DeleteOperationCommandFactory;
@@ -15,9 +17,10 @@ use Illuminate\Http\JsonResponse;
 class DeleteOperationAction
 {
     public function __invoke(
-        DeleteOperationHandler $handler,
-        DeleteOperationRequest $request,
-        OperationsLogger $logger,
+        DeleteOperationHandler     $handler,
+        UpdateFinancialGoalHandler $updateFinancialGoalHandler,
+        DeleteOperationRequest     $request,
+        OperationsLogger           $logger,
     ): JsonResponse
     {
         $httpJson = ['status' => false];
@@ -26,6 +29,15 @@ class DeleteOperationAction
             $command = DeleteOperationCommandFactory::buildFromRequest($request);
             $response = $handler->handle($command);
 
+            $updateFinancialGoalCommand = new UpdateFinancialGoalCommand(
+                accountId: $command->accountId,
+                previousAmount: $response->operationAmount,
+                amount: $response->operationAmount,
+                operationDate: $response->date,
+                type: $response->operationType,
+                isDelete: true,
+            );
+            $updateFinancialGoalHandler->handle($updateFinancialGoalCommand);
             $httpJson = [
                 'status' => true,
                 'isDeleted' => $response->isDeleted,

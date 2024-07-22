@@ -56,7 +56,7 @@ class MakeFinancialGoalTest extends TestCase
 
         $response = $this->makeFinancialGoal($command);
 
-        $savedFinancialGoal = $this->repository->financialsGoal[$response->financialGoalId];
+        $savedFinancialGoal = $this->repository->financialsGoals[$response->financialGoalId];
         $this->assertTrue($response->isMake);
         $this->assertNotNull($response->financialGoalId);
         $this->assertNotNull($savedFinancialGoal);
@@ -84,7 +84,7 @@ class MakeFinancialGoalTest extends TestCase
 
         $response = $this->makeFinancialGoal($command);
 
-        $updatedFinancialGoal = $this->repository->financialsGoal[$initSUT['financialGoalId']];
+        $updatedFinancialGoal = $this->repository->financialsGoals[$initSUT['financialGoalId']];
 
         $this->assertTrue($response->isMake);
         $this->assertNull($response->financialGoalId);
@@ -138,7 +138,7 @@ class MakeFinancialGoalTest extends TestCase
               details: new StringVO('save 100 000 CFA before september 2024'),
               currentAmount: new AmountVO(0)
           );
-          $this->repository->financialsGoal[$financialGoal->id()->value()] = $financialGoal;
+          $this->repository->financialsGoals[$financialGoal->id()->value()] = $financialGoal;
         }
         return [
             'userId' => $userId->value(),

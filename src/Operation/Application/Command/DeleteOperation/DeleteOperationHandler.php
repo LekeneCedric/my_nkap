@@ -21,6 +21,7 @@ class DeleteOperationHandler
      * @return DeleteOperationResponse
      * @throws NotFoundAccountException
      * @throws NotFoundOperationException
+     * @throws \Exception
      */
     public function handle(DeleteOperationCommand $command): DeleteOperationResponse
     {
@@ -32,6 +33,9 @@ class DeleteOperationHandler
         return new DeleteOperationResponse(
             message: 'Operation supprimée avec succès !',
             isDeleted: true,
+            operationAmount: $operationAccount->currentOperation()->amount()->value(),
+            date: $operationAccount->currentOperation()->date()->formatYMDHIS(),
+            operationType: $operationAccount->currentOperation()->type(),
         );
     }
 

@@ -36,7 +36,7 @@ class DateVO
     {
         $d = DateTime::createFromFormat($this->format, $this->value);
         if (!$d || $d->format($this->format) != $this->value) {
-            throw new \InvalidArgumentException("La date entrée n'est pas valide");
+            throw new \InvalidArgumentException("La date entrée n'est pas valide !");
         }
     }
 
@@ -48,10 +48,10 @@ class DateVO
         $date1 = new DateTime($this->value);
         $date2 = new DateTime($startDate->formatYMDHIS());
         if ($date1 < $date2) {
-            return ComparisonEnum::GREATER->value;
+            return ComparisonEnum::LESS->value;
         }
         if ($date1 > $date2) {
-            return ComparisonEnum::LESS->value;
+            return ComparisonEnum::GREATER->value;
         }
         return ComparisonEnum::EQUAL->value;
     }

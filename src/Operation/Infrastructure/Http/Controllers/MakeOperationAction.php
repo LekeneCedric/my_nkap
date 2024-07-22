@@ -32,7 +32,8 @@ class MakeOperationAction
                 accountId: $command->accountId,
                 previousAmount: $response->previousOperationAmount,
                 amount: $command->amount,
-                operationDate: $command->date
+                operationDate: $command->date,
+                type: $command->type
             );
             $updateFinancialGoalHandler->handle($updateFinancialGoalCommand);
 
