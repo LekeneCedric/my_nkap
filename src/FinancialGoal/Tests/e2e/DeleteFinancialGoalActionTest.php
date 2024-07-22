@@ -3,7 +3,7 @@
 namespace App\FinancialGoal\Tests\e2e;
 
 use App\FinancialGoal\Infrastructure\Model\FinancialGoal;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -8,10 +8,10 @@ use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;
 use App\FinancialGoal\Domain\Service\CheckIfUserExistByIdService;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\DateVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\DateVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use App\User\Domain\Exceptions\NotFoundUserException;
 
 class MakeFinancialGoalHandler

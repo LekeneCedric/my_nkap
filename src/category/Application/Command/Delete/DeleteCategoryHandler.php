@@ -6,7 +6,7 @@ use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\category\Domain\Exceptions\NotFoundUserCategoryException;
 use App\category\Domain\UserCategory;
 use App\category\Domain\UserCategoryRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class DeleteCategoryHandler
 {

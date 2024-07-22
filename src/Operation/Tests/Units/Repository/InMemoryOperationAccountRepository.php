@@ -4,7 +4,7 @@ namespace App\Operation\Tests\Units\Repository;
 
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class InMemoryOperationAccountRepository implements OperationAccountRepository
 {

@@ -7,16 +7,17 @@ use App\FinancialGoal\Domain\Enum\FinancialGoalEventStateEnum;
 use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\DateVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\FinancialGoal\Infrastructure\Model\FinancialGoal as FinancialGoalModel;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\DateVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use App\User\Infrastructure\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use PDO;
 use PDOException;
-use App\FinancialGoal\Infrastructure\Model\FinancialGoal AS FinancialGoalModel;
+
 class PdoFinancialGoalRepository implements FinancialGoalRepository
 {
     private PDO $pdo;

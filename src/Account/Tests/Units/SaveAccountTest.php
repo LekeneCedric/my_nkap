@@ -9,7 +9,7 @@ use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Tests\Units\Builders\SaveAccountCommandBuilder;
 use App\Account\Tests\Units\Repositories\InMemoryAccountRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 use Tests\TestCase;
 
 class SaveAccountTest extends TestCase

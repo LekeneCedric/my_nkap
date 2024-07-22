@@ -4,7 +4,7 @@ namespace App\FinancialGoal\Tests\Units\Service;
 
 use App\Account\Domain\Account;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class InMemoryCheckIfAccountExitByIdService implements CheckIfAccountExitByIdService
 {

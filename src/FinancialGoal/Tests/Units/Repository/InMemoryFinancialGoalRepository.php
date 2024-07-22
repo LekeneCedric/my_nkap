@@ -4,7 +4,7 @@ namespace App\FinancialGoal\Tests\Units\Repository;
 
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class InMemoryFinancialGoalRepository implements FinancialGoalRepository
 {

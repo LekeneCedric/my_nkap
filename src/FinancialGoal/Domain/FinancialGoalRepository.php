@@ -3,7 +3,7 @@
 namespace App\FinancialGoal\Domain;
 
 use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 interface FinancialGoalRepository
 {

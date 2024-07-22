@@ -7,7 +7,7 @@ use App\category\Domain\Exceptions\ErrorOnSaveCategoryException;
 use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\category\Domain\UserCategoryRepository;
 use App\category\Infrastructure\Repository\EloquentUserCategoryRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

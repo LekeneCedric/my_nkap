@@ -3,15 +3,14 @@
 namespace App\category\Tests\Features;
 
 use App\category\Domain\Category;
-use App\category\Domain\Exceptions\NotFoundCategoryException;
-use App\category\Infrastructure\Models\Category as CategoryModel;
 use App\category\Domain\Exceptions\AlreadyExistsCategoryException;
+use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\category\Domain\UserCategory;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\category\Infrastructure\Models\Category as CategoryModel;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
-use Illuminate\Support\Str;
 
 class CategorySUT
 {

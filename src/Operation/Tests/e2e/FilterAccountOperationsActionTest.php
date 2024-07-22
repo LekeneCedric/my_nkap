@@ -5,7 +5,7 @@ namespace App\Operation\Tests\e2e;
 use App\Account\Tests\e2e\AccountSUT;
 use App\category\Infrastructure\Models\Category;
 use App\Operation\Domain\OperationTypeEnum;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

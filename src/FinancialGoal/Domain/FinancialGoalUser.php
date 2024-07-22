@@ -2,7 +2,7 @@
 
 namespace App\FinancialGoal\Domain;
 
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class FinancialGoalUser
 {

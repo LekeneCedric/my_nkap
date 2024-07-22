@@ -4,7 +4,7 @@ namespace App\Account\Domain\Repository;
 
 use App\Account\Domain\Account;
 use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 interface AccountRepository
 {

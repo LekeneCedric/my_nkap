@@ -3,7 +3,7 @@
 namespace App\FinancialGoal\Infrastructure\Services;
 
 use App\FinancialGoal\Domain\Service\CheckIfUserExistByIdService;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 use Illuminate\Support\Facades\DB;
 
 class PdoCheckIfUserExistByIdService implements CheckIfUserExistByIdService

@@ -4,7 +4,7 @@ namespace App\category\Tests\Units;
 
 use App\category\Domain\UserCategory;
 use App\category\Domain\UserCategoryRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class InMemoryUserCategoryRepository implements UserCategoryRepository
 {

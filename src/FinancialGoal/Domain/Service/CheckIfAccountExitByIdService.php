@@ -2,7 +2,7 @@
 
 namespace App\FinancialGoal\Domain\Service;
 
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 interface CheckIfAccountExitByIdService
 {

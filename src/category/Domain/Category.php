@@ -3,8 +3,8 @@
 namespace App\category\Domain;
 
 use App\category\Domain\Enums\EventState\CategoryEventStateEnum;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 
 class Category
 {

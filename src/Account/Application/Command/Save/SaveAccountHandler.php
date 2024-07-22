@@ -6,9 +6,9 @@ use App\Account\Domain\Account;
 use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 
 class SaveAccountHandler
 {

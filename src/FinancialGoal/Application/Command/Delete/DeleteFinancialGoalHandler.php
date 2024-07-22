@@ -6,7 +6,7 @@ use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Domain\Exceptions\NotFoundFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class DeleteFinancialGoalHandler
 {

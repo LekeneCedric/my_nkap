@@ -2,13 +2,13 @@
 
 namespace App\category\Infrastructure\Models;
 
+use App\category\Domain\Category as CategoryDomain;
 use App\category\Infrastructure\database\Factories\CategoryFactory;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\category\Domain\Category AS CategoryDomain;
 
 /**
  * @method static whereUuid(string|null $value)

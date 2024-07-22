@@ -5,7 +5,7 @@ namespace App\Account\Application\Command\Delete;
 use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class DeleteAccountHandler
 {

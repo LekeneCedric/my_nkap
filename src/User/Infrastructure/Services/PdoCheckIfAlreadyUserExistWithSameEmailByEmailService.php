@@ -2,7 +2,7 @@
 
 namespace App\User\Infrastructure\Services;
 
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\StringVO;
 use App\User\Domain\Service\CheckIfAlreadyUserExistWithSameEmailByEmailService;
 use Illuminate\Support\Facades\DB;
 use PDO;

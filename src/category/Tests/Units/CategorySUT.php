@@ -4,8 +4,8 @@ namespace App\category\Tests\Units;
 
 use App\category\Domain\Category;
 use App\category\Domain\UserCategory;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 
 class CategorySUT
 {

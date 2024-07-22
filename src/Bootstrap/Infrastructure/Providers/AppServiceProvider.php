@@ -8,6 +8,7 @@ use App\FinancialGoal\Infrastructure\Provider\FinancialGoalServiceProvider;
 use App\Operation\Infrastructure\provider\OperationServiceProvider;
 use App\Profession\Infrastructure\Provider\ProfessionServiceProvider;
 use App\Shared\Infrastructure\Logs\Provider\LogServiceProvider;
+use App\Statistics\Infrastructure\Providers\StatisticsServiceProvider;
 use App\User\Infrastructure\Provider\UserProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,16 +21,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->loadModuleServiceProviders();
         $this->loadDefaultMigrations();
-        $this->loadDefaultView();
-    }
-
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        $this->bindModuleRepositories();
-        $this->bindSharedLibrairies();
     }
 
     /**
@@ -44,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(ProfessionServiceProvider::class);
         $this->app->register(LogServiceProvider::class);
         $this->app->register(CategoryServiceProvider::class);
+        $this->app->register(StatisticsServiceProvider::class);
     }
 
     /**
@@ -52,29 +44,5 @@ class AppServiceProvider extends ServiceProvider
     private function loadDefaultMigrations(): void
     {
         $this->loadMigrationsFrom('/src/Bootstrap/Infrastructure/database/migrations');
-    }
-
-    /**
-     * @return void
-     */
-    private function loadDefaultView()
-    {
-        //
-    }
-
-    /**
-     * @return void
-     */
-    private function bindModuleRepositories()
-    {
-        //
-    }
-
-    /**
-     * @return void
-     */
-    private function bindSharedLibrairies()
-    {
-        //
     }
 }

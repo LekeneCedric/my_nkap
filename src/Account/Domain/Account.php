@@ -3,10 +3,10 @@
 namespace App\Account\Domain;
 
 use App\Account\Domain\Enums\AccountEventStateEnum;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\DateVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\DateVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 
 class Account
 {

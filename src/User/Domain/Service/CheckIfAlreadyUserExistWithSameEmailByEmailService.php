@@ -2,7 +2,7 @@
 
 namespace App\User\Domain\Service;
 
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\StringVO;
 
 interface CheckIfAlreadyUserExistWithSameEmailByEmailService
 {

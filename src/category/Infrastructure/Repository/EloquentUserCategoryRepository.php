@@ -3,12 +3,12 @@
 namespace App\category\Infrastructure\Repository;
 
 use App\category\Domain\Category;
-use App\category\Infrastructure\Models\Category AS CategoryModel;
 use App\category\Domain\Enums\EventState\CategoryEventStateEnum;
 use App\category\Domain\Exceptions\ErrorOnSaveCategoryException;
 use App\category\Domain\UserCategory;
 use App\category\Domain\UserCategoryRepository;
-use App\Shared\VO\Id;
+use App\category\Infrastructure\Models\Category as CategoryModel;
+use App\Shared\Domain\VO\Id;
 use App\User\Infrastructure\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;

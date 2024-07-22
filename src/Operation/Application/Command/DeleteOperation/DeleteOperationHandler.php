@@ -6,7 +6,7 @@ use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Operation\Domain\Exceptions\NotFoundOperationException;
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class DeleteOperationHandler
 {

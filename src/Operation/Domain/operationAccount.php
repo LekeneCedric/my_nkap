@@ -4,10 +4,10 @@ namespace App\Operation\Domain;
 
 use App\Operation\Domain\Exceptions\NotFoundOperationException;
 use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\DateVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\DateVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use Exception;
 
 class operationAccount

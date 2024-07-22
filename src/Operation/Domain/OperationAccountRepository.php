@@ -2,7 +2,7 @@
 
 namespace App\Operation\Domain;
 
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 interface OperationAccountRepository
 {

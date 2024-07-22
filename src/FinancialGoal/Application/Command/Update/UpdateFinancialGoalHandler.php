@@ -5,7 +5,7 @@ namespace App\FinancialGoal\Application\Command\Update;
 use App\FinancialGoal\Domain\Enum\ComparisonEnum;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
 use App\Operation\Domain\OperationTypeEnum;
-use App\Shared\VO\DateVO;
+use App\Shared\Domain\VO\DateVO;
 use Exception;
 
 class UpdateFinancialGoalHandler

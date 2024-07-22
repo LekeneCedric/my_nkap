@@ -3,9 +3,9 @@
 namespace App\Account\Tests\Features;
 
 use App\Account\Domain\Account;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 

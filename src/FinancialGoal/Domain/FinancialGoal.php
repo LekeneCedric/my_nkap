@@ -4,10 +4,10 @@ namespace App\FinancialGoal\Domain;
 
 use App\FinancialGoal\Domain\Dto\FinancialGoalDto;
 use App\FinancialGoal\Domain\Enum\FinancialGoalEventStateEnum;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\DateVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\DateVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use Exception;
 
 class FinancialGoal

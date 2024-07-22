@@ -3,8 +3,8 @@
 namespace App\Account\Tests\e2e;
 
 use App\Account\Infrastructure\Model\Account;
-use App\Shared\VO\DateVO;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\DateVO;
+use App\Shared\Domain\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 use Exception;

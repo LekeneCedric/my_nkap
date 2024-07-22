@@ -10,17 +10,16 @@ use App\FinancialGoal\Application\Command\Make\MakeFinancialGoalResponse;
 use App\FinancialGoal\Domain\Exceptions\ErrorOnSaveFinancialGoalException;
 use App\FinancialGoal\Domain\FinancialGoal;
 use App\FinancialGoal\Domain\FinancialGoalRepository;
-use App\FinancialGoal\Domain\FinancialGoalUser;
 use App\FinancialGoal\Domain\Service\CheckIfAccountExitByIdService;
 use App\FinancialGoal\Domain\Service\CheckIfUserExistByIdService;
 use App\FinancialGoal\Tests\Units\Builder\MakeFinancialGoalCommandBuilder;
 use App\FinancialGoal\Tests\Units\Repository\InMemoryFinancialGoalRepository;
 use App\FinancialGoal\Tests\Units\Service\InMemoryCheckIfAccountExitByIdService;
 use App\FinancialGoal\Tests\Units\Service\InMemoryCheckIfUserExistByIdService;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\DateVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\DateVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use Tests\TestCase;
 
 class MakeFinancialGoalTest extends TestCase

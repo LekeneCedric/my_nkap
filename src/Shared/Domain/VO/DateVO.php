@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\VO;
+namespace App\Shared\Domain\VO;
 
 use App\FinancialGoal\Domain\Enum\ComparisonEnum;
 use DateTime;

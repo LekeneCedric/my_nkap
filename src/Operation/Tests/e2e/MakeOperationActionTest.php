@@ -7,7 +7,7 @@ use App\category\Infrastructure\Models\Category;
 use App\FinancialGoal\Infrastructure\Model\FinancialGoal;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

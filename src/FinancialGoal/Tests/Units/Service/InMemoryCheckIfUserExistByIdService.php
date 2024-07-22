@@ -2,9 +2,8 @@
 
 namespace App\FinancialGoal\Tests\Units\Service;
 
-use App\FinancialGoal\Domain\FinancialGoalUser;
 use App\FinancialGoal\Domain\Service\CheckIfUserExistByIdService;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 class InMemoryCheckIfUserExistByIdService implements CheckIfUserExistByIdService
 {

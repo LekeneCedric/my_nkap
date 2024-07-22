@@ -2,8 +2,8 @@
 
 namespace App\User\Application\Command\Register;
 
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use App\User\Domain\Exceptions\AlreadyUserExistWithSameEmailException;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Repository\UserRepository;

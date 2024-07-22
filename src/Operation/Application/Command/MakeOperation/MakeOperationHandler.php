@@ -6,10 +6,10 @@ use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\DateVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\DateVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 
 class MakeOperationHandler
 {

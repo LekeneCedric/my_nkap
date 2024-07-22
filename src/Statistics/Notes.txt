@@ -1,0 +1,39 @@
+
+- RECUPERER POUR LES 3 DERNIERS MOIS :
+
+    I - DEPENSES & REVENUS PAR MOIS
+
+    - DEPENSES TOTALES MENSUELS UTILISATEUR
+    - REVENUS TOTAL MENSUELS UTILISATEUR
+    + DIFFERENCE EN + ou EN - PAR RAPPORT AU MOIS PRECEDENT
+
+    II - DEPENSES & REVENUS PAR CATEGORIES
+
+    - DEPENSES & GAINS TOTALES DU MOIS PAR CATEGORIES :
+
+        TOTAL : 300.000 XAF
+
+        ---------------------------------------
+        |Categories | pourcentage |    prix   |
+        ---------------------------------------
+        |  Alim...  |     40      |   150.000 |
+        ---------------------------------------
+
+-----------------------------------------------------------------------------------------------------
+
+    I -
+
+    MONTHLY_STATISTICS
+
+    ---------------------------------------------------------------------
+    | id | composed_id | year | month | total_expenses | total_incomes |              |
+    ---------------------------------------------------------------------
+
+
+    II -
+
+    MONTHLY_CATEGORY_STATISTICS
+
+    -----------------------------------------------------------------------------------------------------------------------------------
+    | id | composed_id | year | month | category_id | category_icon | category_label | caregory_color | total_incomes | total_expenses | percentage |
+    -----------------------------------------------------------------------------------------------------------------------------------

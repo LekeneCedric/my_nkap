@@ -2,8 +2,7 @@
 
 namespace App\category\Domain;
 
-use App\category\Domain\Exceptions\ErrorOnSaveCategoryException;
-use App\Shared\VO\Id;
+use App\Shared\Domain\VO\Id;
 
 interface UserCategoryRepository
 {

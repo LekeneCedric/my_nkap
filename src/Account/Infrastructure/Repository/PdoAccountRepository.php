@@ -6,13 +6,12 @@ use App\Account\Domain\Account;
 use App\Account\Domain\Enums\AccountEventStateEnum;
 use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Repository\AccountRepository;
-use App\Shared\VO\AmountVO;
-use App\Shared\VO\Id;
-use App\Shared\VO\StringVO;
+use App\Shared\Domain\VO\AmountVO;
+use App\Shared\Domain\VO\Id;
+use App\Shared\Domain\VO\StringVO;
 use App\User\Infrastructure\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Psy\Util\Str;
 
 class PdoAccountRepository implements AccountRepository
 {
