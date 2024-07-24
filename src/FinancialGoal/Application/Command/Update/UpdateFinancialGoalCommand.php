@@ -7,12 +7,12 @@ use App\Operation\Domain\OperationTypeEnum;
 class UpdateFinancialGoalCommand
 {
     public function __construct(
-        public string $accountId,
-        public float  $previousAmount,
-        public float  $amount,
-        public string $operationDate,
+        public string             $accountId,
+        public float              $previousAmount,
+        public float              $newAmount,
+        public string             $operationDate,
         public ?OperationTypeEnum $type = null,
-        public bool $isDelete = false,
+        public bool               $isDelete = false,
     )
     {
     }

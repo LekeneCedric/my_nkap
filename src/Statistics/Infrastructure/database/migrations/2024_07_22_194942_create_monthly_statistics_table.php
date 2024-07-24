@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('monthly_statistics', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->primary();
             $table->string('composed_id')->index();
             $table->string('user_id')->index();
             $table->unsignedSmallInteger('year');

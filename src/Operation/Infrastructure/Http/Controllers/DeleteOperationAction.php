@@ -32,7 +32,7 @@ class DeleteOperationAction
             $updateFinancialGoalCommand = new UpdateFinancialGoalCommand(
                 accountId: $command->accountId,
                 previousAmount: $response->operationAmount,
-                amount: $response->operationAmount,
+                newAmount: $response->operationAmount,
                 operationDate: $response->date,
                 type: $response->operationType,
                 isDelete: true,

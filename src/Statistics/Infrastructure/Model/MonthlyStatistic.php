@@ -2,16 +2,29 @@
 
 namespace App\Statistics\Infrastructure\Model;
 
+use App\Statistics\Domain\MonthlyStatistic AS MonthlyStatisticDomain;
 use App\Statistics\Infrastructure\database\factories\MonthlyStatisticFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static whereComposedId(string $composedId)
+ * @method static create(array $toCreateArray)
+ * @property mixed $id
+ * @property mixed $composed_id
+ * @property mixed $user_id
+ * @property mixed $year
+ * @property mixed $month
+ * @property mixed $total_income
+ * @property mixed $total_expense
+ */
 class MonthlyStatistic extends Model
 {
     use HasFactory;
     protected $guarded = [];
     protected $fillable = [
         'id',
+        'composed_id',
         'user_id',
         'month',
         'year',
@@ -21,8 +34,6 @@ class MonthlyStatistic extends Model
         'updated_at'
     ];
     protected $hidden = [
-        'id',
-        'user_id',
         'created_at',
         'updated_at'
     ];
@@ -33,5 +44,18 @@ class MonthlyStatistic extends Model
     protected static function newFactory(): MonthlyStatisticFactory
     {
         return MonthlyStatisticFactory::new();
+    }
+
+    public function toDomain(): MonthlyStatisticDomain
+    {
+        return MonthlyStatisticDomain::createFromModel(
+            id: $this->id,
+            composedId: $this->composed_id,
+            userId: $this->user_id,
+            year: $this->year,
+            month: $this->month,
+            totalIncome: $this->total_income,
+            totalExpense: $this->total_expense,
+        );
     }
 }

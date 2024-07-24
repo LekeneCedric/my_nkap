@@ -43,7 +43,7 @@ class UpdateFinancialGoalHandler
                     $isUpdate = $command->previousAmount > 0;
                     if (!$isUpdate) {
                         if ($command->type === OperationTypeEnum::INCOME) {
-                            $financialGoal->addAmount($command->amount);
+                            $financialGoal->addAmount($command->newAmount);
                         }
                         if ($command->type === OperationTypeEnum::EXPENSE) {
                             $financialGoal->retrieveAmount($command->previousAmount);
@@ -52,11 +52,11 @@ class UpdateFinancialGoalHandler
                     }
                     if ($command->type === OperationTypeEnum::INCOME) {
                         $financialGoal->retrieveAmount($command->previousAmount);
-                        $financialGoal->addAmount($command->amount);
+                        $financialGoal->addAmount($command->newAmount);
                     }
                     if ($command->type === OperationTypeEnum::EXPENSE) {
                         $financialGoal->addAmount($command->previousAmount);
-                        $financialGoal->retrieveAmount($command->amount);
+                        $financialGoal->retrieveAmount($command->newAmount);
                     }
                 }
             }

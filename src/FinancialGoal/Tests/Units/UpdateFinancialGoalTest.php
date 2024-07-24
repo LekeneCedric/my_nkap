@@ -35,7 +35,7 @@ class UpdateFinancialGoalTest extends TestCase
         $command = new UpdateFinancialGoalCommand(
             accountId: $initSUT['accountId'],
             previousAmount: 0,
-            amount: 4000,
+            newAmount: 4000,
             operationDate: '2024-07-20 00:00:00',
             type: OperationTypeEnum::INCOME
         );
@@ -54,7 +54,7 @@ class UpdateFinancialGoalTest extends TestCase
         $command = new UpdateFinancialGoalCommand(
             accountId: $initSUT['accountId'],
             previousAmount: 1000,
-            amount: 2000,
+            newAmount: 2000,
             operationDate: '2024-07-20 00:00:00',
             type: OperationTypeEnum::EXPENSE
         );
@@ -74,7 +74,7 @@ class UpdateFinancialGoalTest extends TestCase
         $command = new UpdateFinancialGoalCommand(
             accountId: $initSUT['accountId'],
             previousAmount: 1000,
-            amount: 1000,
+            newAmount: 1000,
             operationDate: '2024-07-20 00:00:00',
             type: OperationTypeEnum::INCOME,
             isDelete: true,

@@ -12,7 +12,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('monthly_category_statistics', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->primary();
             $table->string('composed_id')->index();
             $table->string('user_id')->index();
             $table->unsignedSmallInteger('year')->index();
@@ -21,7 +21,6 @@ return new class extends Migration {
             $table->string('category_icon');
             $table->string('category_label');
             $table->string('category_color');
-            $table->unsignedTinyInteger('percentage')->default(0);
             $table->float('total_income')->default(0);
             $table->float('total_expense')->default(0);
             $table->timestamps();

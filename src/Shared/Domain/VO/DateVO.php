@@ -55,4 +55,16 @@ class DateVO
         }
         return ComparisonEnum::EQUAL->value;
     }
+
+    public function year(): int
+    {
+        $timestamp = strtotime($this->value);
+        return date('Y', $timestamp);
+    }
+
+    public function month(): int
+    {
+        $timestamp = strtotime($this->value);
+        return date('m', $timestamp);
+    }
 }

@@ -11,15 +11,18 @@ use App\Operation\Infrastructure\Factories\MakeOperationCommandFactory;
 use App\Operation\Infrastructure\Http\Requests\MakeOperationRequest;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
+use App\Statistics\Application\Command\UpdateMonthlyStatistics\UpdateMonthlyStatisticsCommand;
+use App\Statistics\Application\Command\UpdateMonthlyStatistics\UpdateMonthlyStatisticsHandler;
 use Illuminate\Http\JsonResponse;
 
 class MakeOperationAction
 {
     public function __invoke(
-        MakeOperationHandler $handler,
-        UpdateFinancialGoalHandler $updateFinancialGoalHandler,
-        MakeOperationRequest $request,
-        OperationsLogger $logger,
+        MakeOperationHandler           $handler,
+        UpdateFinancialGoalHandler     $updateFinancialGoalHandler,
+        UpdateMonthlyStatisticsHandler $updateStatisticsHandler,
+        MakeOperationRequest           $request,
+        OperationsLogger               $logger,
     ): JsonResponse
     {
         $httpJson = ['status' => false, 'operationIsSaved' => false];
@@ -31,11 +34,20 @@ class MakeOperationAction
             $updateFinancialGoalCommand = new UpdateFinancialGoalCommand(
                 accountId: $command->accountId,
                 previousAmount: $response->previousOperationAmount,
-                amount: $command->amount,
+                newAmount: $command->amount,
                 operationDate: $command->date,
                 type: $command->type
             );
             $updateFinancialGoalHandler->handle($updateFinancialGoalCommand);
+
+            $updateStatisticsCommand = new UpdateMonthlyStatisticsCommand(
+                previousAmount: $response->previousOperationAmount,
+                newAmount: $command->amount,
+                operationType: $command->type,
+                operationDate: $command->date,
+                categoryId: $command->categoryId,
+            );
+            $updateStatisticsHandler->handle($updateStatisticsCommand);
 
             $httpJson = [
                 'status' => true,
