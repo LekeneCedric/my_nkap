@@ -37,4 +37,9 @@ class InMemoryMonthlyMonthlyStatisticRepository implements MonthlyStatisticRepos
     {
         $this->monthlyStatistics[] = $monthlyStatistics;
     }
+
+    public function ofFilterParams(string $userId, int $year, int $month): array
+    {
+        return [];
+    }
 }

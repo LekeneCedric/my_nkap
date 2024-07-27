@@ -6,9 +6,11 @@ use App\category\Infrastructure\Models\Category;
 use App\Statistics\Domain\MonthlyCategoryStatistic;
 use App\Statistics\Domain\repositories\MonthlyCategoryStatisticRepository;
 use App\Statistics\Infrastructure\Model\MonthlyCategoryStatistic AS MonthlyCategoryStatisticModel;
+use App\Statistics\Infrastructure\Trait\StatisticsSelectPreviousMonthTrait;
+
 class EloquentMonthlyCategoryStatisticRepository implements MonthlyCategoryStatisticRepository
 {
-
+    use StatisticsSelectPreviousMonthTrait;
     public function ofComposedId(string $composedId): ?MonthlyCategoryStatistic
     {
         return MonthlyCategoryStatisticModel::whereComposedId($composedId)->first()?->toDomain();
@@ -18,6 +20,7 @@ class EloquentMonthlyCategoryStatisticRepository implements MonthlyCategoryStati
     {
         $categoryAdditionalInformations = Category::select(['icon', 'color', 'name'])->whereUuid($monthlyCategoryStatistic->toDto()->categoryId)
             ->first();
+
         $data = array_merge(
             $monthlyCategoryStatistic->toDto()->toCreateArray(),
             [
@@ -34,5 +37,14 @@ class EloquentMonthlyCategoryStatisticRepository implements MonthlyCategoryStati
     {
         MonthlyCategoryStatisticModel::whereComposedId($monthlyCategoryStatistic->toDto()->composedId)
             ->update($monthlyCategoryStatistic->toDto()->toUpdateArray());
+    }
+
+    public function ofFilterParams(string $userId, int $year, int $month): array
+    {
+        $selectedMonths = $this->selectPreviousMonth($month, [], 3);
+        return MonthlyCategoryStatisticModel::whereUserId($userId)
+            ->where('year', $year)
+            ->whereIn('month', $selectedMonths)
+            ->get()->toArray();
     }
 }

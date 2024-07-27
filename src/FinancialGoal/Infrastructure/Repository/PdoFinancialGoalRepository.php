@@ -199,7 +199,7 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
 
     public function ofsAccountId(string $accountId): array
     {
-        $account_id = Account::whereUuid($accountId)->first()->id;
+        $account_id = Account::whereUuid($accountId)->first()?->id;
         return FinancialGoalModel::whereAccountId($account_id)
             ->get()
             ->map(function(FinancialGoalModel $item) {

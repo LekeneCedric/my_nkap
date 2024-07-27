@@ -24,4 +24,12 @@ interface MonthlyStatisticRepository
      */
     public function update(MonthlyStatistic $monthlyStatistics): void;
 
+    /**
+     * @param string $userId
+     * @param int $year
+     * @param int $month
+     * @return array
+     */
+    public function ofFilterParams(string $userId, int $year, int $month): array;
+
 }

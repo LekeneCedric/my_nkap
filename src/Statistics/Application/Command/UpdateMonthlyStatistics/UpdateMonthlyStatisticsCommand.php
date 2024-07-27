@@ -8,10 +8,15 @@ use App\User\Infrastructure\Models\User;
 class UpdateMonthlyStatisticsCommand
 {
     /**
-     * @var true
+     * @param string $composedId
+     * @param string $userId
+     * @param int $year
+     * @param int $month
+     * @param float $previousAmount
+     * @param float $newAmount
+     * @param OperationTypeEnum $operationType
+     * @param bool $toDelete
      */
-    public bool $toDelete;
-
     public function __construct(
         public string $composedId,
         public string $userId,
@@ -20,8 +25,8 @@ class UpdateMonthlyStatisticsCommand
         public float $previousAmount,
         public float $newAmount,
         public OperationTypeEnum $operationType,
+        public bool $toDelete = false
     )
     {
-        $this->toDelete = false;
     }
 }

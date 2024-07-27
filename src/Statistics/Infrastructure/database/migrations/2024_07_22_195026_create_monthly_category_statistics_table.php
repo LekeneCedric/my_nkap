@@ -21,8 +21,8 @@ return new class extends Migration {
             $table->string('category_icon');
             $table->string('category_label');
             $table->string('category_color');
-            $table->float('total_income')->default(0);
-            $table->float('total_expense')->default(0);
+            $table->decimal('total_income', 15)->default(0);
+            $table->decimal('total_expense', 15)->default(0);
             $table->timestamps();
         });
     }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @method static whereComposedId(string $composedId)
  * @method static create(array $toCreateArray)
+ * @method static whereUserId(string $userId)
  * @property mixed $id
  * @property mixed $composed_id
  * @property mixed $user_id

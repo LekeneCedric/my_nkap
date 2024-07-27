@@ -1,3 +1,4 @@
 <?php
 
-#TODO: update statistics after : (- save operation , - delete operation)
+#TODO: update statistics after : (- delete operation)
+#TODO: put all in transaction

@@ -10,17 +10,24 @@ use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
 use App\Operation\Infrastructure\Factories\MakeOperationCommandFactory;
 use App\Operation\Infrastructure\Http\Requests\MakeOperationRequest;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
+use App\Shared\Domain\VO\DateVO;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
+use App\Statistics\Application\Command\UpdateMonthlyCategoryStatistics\UpdateMonthlyCategoryStatisticsCommand;
+use App\Statistics\Application\Command\UpdateMonthlyCategoryStatistics\UpdateMonthlyCategoryStatisticsHandler;
 use App\Statistics\Application\Command\UpdateMonthlyStatistics\UpdateMonthlyStatisticsCommand;
 use App\Statistics\Application\Command\UpdateMonthlyStatistics\UpdateMonthlyStatisticsHandler;
+use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 class MakeOperationAction
 {
+    use StatisticsComposedIdBuilderTrait;
     public function __invoke(
         MakeOperationHandler           $handler,
         UpdateFinancialGoalHandler     $updateFinancialGoalHandler,
-        UpdateMonthlyStatisticsHandler $updateStatisticsHandler,
+        UpdateMonthlyStatisticsHandler $updateMonthlyStatisticsHandler,
+        UpdateMonthlyCategoryStatisticsHandler $updateMonthlyCategoryStatisticsHandler,
         MakeOperationRequest           $request,
         OperationsLogger               $logger,
     ): JsonResponse
@@ -40,14 +47,35 @@ class MakeOperationAction
             );
             $updateFinancialGoalHandler->handle($updateFinancialGoalCommand);
 
-            $updateStatisticsCommand = new UpdateMonthlyStatisticsCommand(
+            $userId = auth()->user()->uuid;
+            list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];
+            $updateMonthlyStatisticsCommand = new UpdateMonthlyStatisticsCommand(
+                composedId: $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $userId),
+                userId: $userId,
+                year: $year,
+                month: $month,
                 previousAmount: $response->previousOperationAmount,
                 newAmount: $command->amount,
                 operationType: $command->type,
-                operationDate: $command->date,
+            );
+            $updateMonthlyStatisticsHandler->handle($updateMonthlyStatisticsCommand);
+
+            $updateMonthlyCategoryStatisticCommand = new UpdateMonthlyCategoryStatisticsCommand(
+                composedId: $this->buildMonthlyCategoryStatisticsComposedId(
+                    month: $month,
+                    year: $year,
+                    userId: $userId,
+                    categoryId: $command->categoryId,
+                ),
+                userId: $userId,
+                year: $year,
+                month: $month,
+                previousAmount: $response->previousOperationAmount,
+                newAmount: $command->amount,
+                operationType: $command->type,
                 categoryId: $command->categoryId,
             );
-            $updateStatisticsHandler->handle($updateStatisticsCommand);
+            $updateMonthlyCategoryStatisticsHandler->handle($updateMonthlyCategoryStatisticCommand);
 
             $httpJson = [
                 'status' => true,
@@ -64,7 +92,7 @@ class MakeOperationAction
                 description: $e,
             );
             $httpJson['message'] = $e->getMessage();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $logger->Log(
                 message: $e->getMessage(),
                 level: LogLevelEnum::ERROR,

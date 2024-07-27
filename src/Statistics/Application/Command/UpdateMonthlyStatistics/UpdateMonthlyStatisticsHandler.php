@@ -15,8 +15,17 @@ class UpdateMonthlyStatisticsHandler
 
     public function handle(UpdateMonthlyStatisticsCommand $command): void
     {
-        $isUpdate = false;
-        $monthlyStatistics = $this->getMonthlyStatisticsOrCreate($command);
+        $isUpdate = true;
+        $monthlyStatistics = $this->getMonthlyStatistics($command);
+        if (!$monthlyStatistics) {
+            $isUpdate = false;
+            $monthlyStatistics = MonthlyStatistic::create(
+                composedId: $command->composedId,
+                userId: $command->userId,
+                year: $command->year,
+                month: $command->month,
+            );
+        }
         if ($command->toDelete) {
             $monthlyStatistics->updateAfterDeleteOperation(
                 previousAmount: $command->previousAmount,
@@ -37,17 +46,8 @@ class UpdateMonthlyStatisticsHandler
         $this->repository->update($monthlyStatistics);
     }
 
-    private function getMonthlyStatisticsOrCreate(UpdateMonthlyStatisticsCommand $command): MonthlyStatistic
+    private function getMonthlyStatistics(UpdateMonthlyStatisticsCommand $command): ?MonthlyStatistic
     {
-        $monthlyStatistics = $this->repository->ofComposedId($command->composedId);
-        if (!$monthlyStatistics) {
-            $monthlyStatistics = MonthlyStatistic::create(
-                composedId: $command->composedId,
-                userId: $command->userId,
-                year: $command->year,
-                month: $command->month,
-            );
-        }
-        return $monthlyStatistics;
+        return $this->repository->ofComposedId($command->composedId);
     }
 }

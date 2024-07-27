@@ -2,8 +2,11 @@
 
 namespace App\Statistics\Infrastructure\Providers;
 
+use App\Statistics\Domain\repositories\MonthlyCategoryStatisticRepository;
 use App\Statistics\Domain\repositories\MonthlyStatisticRepository;
+use App\Statistics\Infrastructure\Repositories\EloquentMonthlyCategoryStatisticRepository;
 use App\Statistics\Infrastructure\Repositories\EloquentMonthlyStatisticRepository;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class StatisticsServiceProvider extends ServiceProvider
@@ -12,6 +15,7 @@ class StatisticsServiceProvider extends ServiceProvider
     {
         $this->loadMigrations();
         $this->bindModuleRepositories();
+        $this->registerRoutes();
     }
 
     private function loadMigrations(): void
@@ -26,5 +30,24 @@ class StatisticsServiceProvider extends ServiceProvider
     private function bindModuleRepositories(): void
     {
         $this->app->singleton(MonthlyStatisticRepository::class, EloquentMonthlyStatisticRepository::class);
+        $this->app->singleton(MonthlyCategoryStatisticRepository::class, EloquentMonthlyCategoryStatisticRepository::class);
+    }
+
+    private function registerRoutes()
+    {
+        Route::group($this->routeConfig(), function(){
+            $this->loadRoutesFrom(
+                base_path('src/Statistics/Infrastructure/routes/web.php')
+            );
+        });
+    }
+
+    private function routeConfig(): array
+    {
+        $defaultPrefix = '/statistics';
+        return [
+            'prefix' => 'api'.$defaultPrefix,
+            'middleware' => ['auth:sanctum']
+        ];
     }
 }

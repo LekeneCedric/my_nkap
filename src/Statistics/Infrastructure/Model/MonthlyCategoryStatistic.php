@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @method static whereComposedId(string $composedId)
+ * @method static create(array $array)
  */
 class MonthlyCategoryStatistic extends Model
 {

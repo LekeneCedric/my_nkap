@@ -36,6 +36,7 @@ class DeleteOperationHandler
             operationAmount: $operationAccount->currentOperation()->amount()->value(),
             date: $operationAccount->currentOperation()->date()->formatYMDHIS(),
             operationType: $operationAccount->currentOperation()->type(),
+            categoryId: $operationAccount->currentOperation()->categoryId()->value(),
         );
     }
 

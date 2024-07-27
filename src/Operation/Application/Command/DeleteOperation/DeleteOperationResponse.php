@@ -20,6 +20,7 @@ class DeleteOperationResponse
         public float $operationAmount,
         public string $date,
         public OperationTypeEnum $operationType,
+        public string $categoryId,
     )
     {
     }

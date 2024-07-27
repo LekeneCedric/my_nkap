@@ -10,17 +10,26 @@ use App\Operation\Domain\Exceptions\NotFoundOperationException;
 use App\Operation\Infrastructure\Factories\DeleteOperationCommandFactory;
 use App\Operation\Infrastructure\Http\Requests\DeleteOperationRequest;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
+use App\Shared\Domain\VO\DateVO;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
+use App\Statistics\Application\Command\UpdateMonthlyCategoryStatistics\UpdateMonthlyCategoryStatisticsCommand;
+use App\Statistics\Application\Command\UpdateMonthlyCategoryStatistics\UpdateMonthlyCategoryStatisticsHandler;
+use App\Statistics\Application\Command\UpdateMonthlyStatistics\UpdateMonthlyStatisticsCommand;
+use App\Statistics\Application\Command\UpdateMonthlyStatistics\UpdateMonthlyStatisticsHandler;
+use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
 class DeleteOperationAction
 {
+    use StatisticsComposedIdBuilderTrait;
     public function __invoke(
-        DeleteOperationHandler     $handler,
-        UpdateFinancialGoalHandler $updateFinancialGoalHandler,
-        DeleteOperationRequest     $request,
-        OperationsLogger           $logger,
+        DeleteOperationHandler                 $handler,
+        UpdateFinancialGoalHandler             $updateFinancialGoalHandler,
+        UpdateMonthlyStatisticsHandler         $updateMonthlyStatisticsHandler,
+        UpdateMonthlyCategoryStatisticsHandler $updateMonthlyCategoryStatisticsHandler,
+        DeleteOperationRequest                 $request,
+        OperationsLogger                       $logger,
     ): JsonResponse
     {
         $httpJson = ['status' => false];
@@ -38,6 +47,39 @@ class DeleteOperationAction
                 isDelete: true,
             );
             $updateFinancialGoalHandler->handle($updateFinancialGoalCommand);
+
+            $userId = auth()->user()->uuid;
+            list($year, $month) = [(new DateVO($response->date))->year(), (new DateVO($response->date))->month()];
+            $updateMonthlyStatisticsCommand = new UpdateMonthlyStatisticsCommand(
+                composedId: $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $userId),
+                userId: $userId,
+                year: $year,
+                month: $month,
+                previousAmount: $response->operationAmount,
+                newAmount: 0,
+                operationType: $response->operationType,
+                toDelete: true
+            );
+            $updateMonthlyStatisticsHandler->handle($updateMonthlyStatisticsCommand);
+
+            $updateMonthlyCategoryStatisticCommand = new UpdateMonthlyCategoryStatisticsCommand(
+                composedId: $this->buildMonthlyCategoryStatisticsComposedId(
+                    month: $month,
+                    year: $year,
+                    userId: $userId,
+                    categoryId: $response->categoryId,
+                ),
+                userId: $userId,
+                year: $year,
+                month: $month,
+                previousAmount: $response->operationAmount,
+                newAmount: 0,
+                operationType: $response->operationType,
+                categoryId: $response->categoryId,
+                toDelete: true,
+            );
+            $updateMonthlyCategoryStatisticsHandler->handle($updateMonthlyCategoryStatisticCommand);
+
             $httpJson = [
                 'status' => true,
                 'isDeleted' => $response->isDeleted,

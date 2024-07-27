@@ -12,7 +12,24 @@ interface MonthlyCategoryStatisticRepository
      */
     public function ofComposedId(string $composedId): ?MonthlyCategoryStatistic;
 
+    /**
+     * @param MonthlyCategoryStatistic $monthlyCategoryStatistic
+     * @return void
+     */
     public function create(MonthlyCategoryStatistic $monthlyCategoryStatistic): void;
+
+    /**
+     * @param MonthlyCategoryStatistic $monthlyCategoryStatistic
+     * @return void
+     */
     public function update(MonthlyCategoryStatistic $monthlyCategoryStatistic): void;
+
+    /**
+     * @param string $userId
+     * @param int $year
+     * @param int $month
+     * @return array
+     */
+    public function ofFilterParams(string $userId, int $year, int $month): array;
 
 }

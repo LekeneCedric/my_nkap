@@ -13,7 +13,7 @@ class UpdateMonthlyCategoryStatisticsHandler
     {
     }
 
-    public function handle(UpdateMonthlyCategoryStatisticsCommand $command)
+    public function handle(UpdateMonthlyCategoryStatisticsCommand $command): void
     {
         $isUpdate = true;
         $monthlyCategoryStatistic = $this->getMonthlyCategoryStatistic($command);

@@ -230,13 +230,14 @@ class PdoOperationAccountRepository implements OperationAccountRepository
     {
         $sql = "
             SELECT
-                uuid AS Id,
-                amount,
-                type,
-                category_id,
-                details,
-                date
-            FROM operations
+                o.uuid AS Id,
+                o.amount,
+                o.type,
+                c.uuid AS categoryId,
+                o.details,
+                o.date
+            FROM operations o
+            INNER JOIN categories c ON o.category_id = c.id
             WHERE account_id=:account_id
         ";
 
@@ -254,7 +255,7 @@ class PdoOperationAccountRepository implements OperationAccountRepository
             $operations[$result['Id']] = Operation::create(
                 amount: new AmountVO($result['amount']),
                 type: OperationTypeEnum::from($result['type']),
-                categoryId: new Id($result['category_id']),
+                categoryId: new Id($result['categoryId']),
                 detail: new StringVO($result['details']),
                 date: new DateVO($result['date']),
                 id: new Id($result['Id'])
