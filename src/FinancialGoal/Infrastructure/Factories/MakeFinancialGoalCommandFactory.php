@@ -14,8 +14,8 @@ class MakeFinancialGoalCommandFactory
         $command = new MakeFinancialGoalCommand(
             userId: $request->get('userId'),
             accountId: $request->get('accountId'),
-            startDate: $request->get('startDate'),
-            endDate: $request->get('endDate'),
+            startDate: $request->get('startDate'). ' 00:00:00',
+            endDate: $request->get('endDate'). ' 00:00:00',
             desiredAmount: $request->get('desiredAmount'),
             details: $request->get('details')
         );

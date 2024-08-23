@@ -25,10 +25,10 @@ class LoginAction
               'isLogged' => $response->isLogged,
               'user' => $response->user,
               'token' => $response->token,
-              'message' => 'Bienvenue , '.$response->user['name'],
+              'message' => $response->user['name'],
             ];
         } catch (NotFoundUserException $e) {
-            $httpResponse['message'] = $e->getMessage();
+            $httpResponse['message'] = 'not_found_user';
         }
         return response()->json($httpResponse);
     }

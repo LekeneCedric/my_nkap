@@ -41,7 +41,7 @@ class GetAllMonthlyStatisticViewModel
             }
             $result['months'][] = [
                 'month' => $data['month'],
-                'totalExpenses' => $data['total_expense']
+                'totalExpense' => $data['total_expense']
             ];
 
         }
@@ -66,7 +66,7 @@ class GetAllMonthlyStatisticViewModel
             }
             $result['months'][] = [
                 'month' => $data['month'],
-                'totalIncomes' => $data['total_income']
+                'totalIncome' => $data['total_income']
             ];
 
         }

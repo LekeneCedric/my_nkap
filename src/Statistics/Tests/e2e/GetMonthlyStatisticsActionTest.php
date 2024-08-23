@@ -42,7 +42,6 @@ class GetMonthlyStatisticsActionTest extends TestCase
         $response = $this->getJson($url, [
             'Authorization' => 'Bearer '.$this->token,
         ]);
-        ;
         $response->assertOk();
         $this->assertTrue($response['status']);
         $this->assertNotNull($response['data']);

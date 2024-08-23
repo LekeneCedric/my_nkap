@@ -41,10 +41,9 @@ class EloquentMonthlyCategoryStatisticRepository implements MonthlyCategoryStati
 
     public function ofFilterParams(string $userId, int $year, int $month): array
     {
-        $selectedMonths = $this->selectPreviousMonth($month, [], 3);
         return MonthlyCategoryStatisticModel::whereUserId($userId)
             ->where('year', $year)
-            ->whereIn('month', $selectedMonths)
+            ->where('month', $month)
             ->get()->toArray();
     }
 }
