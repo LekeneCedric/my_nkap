@@ -214,13 +214,9 @@ class PdoFinancialGoalRepository implements FinancialGoalRepository
      */
     public function updateMany(array $financialGoals): void
     {
-        DB::transaction(
-            function() use ($financialGoals){
-                foreach ($financialGoals as $financialGoal) {
-                    FinancialGoalModel::whereUuid($financialGoal->id()->value())
-                        ->update($financialGoal->toDto()->toUpdateArray());
-                }
-            }
-        );
+        foreach ($financialGoals as $financialGoal) {
+            FinancialGoalModel::whereUuid($financialGoal->id()->value())
+                ->update($financialGoal->toDto()->toUpdateArray());
+        }
     }
 }

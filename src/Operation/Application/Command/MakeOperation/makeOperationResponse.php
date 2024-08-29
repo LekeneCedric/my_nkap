@@ -7,5 +7,6 @@ class makeOperationResponse
     public float $previousOperationAmount = 0.0;
     public bool $operationSaved = false;
     public string $operationId = '';
+    public string $message = '';
 
 }

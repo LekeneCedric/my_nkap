@@ -7,7 +7,10 @@ use App\category\Infrastructure\Provider\CategoryServiceProvider;
 use App\FinancialGoal\Infrastructure\Provider\FinancialGoalServiceProvider;
 use App\Operation\Infrastructure\provider\OperationServiceProvider;
 use App\Profession\Infrastructure\Provider\ProfessionServiceProvider;
+use App\Shared\Domain\Event\DomainEventPublisher;
+use App\Shared\Domain\Transaction\TransactionSession;
 use App\Shared\Infrastructure\Logs\Provider\LogServiceProvider;
+use App\Shared\Infrastructure\Transaction\EloquentTransactionSession;
 use App\Statistics\Infrastructure\Providers\StatisticsServiceProvider;
 use App\User\Infrastructure\Provider\UserProvider;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->loadModuleServiceProviders();
         $this->loadDefaultMigrations();
+        $this->bindModuleRepositories();
+        $this->loadDomainEventSubscribers();
     }
 
     /**
@@ -44,5 +49,20 @@ class AppServiceProvider extends ServiceProvider
     private function loadDefaultMigrations(): void
     {
         $this->loadMigrationsFrom('/src/Bootstrap/Infrastructure/database/migrations');
+    }
+
+    /**
+     * @return void
+     */
+    private function bindModuleRepositories(): void
+    {
+        $this->app->singleton(TransactionSession::class, EloquentTransactionSession::class);
+    }
+
+    private function loadDomainEventSubscribers(): void
+    {
+        $this->app->singleton(DomainEventPublisher::class, function() {
+            return DomainEventPublisher::instance();
+        });
     }
 }

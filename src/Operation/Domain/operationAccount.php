@@ -2,15 +2,19 @@
 
 namespace App\Operation\Domain;
 
+use App\Operation\Application\Command\MakeOperation\MakeOperationCommand;
+use App\Operation\Domain\Events\OperationSaved;
 use App\Operation\Domain\Exceptions\NotFoundOperationException;
 use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
+use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Command\Command;
 use App\Shared\Domain\VO\AmountVO;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
 use Exception;
 
-class operationAccount
+class operationAccount extends AggregateRoot
 {
     /**
      * @var Operation[]
@@ -27,6 +31,7 @@ class operationAccount
         private AmountVO    $totalExpenses
     )
     {
+        parent::__construct();
     }
 
     /**
@@ -313,5 +318,24 @@ class operationAccount
     public function operation(string $operationId): Operation
     {
         return $this->operations[$operationId];
+    }
+
+    public function publishOperationSaved(MakeOperationCommand|Command $command): void
+    {
+        $this->domainEventPublisher->publish(
+            new OperationSaved(
+                accountId: $command->accountId,
+                previousAmount: $command->previousAmount,
+                newAmount: $command->amount,
+                operationDate: $command->date,
+                type: $command->type,
+                userId: $command->userId,
+                year: $command->year,
+                month: $command->month,
+                categoryId: $command->categoryId,
+                monthlyStatsComposedId: $command->monthlyStatsComposedId,
+                monthlyStatsByCategoryComposedId: $command->monthlyStatsByCategoryComposedId,
+            )
+        );
     }
 }

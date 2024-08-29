@@ -2,8 +2,10 @@
 
 namespace App\Statistics\Infrastructure\Providers;
 
+use App\Shared\Domain\Event\DomainEventPublisher;
 use App\Statistics\Domain\repositories\MonthlyCategoryStatisticRepository;
 use App\Statistics\Domain\repositories\MonthlyStatisticRepository;
+use App\Statistics\Domain\Subscribers\StatisticsEventSubscriber;
 use App\Statistics\Infrastructure\Repositories\EloquentMonthlyCategoryStatisticRepository;
 use App\Statistics\Infrastructure\Repositories\EloquentMonthlyStatisticRepository;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +18,18 @@ class StatisticsServiceProvider extends ServiceProvider
         $this->loadMigrations();
         $this->bindModuleRepositories();
         $this->registerRoutes();
+    }
+
+    public function boot(): void
+    {
+        $domainEventPublisher = app(DomainEventPublisher::class);
+
+        $domainEventPublisher->subscriber(
+            new StatisticsEventSubscriber(
+                monthlyStatisticRepository: app(MonthlyStatisticRepository::class),
+                monthlyCategoryStatisticRepository: app(MonthlyCategoryStatisticRepository::class),
+            ),
+        );
     }
 
     private function loadMigrations(): void
