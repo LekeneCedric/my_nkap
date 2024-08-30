@@ -23,7 +23,9 @@ class TransactionCommandHandler implements CommandHandler
         try {
             return $this->session->executeAtomically($operation);
         } catch (TransactionExecutionErrorException $e) {
-            return new TransactionalResponse();
+            $response = new TransactionalResponse();
+            $response->message = $e;
+            return $response;
         }
     }
 }

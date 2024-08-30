@@ -9,15 +9,12 @@ use App\Operation\Infrastructure\Http\Requests\MakeOperationRequest;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
 use App\Shared\Domain\Transaction\TransactionCommandHandler;
 use App\Shared\Domain\Transaction\TransactionSession;
-use App\Shared\Domain\VO\DateVO;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
-use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use Illuminate\Http\JsonResponse;
 use InvalidArgumentException;
 
 class MakeOperationAction
 {
-    use StatisticsComposedIdBuilderTrait;
 
     public function __invoke(
         MakeOperationHandler $handler,
@@ -30,14 +27,8 @@ class MakeOperationAction
 
         try {
             $command = MakeOperationCommandFactory::buildFromRequest($request);
-            list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];
-            $userId = auth()->user()->uuid;
-            $command->userId = $userId;
-            $command->year = $year;
-            $command->month = $month;
-            $command->previousAmount = $request->get('previousAmount');
-            $command->monthlyStatsComposedId = $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $userId);
-            $command->monthlyStatsByCategoryComposedId = $this->buildMonthlyCategoryStatisticsComposedId(month: $month, year: $year, userId: $userId, categoryId: $command->categoryId);
+            $command->previousAmount = $request->get('previousAmount') ?? 0;
+
             $transactionCommandHandler = new TransactionCommandHandler($handler, $transactionSession);
             $response = $transactionCommandHandler->handle($command);
 

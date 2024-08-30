@@ -15,6 +15,7 @@ use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use PDOException;
 
 class PdoOperationAccountRepository implements OperationAccountRepository
 {
@@ -70,11 +71,9 @@ class PdoOperationAccountRepository implements OperationAccountRepository
     public function saveOperation(operationAccount $operationAccount): void
     {
         try {
-            $this->pdo->beginTransaction();
             $this->updateOperationAccount($operationAccount);
             $this->saveCurrentOperation($operationAccount);
-            $this->pdo->commit();
-        } catch (\PDOException|Exception $e) {
+        } catch (PDOException|Exception $e) {
             $this->pdo->rollBack();
         }
     }

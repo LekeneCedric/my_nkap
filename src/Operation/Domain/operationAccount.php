@@ -2,7 +2,9 @@
 
 namespace App\Operation\Domain;
 
+use App\Operation\Application\Command\DeleteOperation\DeleteOperationCommand;
 use App\Operation\Application\Command\MakeOperation\MakeOperationCommand;
+use App\Operation\Domain\Events\OperationDeleted;
 use App\Operation\Domain\Events\OperationSaved;
 use App\Operation\Domain\Exceptions\NotFoundOperationException;
 use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
@@ -335,6 +337,26 @@ class operationAccount extends AggregateRoot
                 categoryId: $command->categoryId,
                 monthlyStatsComposedId: $command->monthlyStatsComposedId,
                 monthlyStatsByCategoryComposedId: $command->monthlyStatsByCategoryComposedId,
+            )
+        );
+    }
+
+    public function publishOperationDeleted(DeleteOperationCommand|Command $command): void
+    {
+        $this->domainEventPublisher->publish(
+            new OperationDeleted(
+               accountId: $command->accountId,
+               previousAmount: $command->previousAmount,
+               newAmount: $command->newAmount,
+               date: $command->date,
+               type: $command->type,
+               isDeleted: $command->isDeleted,
+               monthlyStatisticsComposedId: $command->monthlyStatisticsComposedId,
+               monthlyStatisticsByCategoryComposedId: $command->monthlyStatisticsByCategoryComposedId,
+               userId: $command->userId,
+               year: $command->year,
+               month: $command->month,
+               categoryId: $command->categoryId,
             )
         );
     }

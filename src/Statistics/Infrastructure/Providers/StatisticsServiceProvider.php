@@ -24,7 +24,7 @@ class StatisticsServiceProvider extends ServiceProvider
     {
         $domainEventPublisher = app(DomainEventPublisher::class);
 
-        $domainEventPublisher->subscriber(
+        $domainEventPublisher->subscribe(
             new StatisticsEventSubscriber(
                 monthlyStatisticRepository: app(MonthlyStatisticRepository::class),
                 monthlyCategoryStatisticRepository: app(MonthlyCategoryStatisticRepository::class),
@@ -47,7 +47,7 @@ class StatisticsServiceProvider extends ServiceProvider
         $this->app->singleton(MonthlyCategoryStatisticRepository::class, EloquentMonthlyCategoryStatisticRepository::class);
     }
 
-    private function registerRoutes()
+    private function registerRoutes(): void
     {
         Route::group($this->routeConfig(), function(){
             $this->loadRoutesFrom(

@@ -2,6 +2,7 @@
 
 namespace App\Statistics\Domain\Subscribers;
 
+use App\Operation\Domain\Events\OperationDeleted;
 use App\Operation\Domain\Events\OperationSaved;
 use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\Event\DomainEventSubscriber;
@@ -23,15 +24,19 @@ class StatisticsEventSubscriber implements DomainEventSubscriber
 
     public function handle(DomainEvent $event): void
     {
-        if ($event instanceof OperationSaved::class) {
+        if (get_class($event) === OperationSaved::class) {
             $this->updateMonthlyStatistics($event);
             $this->updateMonthlyByCategoryStatistics($event);
+        }
+        if (get_class($event) === OperationDeleted::class) {
+            $this->retrieveFromMonthlyStatistics($event);
+            $this->retrieveFromMonthlyByCategoryStatistics($event);
         }
     }
 
     public function isSubscribeTo(DomainEvent $event): bool
     {
-        return $event instanceof OperationSaved::class;
+        return get_class($event) === OperationSaved::class;
     }
 
     private function updateMonthlyStatistics(OperationSaved $event): void
@@ -53,7 +58,7 @@ class StatisticsEventSubscriber implements DomainEventSubscriber
     private function updateMonthlyByCategoryStatistics(OperationSaved $event): void
     {
         $command = new UpdateMonthlyCategoryStatisticsCommand(
-            composedId: $event->monthlyStatsBycategoryComposedId,
+            composedId: $event->monthlyStatsByCategoryComposedId,
             userId: $event->userId,
             year: $event->year,
             month: $event->month,
@@ -64,6 +69,41 @@ class StatisticsEventSubscriber implements DomainEventSubscriber
         );
         (new UpdateMonthlyCategoryStatisticsHandler(
             repository: $this->monthlyCategoryStatisticRepository,
+        ))->handle($command);
+    }
+
+    private function retrieveFromMonthlyStatistics(OperationDeleted $event): void
+    {
+        $command = new UpdateMonthlyStatisticsCommand(
+            composedId: $event->monthlyStatisticsComposedId,
+            userId: $event->userId,
+            year: $event->year,
+            month: $event->month,
+            previousAmount: $event->previousAmount,
+            newAmount: 0,
+            operationType: $event->type,
+            toDelete: $event->isDeleted,
+        );
+        (new UpdateMonthlyStatisticsHandler(
+            repository: $this->monthlyStatisticRepository
+        ))->handle($command);
+    }
+
+    private function retrieveFromMonthlyByCategoryStatistics(OperationDeleted $event): void
+    {
+        $command = new UpdateMonthlyCategoryStatisticsCommand(
+            composedId: $event->monthlyStatisticsByCategoryComposedId,
+            userId: $event->userId,
+            year: $event->year,
+            month: $event->month,
+            previousAmount: $event->previousAmount,
+            newAmount: 0,
+            operationType: $event->type,
+            categoryId: $event->categoryId,
+            toDelete: $event->isDeleted,
+        );
+        (new UpdateMonthlyCategoryStatisticsHandler(
+            repository: $this->monthlyCategoryStatisticRepository
         ))->handle($command);
     }
 

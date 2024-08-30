@@ -12,10 +12,13 @@ use App\Shared\Domain\VO\AmountVO;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use Exception;
 
 class MakeOperationHandler implements CommandHandler
 {
+    use StatisticsComposedIdBuilderTrait;
+
     public function __construct(
         private OperationAccountRepository $repository,
     )
@@ -54,6 +57,9 @@ class MakeOperationHandler implements CommandHandler
             }
 
             $this->repository->saveOperation($operationAccount);
+            $this->completCommandWithAdditionalInformation(
+              $command
+            );
             $operationAccount->publishOperationSaved($command);
 
             $response->operationSaved = true;
@@ -77,5 +83,16 @@ class MakeOperationHandler implements CommandHandler
             throw new NotFoundAccountException("Le compte sélectionné n'existe pas !");
         }
         return $account;
+    }
+
+    private function completCommandWithAdditionalInformation(MakeOperationCommand|Command &$command): void
+    {
+        list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];
+        $userId = auth()->user()->uuid;
+        $command->userId = $userId;
+        $command->year = $year;
+        $command->month = $month;
+        $command->monthlyStatsComposedId = $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $userId);
+        $command->monthlyStatsByCategoryComposedId = $this->buildMonthlyCategoryStatisticsComposedId(month: $month, year: $year, userId: $userId, categoryId: $command->categoryId);
     }
 }

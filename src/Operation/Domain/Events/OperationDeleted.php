@@ -6,7 +6,7 @@ use App\Operation\Domain\OperationTypeEnum;
 use App\Shared\Domain\Event\DomainEvent;
 use DateTimeImmutable;
 
-class OperationSaved implements DomainEvent
+class OperationDeleted implements DomainEvent
 {
     private DateTimeImmutable $occuredOn;
 
@@ -14,22 +14,21 @@ class OperationSaved implements DomainEvent
         public readonly string $accountId,
         public readonly float $previousAmount,
         public readonly float $newAmount,
-        public readonly string $operationDate,
-        public readonly OperationTypeEnum $type,
-        public readonly string $userId,
-        public readonly int $year,
-        public readonly int $month,
-        public readonly string $categoryId,
-        public readonly string $monthlyStatsComposedId,
-        public readonly string $monthlyStatsByCategoryComposedId,
+        public readonly string $date,
+        public OperationTypeEnum $type,
+        public bool $isDeleted,
+        public string $monthlyStatisticsComposedId,
+        public string $monthlyStatisticsByCategoryComposedId,
+        public string $userId,
+        public int $year,
+        public int $month,
+        public string $categoryId,
+
     )
     {
         $this->occuredOn = new DateTimeImmutable();
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function occuredOn(): DateTimeImmutable
     {
         return $this->occuredOn;
