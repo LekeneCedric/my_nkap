@@ -40,7 +40,7 @@ class GetAllMonthlyCategoryStatisticViewModel
                 'categoryLabel' => $data['category_label'],
                 'categoryColor' => $data['category_color'],
                 'totalIncome' => $data['total_income'],
-                'percentage' => round(($data['total_income'] * 100)/$totalIncomes),
+                'percentage' => $totalIncomes == 0 ? 0 : round(($data['total_income'] * 100)/$totalIncomes),
             ];
         }
         return $result;
@@ -62,7 +62,7 @@ class GetAllMonthlyCategoryStatisticViewModel
                 'categoryLabel' => $data['category_label'],
                 'categoryColor' => $data['category_color'],
                 'totalExpense' => $data['total_expense'],
-                'percentage' => round(($data['total_expense'] * 100)/$totalExpenses),
+                'percentage' => $totalExpenses == 0 ? 0 : round(($data['total_expense'] * 100)/$totalExpenses),
             ];
         }
         return $result;

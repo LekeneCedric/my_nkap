@@ -3,6 +3,7 @@
 namespace App\Operation\Infrastructure\Http\Controllers;
 
 use App\Operation\Application\Command\DeleteOperation\DeleteOperationHandler;
+use App\Operation\Application\Command\DeleteOperation\DeleteOperationResponse;
 use App\Operation\Infrastructure\Factories\DeleteOperationCommandFactory;
 use App\Operation\Infrastructure\Http\Requests\DeleteOperationRequest;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
@@ -28,12 +29,12 @@ class DeleteOperationAction
             $transactionCommandHandler = new TransactionCommandHandler($handler, $transactionSession);
             $response = $transactionCommandHandler->handle($command);
 
-            $httpJson = [
-                'status' => true,
-                'isDeleted' => $response->isDeleted,
-                'message' => $response->message,
-                'operationId' => $command->operationId,
-            ];
+            if ($response instanceof DeleteOperationResponse) {
+                $httpJson['status'] = $response->isDeleted;
+                $httpJson['isDeleted'] = $response->isDeleted;
+                $httpJson['operationId'] = $command->operationId;
+            }
+            $httpJson['message'] = $response->message;
         } catch (InvalidArgumentException $e) {
             $httpJson['message'] = $e->getMessage();
         }

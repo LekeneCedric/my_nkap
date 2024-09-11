@@ -36,7 +36,8 @@ class StatisticsEventSubscriber implements DomainEventSubscriber
 
     public function isSubscribeTo(DomainEvent $event): bool
     {
-        return get_class($event) === OperationSaved::class;
+        return get_class($event) === OperationSaved::class ||
+            get_class($event) === OperationDeleted::class;
     }
 
     private function updateMonthlyStatistics(OperationSaved $event): void
