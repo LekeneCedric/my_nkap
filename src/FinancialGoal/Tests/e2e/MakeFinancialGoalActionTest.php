@@ -47,8 +47,8 @@ class MakeFinancialGoalActionTest extends TestCase
         $data = [
            'userId' => $initSUT->user->uuid,
            'accountId' => $initSUT->account->uuid,
-           'startDate' =>  (new DateVO())->formatYMDHIS(),
-           'endDate' => (new DateVO())->formatYMDHIS(),
+           'startDate' =>  (new DateVO())->formatYMD(),
+           'endDate' => (new DateVO())->formatYMD(),
            'desiredAmount' => 200000,
            'details' => 'want to save --200000-- to buy my new home'
         ];
@@ -83,8 +83,8 @@ class MakeFinancialGoalActionTest extends TestCase
             'financialGoalId' => $initSUT->financialGoal->uuid,
             'userId' => $initSUT->user->uuid,
             'accountId' => $initSUT->account->uuid,
-            'startDate' =>  (new DateVO())->formatYMDHIS(),
-            'endDate' => (new DateVO())->formatYMDHIS(),
+            'startDate' =>  (new DateVO())->formatYMD(),
+            'endDate' => (new DateVO())->formatYMD(),
             'desiredAmount' => 500000,
             'details' => 'want to save --200000-- to buy my new home'
         ];
@@ -101,13 +101,16 @@ class MakeFinancialGoalActionTest extends TestCase
         $this->assertEquals($updatedFinancialGoal->updated_at, (new DateVO())->formatYMDHIS());
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_can_throw_error_message_when_not_found_account()
     {
         $data = [
             'userId' => 'wrong_user_id',
             'accountId' => 'wrong_account_id',
-            'startDate' =>  (new DateVO())->formatYMDHIS(),
-            'endDate' => (new DateVO())->formatYMDHIS(),
+            'startDate' =>  (new DateVO())->formatYMD(),
+            'endDate' => (new DateVO())->formatYMD(),
             'desiredAmount' => 200000,
             'details' => 'want to save --200000-- to buy my new home'
         ];

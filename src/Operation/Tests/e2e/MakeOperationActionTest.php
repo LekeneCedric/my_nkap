@@ -65,6 +65,7 @@ class MakeOperationActionTest extends TestCase
         $this->assertEquals(20000, $createdOperation->amount);
     }
 
+
     public function test_can_update_operation()
     {
         $initData = $this->buildSUT(withExistingOperation: true);
@@ -119,7 +120,7 @@ class MakeOperationActionTest extends TestCase
         $this->assertTrue($response['status']);
         $this->assertTrue($response['operationSaved']);
         $this->assertEquals(30000, $updatedAccount->balance);
-        $this->assertEquals(30000, $updatedFinancialGoal->current_amount);
+        $this->assertEquals(40000, $updatedFinancialGoal->current_amount);
     }
 
     public function test_can_update_financial_goal_after_update_operation()
@@ -152,7 +153,7 @@ class MakeOperationActionTest extends TestCase
         $this->assertTrue($response['operationSaved']);
         $this->assertEquals(30000, $updatedOperation->amount);
         $this->assertEquals(30000, $updatedAccount->balance);
-        $this->assertEquals(10000, $updatedFinancialGoal->current_amount);
+        $this->assertEquals(40000, $updatedFinancialGoal->current_amount);
     }
 
     public function test_can_create_stats_after_create_operation()
@@ -216,7 +217,7 @@ class MakeOperationActionTest extends TestCase
             $financialGoal = FinancialGoal::factory()->create([
                 'account_id' => $account->id,
                 'user_id' => $this->user->id,
-                'current_amount' => 0,
+                'current_amount' => 10000,
                 'desired_amount' => 100000,
                 'is_complete' => false,
                 'start_date' => '2024-09-10 00:00:00',

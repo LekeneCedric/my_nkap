@@ -30,4 +30,9 @@ class InMemoryMonthlyCategoryCategoryStatisticRepository implements MonthlyCateg
     {
         $this->monthlyCategoryStatistics[] = $monthlyCategoryStatistic;
     }
+
+    public function ofFilterParams(string $userId, int $year, int $month): array
+    {
+        return [];
+    }
 }

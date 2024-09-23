@@ -13,6 +13,7 @@ use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
+use App\User\Domain\Repository\UserRepository;
 use Exception;
 
 class DeleteOperationHandler implements CommandHandler
@@ -21,6 +22,7 @@ class DeleteOperationHandler implements CommandHandler
 
     public function __construct(
         private OperationAccountRepository $repository,
+        private UserRepository $userRepository,
     )
     {
     }
@@ -54,7 +56,7 @@ class DeleteOperationHandler implements CommandHandler
         NotFoundOperationException $e
         ) {
             $response->message = $e->getMessage();
-        } catch (Exception) {
+        } catch (Exception $e) {
             $response->message = 'Une erreur est survenue lors de la suppression de l\'opération';
         }
         return $response;
@@ -84,7 +86,7 @@ class DeleteOperationHandler implements CommandHandler
     ): void
     {
         list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];
-        $userId = auth()->user()->uuid;
+        $userId = $this->userRepository->userId();
         $command->userId = $userId;
         $command->year = $year;
         $command->month = $month;

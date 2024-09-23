@@ -5,6 +5,7 @@ namespace App\Statistics\Tests\Feature;
 use App\Statistics\Infrastructure\Model\MonthlyCategoryStatistic;
 use App\Statistics\Infrastructure\Model\MonthlyStatistic;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class SaveStatisticsTest extends TestCase
@@ -14,6 +15,7 @@ class SaveStatisticsTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        DB::rollBack();
     }
 
     public function test_can_create_monthly_statistics()

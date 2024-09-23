@@ -51,4 +51,9 @@ class PdoUserRepository implements UserRepository
           'profession_id' => Profession::where('uuid', $user->professionId()->value())->first()?->id,
         ];
     }
+
+    public function userId(): string
+    {
+        return auth()->user()->uuid;
+    }
 }

@@ -13,4 +13,9 @@ interface UserRepository
      * @throws ErrorOnSaveUserException
      */
     public function save(User $user): void;
+
+    /**
+     * @return string
+     */
+    public function userId(): string;
 }

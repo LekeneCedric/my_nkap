@@ -23,7 +23,7 @@ class MakeOperationAction
         OperationsLogger     $logger,
     ): JsonResponse
     {
-        $httpJson = ['status' => false, 'operationIsSaved' => false];
+        $httpJson = ['status' => false, 'operationSaved' => false];
 
         try {
             $command = MakeOperationCommandFactory::buildFromRequest($request);

@@ -16,21 +16,25 @@ use App\Shared\Domain\VO\AmountVO;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\User\Domain\Repository\UserRepository;
+use App\User\Tests\Units\Repository\InMemoryUserRepository;
 use Exception;
 use Tests\TestCase;
 
 class MakeOperationTest extends TestCase
 {
     private OperationAccountRepository $repository;
+    private UserRepository $userRepository;
     public function setUp(): void
     {
         parent::setUp();
         $this->repository = new InMemoryOperationAccountRepository();
+        $this->userRepository = new InMemoryUserRepository();
     }
 
     /**
      * @return void
-     * @throws Exception
+     * @throws OperationGreaterThanAccountBalanceException
      */
     public function test_can_make_operation()
     {
@@ -57,7 +61,7 @@ class MakeOperationTest extends TestCase
     }
 
     /**
-     * @throws NotFoundAccountException
+     * @return void
      * @throws OperationGreaterThanAccountBalanceException
      */
     public function test_can_update_operation()
@@ -88,7 +92,6 @@ class MakeOperationTest extends TestCase
 
     /**
      * @return void
-     * @throws NotFoundAccountException
      * @throws OperationGreaterThanAccountBalanceException
      */
     public function test_can_throw_exception_if_expense_operation_amount_is_greater_than_balance()
@@ -146,13 +149,12 @@ class MakeOperationTest extends TestCase
     /**
      * @param MakeOperationCommand $command
      * @return makeOperationResponse
-     * @throws NotFoundAccountException
-     * @throws OperationGreaterThanAccountBalanceException
      */
     private function makeOperation(MakeOperationCommand $command): makeOperationResponse
     {
         $handler = new MakeOperationHandler(
             repository: $this->repository,
+            userRepository: $this->userRepository,
         );
         return $handler->handle($command);
     }

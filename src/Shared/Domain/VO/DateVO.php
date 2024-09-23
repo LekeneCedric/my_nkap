@@ -32,6 +32,18 @@ class DateVO
             return (new DateTime($this->value))->format('Y-m-d H:i:s');
     }
 
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function formatYMD(): string
+    {
+        if (!$this->value) {
+            throw new Exception(' La date n\'est pas valide !');
+        }
+        return (new DateTime($this->value))->format('Y-m-d');
+    }
+
     private function validate(): void
     {
         $d = DateTime::createFromFormat($this->format, $this->value);

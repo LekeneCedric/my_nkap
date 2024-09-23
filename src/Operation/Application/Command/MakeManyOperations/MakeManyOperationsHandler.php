@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Operation\Application\Command\MakeOperation;
+namespace App\Operation\Application\Command\MakeManyOperations;
 
 use App\Account\Domain\Exceptions\NotFoundAccountException;
-use App\Operation\Domain\Exceptions\OperationGreaterThanAccountBalanceException;
+use App\Operation\Application\Command\MakeOperation\MakeOperationCommand;
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
 use App\Shared\Domain\Command\Command;
@@ -16,7 +16,7 @@ use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
 
-class MakeOperationHandler implements CommandHandler
+class MakeManyOperationsHandler implements CommandHandler
 {
     use StatisticsComposedIdBuilderTrait;
 
@@ -27,45 +27,29 @@ class MakeOperationHandler implements CommandHandler
     {
     }
 
-    /**
-     * @param MakeOperationCommand|Command $command
-     * @return makeOperationResponse
-     */
-    public function handle(MakeOperationCommand|Command $command): makeOperationResponse
+    public function handle(MakeManyOperationsCommand|Command $command): mixed
     {
-        $response = new makeOperationResponse();
-
+        $response = new MakeManyOperationResponse();
+        $operationIds = [];
         try {
-            $operationAccount = $this->getOperationAccountOrThrowNotFoundException($command->accountId);
-            if ($command->operationId) {
-                $response->previousOperationAmount = $operationAccount->operation($command->operationId)->amount()->value();
-                $operationAccount->updateOperation(
-                    operationId: new Id($command->operationId),
-                    amount: new AmountVO($command->amount),
-                    type: $command->type,
-                    categoryId: new Id($command->categoryId),
-                    detail: new StringVO($command->detail),
-                    date: new DateVO($command->date),
-                );
-            }
-            if (!$command->operationId) {
+            foreach ($command->operations as $operationCommand) {
+                $operationCommand->previousAmount = 0;
+                $operationAccount = $this->getOperationAccountOrThrowNotFoundException($operationCommand->accountId);
                 $operationAccount->makeOperation(
-                    amount: new AmountVO($command->amount),
-                    type: $command->type,
-                    categoryId: new Id($command->categoryId),
-                    detail: new StringVO($command->detail),
-                    date: new DateVO($command->date)
+                    amount: new AmountVO($operationCommand->amount),
+                    type: $operationCommand->type,
+                    categoryId: new Id($operationCommand->categoryId),
+                    detail: new StringVO($operationCommand->detail),
+                    date: new DateVO($operationCommand->date),
                 );
+
+                $this->repository->saveOperation($operationAccount);
+                $this->completCommandWithAdditionalInformation($operationCommand);
+                $operationAccount->publishOperationSaved($operationCommand);
+                $operationIds[] = $operationAccount->currentOperation()->id()->value();
             }
-
-            $this->repository->saveOperation($operationAccount);
-            $this->completCommandWithAdditionalInformation(
-              $command
-            );
-            $operationAccount->publishOperationSaved($command);
-
-            $response->operationSaved = true;
-            $response->operationId = $operationAccount->currentOperation()->id()->value();
+            $response->operationsSaved = true;
+            $response->operationIds = $operationIds;
         } catch (NotFoundAccountException|Exception $e) {
             $response->message = $e->getMessage();
         }

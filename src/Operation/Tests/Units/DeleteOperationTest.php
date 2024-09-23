@@ -17,17 +17,21 @@ use App\Shared\Domain\VO\AmountVO;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\User\Domain\Repository\UserRepository;
+use App\User\Tests\Units\Repository\InMemoryUserRepository;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DeleteOperationTest extends TestCase
 {
     private OperationAccountRepository $repository;
+    private UserRepository $userRepository;
 
     public function setUp(): void
     {
         parent::setUp();
-
         $this->repository = new InMemoryOperationAccountRepository();
+        $this->userRepository = new InMemoryUserRepository();
     }
 
     /**
@@ -128,7 +132,8 @@ class DeleteOperationTest extends TestCase
     private function deleteOperation(DeleteOperationCommand $command): DeleteOperationResponse
     {
         $handler = new DeleteOperationHandler(
-            repository: $this->repository
+            repository: $this->repository,
+            userRepository: $this->userRepository,
         );
         return $handler->handle($command);
     }
