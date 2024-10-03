@@ -41,7 +41,7 @@ class RegisterUserHandler
             professionId: new Id($command->professionId)
         );
 
-        $this->repository->save($user);
+        $this->repository->create($user);
 
         $userId = $user->id()->value();
         $response->isCreated = true;

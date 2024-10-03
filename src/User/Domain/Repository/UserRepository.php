@@ -12,10 +12,17 @@ interface UserRepository
      * @return void
      * @throws ErrorOnSaveUserException
      */
-    public function save(User $user): void;
+    public function create(User $user): void;
 
+    /**
+     * @param User $user
+     * @return void
+     */
+    public function update(User $user): void;
     /**
      * @return string
      */
     public function userId(): string;
+
+    public function ofEmail(string $email): ?User;
 }

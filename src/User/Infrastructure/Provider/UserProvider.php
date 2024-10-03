@@ -27,6 +27,7 @@ class UserProvider extends  ServiceProvider
     {
         $this->bindModuleRepositories();
         $this->bindModuleServices();
+        $this->loadViews();
     }
 
     /**
@@ -75,5 +76,10 @@ class UserProvider extends  ServiceProvider
             'prefix' => 'api'.$defaultPrefix,
             'middleware' => []
         ];
+    }
+
+    private function loadViews()
+    {
+        $this->loadViewsFrom(base_path('src/User/Infrastructure/views'), 'USER_VIEWS');
     }
 }

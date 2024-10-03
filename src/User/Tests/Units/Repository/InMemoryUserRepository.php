@@ -8,7 +8,7 @@ use App\User\Domain\User;
 class InMemoryUserRepository implements UserRepository
 {
 
-    public function save(User $user): void
+    public function create(User $user): void
     {
         // TODO: Implement save() method.
     }
@@ -16,5 +16,15 @@ class InMemoryUserRepository implements UserRepository
     public function userId(): string
     {
         return 'userId';
+    }
+
+    public function ofEmail(string $email): ?User
+    {
+        return null;
+    }
+
+    public function update(User $user): void
+    {
+        //
     }
 }

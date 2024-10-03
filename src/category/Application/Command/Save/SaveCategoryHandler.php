@@ -52,7 +52,7 @@ class SaveCategoryHandler
         $this->repository->save($user);
 
         $response->isSaved = true;
-        $response->message = 'Nouvelle catégorie ajoutée avec succès !';
+        $response->message = $command->categoryId ? 'category-updated' : 'category-created';
         $response->categoryId = $user->currentCategory()->categoryId->value();
         return $response;
     }
