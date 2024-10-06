@@ -7,6 +7,7 @@ use App\Bootstrap\Infrastructure\database\factories\UserFactory;
 use App\category\Infrastructure\Models\Category;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\User\Domain\VO\VerificationCodeVO;
 use App\User\Infrastructure\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,7 +21,14 @@ use App\User\Domain\User as UserDomain;
 /**
  * @property mixed $uuid
  * @property mixed $id
+ * @property mixed $name
+ * @property mixed $email
+ * @property mixed $password
+ * @property mixed $profession_id
+ * @property mixed $verification_code
+ * @property mixed $verification_code_exp
  * @method static whereUuid(string|null $value)
+ * @method static where(string $string, mixed $email)
  */
 #[ObservedBy([UserObserver::class])]
 class User extends Model
@@ -33,9 +41,11 @@ class User extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'uuid',
         'name',
         'email',
         'password',
+        'profession_id'
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -73,6 +83,7 @@ class User extends Model
             password: new StringVO($this->password),
             userId: new Id($this->uuid),
             professionId: new Id(Profession::where('id', $this->profession_id)->first()?->uuid),
+            verificationCode: new VerificationCodeVO(verificationCode: $this->verification_code ?? null, expirationTime: $this->verification_code_exp ?? null)
         );
     }
 }

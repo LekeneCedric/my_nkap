@@ -37,7 +37,7 @@ class RegisterUserHandler
         $user = User::create(
             name: new StringVO($command->username),
             email: new StringVO($command->email),
-            password: new StringVO($command->password),
+            password: new StringVO(bcrypt($command->password)),
             professionId: new Id($command->professionId)
         );
 

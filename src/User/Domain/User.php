@@ -5,6 +5,8 @@ namespace App\User\Domain;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\User\Domain\Exceptions\UnknownVerificationCodeException;
+use App\User\Domain\Exceptions\VerificationCodeNotMatchException;
 use App\User\Domain\VO\VerificationCodeVO;
 use Exception;
 
@@ -54,6 +56,42 @@ class User
         return $this->professionId;
     }
 
+    public function assignVerificationCode(): void
+    {
+        $this->verificationCode = new VerificationCodeVO();
+    }
+
+    public function verificationCode(): string
+    {
+        return $this->verificationCode->verificationCode();
+    }
+
+    public function email(): StringVO
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $code
+     * @return void
+     * @throws UnknownVerificationCodeException
+     * @throws VerificationCodeNotMatchException
+     */
+    public function checkIfCodeIsCorrectOrThrowException(string $code): void
+    {
+        if (!$this->verificationCode) {
+            throw new UnknownVerificationCodeException();
+        }
+        if (!$this->verificationCode->isValid($code)) {
+            throw new VerificationCodeNotMatchException();
+        }
+    }
+
+    public function resetPassword(string $password): void
+    {
+        $this->password = new StringVO(bcrypt($password));
+    }
+
     /**
      * @return array
      * @throws Exception
@@ -74,20 +112,5 @@ class User
             $data['verification_code_exp'] = $this->verificationCode->expirationTime();
         }
         return $data;
-    }
-
-    public function assignVerificationCode(): void
-    {
-        $this->verificationCode = new VerificationCodeVO();
-    }
-
-    public function verificationCode(): string
-    {
-        return $this->verificationCode->verificationCode();
-    }
-
-    public function email(): StringVO
-    {
-        return $this->email;
     }
 }

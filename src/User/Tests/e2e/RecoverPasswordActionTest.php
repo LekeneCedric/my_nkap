@@ -8,6 +8,7 @@ use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class RecoverPasswordActionTest extends TestCase
@@ -43,12 +44,14 @@ class RecoverPasswordActionTest extends TestCase
         ];
 
         $response = $this->postJson(self::RECOVER_PASSWORD, $data);
+        $updatedUser = User::whereEmail($this->user->email)->first();
 
+        $this->assertTrue(Hash::check('new-passsowrd@237', $updatedUser->password));
         $this->assertTrue($response['status']);
         $this->assertTrue($response['passwordReset']);
     }
 
-    private function buildSUT(VerificationCodeVO $code)
+    private function buildSUT(VerificationCodeVO $code): void
     {
         User::where('email', $this->user->email)->update([
             'verification_code' => $code->verificationCode(),

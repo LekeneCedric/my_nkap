@@ -11,3 +11,4 @@ Route::post('/register', RegisterAction::class);
 Route::post('/login', LoginAction::class);
 Route::post('/logout', LogoutAction::class)->middleware('auth:sanctum');
 Route::post('/send-recover-password-code', SendRecoverPasswordCodeAction::class);
+Route::post('/recover-password', RecoverPasswordAction::class);

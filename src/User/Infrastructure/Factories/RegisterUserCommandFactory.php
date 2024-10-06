@@ -12,7 +12,7 @@ class RegisterUserCommandFactory
     {
         return new RegisterUserCommand(
             email: $request->get('email'),
-            password: bcrypt($request->get('password')),
+            password: $request->get('password'),
             username: $request->get('username'),
             birthday: $request->get('birthday'),
             professionId: $request->get('professionId'),

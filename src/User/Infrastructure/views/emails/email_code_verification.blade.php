@@ -7,7 +7,7 @@
 
     ## **{{ $verification_code }}**
 
-    This code will expire in **{{ $expiration_time }}** minutes.
+    This code will expire in **{{ $expiration_time }}**.
 
     If you did not request this, please ignore this message.
 

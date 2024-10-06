@@ -7,7 +7,7 @@ trait GenerateVerificationCodeTrait
     public function generateVerificationCode(int $length): string
     {
         $verificationCode = '';
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = '0123456789';
         $charactersLengths = strlen($characters);
         for ($i = 0; $i < $length; $i++) {
             $randomPosition = rand(0, $charactersLengths - 1);

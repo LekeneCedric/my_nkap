@@ -8,6 +8,7 @@ use App\User\Domain\Enums\UserMessagesEnum;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Exceptions\NotFoundUserException;
 use App\User\Infrastructure\Mails\EmailCodeVerificationMail;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,7 +48,7 @@ class SendRecoverPasswordCodeAction
         } catch (NotFoundUserException) {
             DB::rollBack();
             $httpJson['message'] = UserMessagesEnum::NOT_FOUND;
-        } catch (ErrorOnSaveUserException) {
+        } catch (ErrorOnSaveUserException|Exception) {
             DB::rollBack();
             $httpJson['message'] = config('my-nkap.message.critical_technical_error');
         }

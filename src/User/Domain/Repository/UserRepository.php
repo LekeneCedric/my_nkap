@@ -17,8 +17,10 @@ interface UserRepository
     /**
      * @param User $user
      * @return void
+     * @throws ErrorOnSaveUserException
      */
     public function update(User $user): void;
+
     /**
      * @return string
      */
