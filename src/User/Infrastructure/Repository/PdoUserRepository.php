@@ -2,6 +2,7 @@
 
 namespace App\User\Infrastructure\Repository;
 
+use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\User;
@@ -69,6 +70,15 @@ class PdoUserRepository implements UserRepository
 
     public function ofEmail(string $email): ?User
     {
-        return UserModel::where('email', $email)->first()?->toDomain();
+        return UserModel::where('email', $email)
+            ->where('status', UserStatusEnum::ACTIVE->value)
+            ->first()?->toDomain();
+    }
+
+    public function of(string $email, UserStatusEnum $status): ?User
+    {
+        return UserModel::where('email', $email)
+            ->where('status', $status->value)
+            ->first()?->toDomain();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\User\Tests\e2e;
 
+use App\User\Domain\Enums\UserStatusEnum;
+use App\User\Domain\VO\VerificationCodeVO;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -15,6 +17,8 @@ class AuthenticationTest extends TestCase
     {
         parent::setUp();
     }
+
+    const VERIFICATION_ACCOUNT = 'api/users/verification-account';
 
     const REGISTER_USER = 'api/users/register';
 
@@ -40,9 +44,34 @@ class AuthenticationTest extends TestCase
         $this->assertTrue($response['isCreated']);
         $this->assertNotNull($response['token']);
         $this->assertNotNull($response['user']);
+        $this->assertEquals(UserStatusEnum::PENDING->value, $createdUser->status);
+        $this->assertNotNull($createdUser->verification_code);
         $this->assertNotNull($createdUser);
     }
 
+    public function test_can_activate_account_after_registration()
+    {
+        $userEmail = 'lekene@gmail.com';
+        $verificationCode = new VerificationCodeVO();
+        UserSUT::asSUT()
+            ->withExistingUser(
+                email: $userEmail,
+                status: UserStatusEnum::PENDING,
+                verificationCode: $verificationCode,
+            )
+            ->build();
+
+        $data = [
+          'email' => $userEmail,
+          'code' =>  $verificationCode->verificationCode(),
+        ];
+
+        $response = $this->postJson(self::VERIFICATION_ACCOUNT, $data);
+        $updatedUser = User::where('email', $userEmail)->first();
+
+        $response->assertOk();
+        $this->assertEquals(UserStatusEnum::ACTIVE->value, $updatedUser->status);
+    }
     public function test_can_throw_message_if_already_exist_user_with_same_email()
     {
         $email = 'lekene@gmail.com';

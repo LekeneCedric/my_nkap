@@ -2,6 +2,7 @@
 
 namespace App\User\Tests\Units\Repository;
 
+use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\User;
 
@@ -24,6 +25,11 @@ class InMemoryUserRepository implements UserRepository
     }
 
     public function update(User $user): void
+    {
+        //
+    }
+
+    public function of(string $email, UserStatusEnum $status): ?User
     {
         //
     }

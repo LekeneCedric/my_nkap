@@ -48,7 +48,7 @@ class RegisterUserHandler
         $response->message = 'Utilisateur créer avec succès !';
         $response->userId = $userId;
         $response->user = $this->getUserById($userId);
-
+        $response->code = $user->verificationCode();
         return $response;
     }
 

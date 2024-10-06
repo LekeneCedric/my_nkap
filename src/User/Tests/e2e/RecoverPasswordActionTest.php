@@ -3,6 +3,7 @@
 namespace App\User\Tests\e2e;
 
 use App\Shared\Domain\VO\Id;
+use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\VO\VerificationCodeVO;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
@@ -29,6 +30,7 @@ class RecoverPasswordActionTest extends TestCase
             'name' => 'lekene',
             'password' => bcrypt('lekene@5144'),
             'profession_id' => (Profession::factory()->create())->id,
+            'status' => UserStatusEnum::ACTIVE->value,
         ]);
         $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
     }

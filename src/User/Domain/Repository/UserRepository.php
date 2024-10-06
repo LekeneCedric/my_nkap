@@ -2,6 +2,7 @@
 
 namespace App\User\Domain\Repository;
 
+use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\User;
 
@@ -26,5 +27,16 @@ interface UserRepository
      */
     public function userId(): string;
 
+    /**
+     * @param string $email
+     * @return User|null
+     */
     public function ofEmail(string $email): ?User;
+
+    /**
+     * @param string $email
+     * @param UserStatusEnum $status
+     * @return User|null
+     */
+    public function of(string $email, UserStatusEnum $status): ?User;
 }

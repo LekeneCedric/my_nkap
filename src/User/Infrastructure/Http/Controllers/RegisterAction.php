@@ -7,9 +7,11 @@ use App\User\Domain\Exceptions\AlreadyUserExistWithSameEmailException;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Infrastructure\Factories\RegisterUserCommandFactory;
 use App\User\Infrastructure\Http\Requests\RegisterUserRequest;
+use App\User\Infrastructure\Mails\EmailCodeVerificationMail;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterAction
 {
@@ -25,6 +27,8 @@ class RegisterAction
             DB::beginTransaction();
             $command = RegisterUserCommandFactory::buildFromRequest($request);
             $response = $handler->handle($command);
+            Mail::to($command->email)
+                ->send(new EmailCodeVerificationMail($response->code, '10 minutes'));
             $user = User::where('uuid', $response->userId)->first(['id']);
             $httpResponse = [
                 'status' => true,

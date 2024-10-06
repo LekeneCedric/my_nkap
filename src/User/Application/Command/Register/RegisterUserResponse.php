@@ -8,4 +8,5 @@ class RegisterUserResponse
         public string $message = '';
         public string $userId = '';
         public array $user = [];
+        public string $code = '';
 }

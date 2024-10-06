@@ -5,6 +5,7 @@ namespace App\User\Domain;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\Exceptions\UnknownVerificationCodeException;
 use App\User\Domain\Exceptions\VerificationCodeNotMatchException;
 use App\User\Domain\VO\VerificationCodeVO;
@@ -20,6 +21,7 @@ class User
         private StringVO            $password,
         private Id                  $userId,
         private Id                  $professionId,
+        private UserStatusEnum      $status,
         private ?VerificationCodeVO $verificationCode = null,
     )
     {
@@ -39,6 +41,8 @@ class User
             password: $password,
             userId: $userId ?: new Id(),
             professionId: $professionId,
+            status: UserStatusEnum::PENDING,
+            verificationCode: new VerificationCodeVO(),
         );
         if (!$userId) {
             $user->createdAt = new DateVO();
@@ -103,6 +107,7 @@ class User
             'name' => $this->name->value(),
             'email' => $this->email->value(),
             'password' => $this->password->value(),
+            'status' => $this->status->value,
         ];
         if ($this->createdAt) {
             $data['created_at'] = $this->createdAt->formatYMDHIS();
@@ -112,5 +117,10 @@ class User
             $data['verification_code_exp'] = $this->verificationCode->expirationTime();
         }
         return $data;
+    }
+
+    public function activateAccount(): void
+    {
+        $this->status = UserStatusEnum::ACTIVE;
     }
 }

@@ -3,6 +3,8 @@
 namespace App\User\Tests\e2e;
 
 use App\Shared\Domain\VO\Id;
+use App\User\Domain\Enums\UserStatusEnum;
+use App\User\Domain\VO\VerificationCodeVO;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 
@@ -18,15 +20,26 @@ class UserSUT
         return $self;
     }
 
-    public function withExistingUser(string $email, string $password = 'lekene@5134'): static
+    public function withExistingUser(
+        string $email,
+        string $password = 'lekene@5134',
+        ?UserStatusEnum $status = UserStatusEnum::ACTIVE,
+        VerificationCodeVO $verificationCode = null,
+    ): static
     {
-        User::factory()->create([
+        $userData = [
             'uuid' => (new Id())->value(),
             'email' => $email,
             'name' => 'lekene',
             'password' => bcrypt($password),
             'profession_id' => $this->profession->id,
-        ]);
+            'status' => $status->value,
+        ];
+        if ($verificationCode) {
+            $userData['verification_code'] = $verificationCode->verificationCode();
+            $userData['verification_code_exp'] = $verificationCode->expirationTime();
+        }
+        User::factory()->create($userData);
         return $this;
     }
 

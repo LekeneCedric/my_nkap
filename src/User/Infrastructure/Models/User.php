@@ -7,6 +7,7 @@ use App\Bootstrap\Infrastructure\database\factories\UserFactory;
 use App\category\Infrastructure\Models\Category;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\VO\VerificationCodeVO;
 use App\User\Infrastructure\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\User\Domain\User as UserDomain;
+
 /**
  * @property mixed $uuid
  * @property mixed $id
@@ -45,7 +47,10 @@ class User extends Model
         'name',
         'email',
         'password',
-        'profession_id'
+        'profession_id',
+        'status',
+        'verification_code',
+        'verification_code_exp',
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -75,6 +80,7 @@ class User extends Model
     {
         return $this->hasMany(Category::class);
     }
+
     public function toDomain(): UserDomain
     {
         return new UserDomain(
@@ -83,6 +89,7 @@ class User extends Model
             password: new StringVO($this->password),
             userId: new Id($this->uuid),
             professionId: new Id(Profession::where('id', $this->profession_id)->first()?->uuid),
+            status: UserStatusEnum::from($this->status),
             verificationCode: new VerificationCodeVO(verificationCode: $this->verification_code ?? null, expirationTime: $this->verification_code_exp ?? null)
         );
     }
