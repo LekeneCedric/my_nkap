@@ -2,6 +2,7 @@
 
 namespace App\User\Application\Command\VerificationAccount;
 
+use App\User\Domain\Enums\UserMessagesEnum;
 use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Exceptions\NotFoundUserException;
@@ -32,6 +33,8 @@ class VerificationAccountHandler
         $user->activateAccount();
 
         $this->userRepository->update($user);
+        $response->accountVerified = true;
+        $response->message = UserMessagesEnum::ACCOUNT_VERIFIED;
         return $response;
     }
 

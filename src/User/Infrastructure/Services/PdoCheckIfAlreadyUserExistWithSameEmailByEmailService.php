@@ -20,7 +20,7 @@ class PdoCheckIfAlreadyUserExistWithSameEmailByEmailService implements CheckIfAl
         $sql = "
             SELECT COUNT(*)
             FROM users
-            WHERE email=:email AND
+            WHERE LOWER(email) = LOWER(:email) AND
                   is_deleted=false AND
                   status = 'active'
         ";

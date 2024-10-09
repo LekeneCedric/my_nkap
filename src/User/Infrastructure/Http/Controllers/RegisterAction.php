@@ -7,11 +7,11 @@ use App\User\Domain\Exceptions\AlreadyUserExistWithSameEmailException;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Infrastructure\Factories\RegisterUserCommandFactory;
 use App\User\Infrastructure\Http\Requests\RegisterUserRequest;
-use App\User\Infrastructure\Mails\EmailCodeVerificationMail;
+use App\User\Infrastructure\Jobs\SendVerificationCodeEmail;
 use App\User\Infrastructure\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class RegisterAction
 {
@@ -23,12 +23,11 @@ class RegisterAction
         $httpResponse = [
             'status' => false,
         ];
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             $command = RegisterUserCommandFactory::buildFromRequest($request);
             $response = $handler->handle($command);
-            Mail::to($command->email)
-                ->send(new EmailCodeVerificationMail($response->code, '10 minutes'));
+
             $user = User::where('uuid', $response->userId)->first(['id']);
             $httpResponse = [
                 'status' => true,
@@ -38,12 +37,13 @@ class RegisterAction
                 'user' => $response->user,
             ];
             DB::commit();
-        } catch (ErrorOnSaveUserException) {
-            DB::rollBack();
-            $httpResponse['message'] = 'Une érreur technique est survenue lors du traitement de votre opération !';
+            SendVerificationCodeEmail::dispatch($command->email, $response->code);
         } catch (AlreadyUserExistWithSameEmailException $e) {
             DB::rollBack();
             $httpResponse['message'] = $e->getMessage();
+        }catch (ErrorOnSaveUserException|Exception) {
+            DB::rollBack();
+            $httpResponse['message'] = config('my-nkap.message.critical_technical_error');
         }
 
         return response()->json($httpResponse);

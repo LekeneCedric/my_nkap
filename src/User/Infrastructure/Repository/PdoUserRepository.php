@@ -31,7 +31,6 @@ class PdoUserRepository implements UserRepository
         $data = array_merge($user->toArray(), $this->getForeignIds($user));
         try {
             UserModel::whereUuid($user->id()->value())
-                ->where('status', UserStatusEnum::ACTIVE->value)
                 ->where('is_deleted', false)
                 ->update($data);
         } catch (\PDOException | Exception $e) {
@@ -84,6 +83,7 @@ class PdoUserRepository implements UserRepository
         return UserModel::where('email', $email)
             ->where('status', $status->value)
             ->where('is_deleted', false)
+            ->orderBy('created_at', 'desc')
             ->first()?->toDomain();
     }
 }

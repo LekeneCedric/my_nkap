@@ -7,12 +7,11 @@ use App\User\Application\Command\SendRecoverPasswordCode\SendRecoverPasswordCode
 use App\User\Domain\Enums\UserMessagesEnum;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Exceptions\NotFoundUserException;
-use App\User\Infrastructure\Mails\EmailCodeVerificationMail;
+use App\User\Infrastructure\Jobs\SendVerificationCodeEmail;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class SendRecoverPasswordCodeAction
 {
@@ -32,8 +31,7 @@ class SendRecoverPasswordCodeAction
                 email: $request->get('email'),
             );
             $response = $handler->handle($command);
-            Mail::to($response->email)
-                ->send(new EmailCodeVerificationMail($response->code, '10 minutes'));
+            SendVerificationCodeEmail::dispatch($response->email, $response->code);
             $response->isSend = true;
             $response->message = UserMessagesEnum::RECOVER_PASSWORD_CODE_SENT;
             $httpJson = [

@@ -25,6 +25,10 @@ class RemoveUnActivateAccountsCommand extends Command
     public function handle(): void
     {
         $unactivatedAccountsBefore10MinutesIds = $this->getUnactivatedUsersBefore10MinutesIds();
+        if (empty($unactivatedAccountsBefore10MinutesIds)) {
+            $this->info('No unactivated accounts found before 10 minutes');
+            return;
+        }
         $this->deleteAccount($unactivatedAccountsBefore10MinutesIds);
     }
 

@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
      */
     private function loadDefaultMigrations(): void
     {
-        $this->loadMigrationsFrom('/src/Bootstrap/Infrastructure/database/migrations');
+        $this->loadMigrationsFrom(base_path('/src/Bootstrap/Infrastructure/database/migrations'));
     }
 
     /**
