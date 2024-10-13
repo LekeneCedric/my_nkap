@@ -29,10 +29,10 @@ class RemoveUnActivateAccountsCommand extends Command
             $this->info('No unactivated accounts found before 10 minutes');
             return;
         }
-        $this->deleteAccount($unactivatedAccountsBefore10MinutesIds);
+        $this->deleteUserAccount($unactivatedAccountsBefore10MinutesIds);
     }
 
-    private function deleteAccount(array $unactivatedAccountIds): void
+    private function deleteUserAccount(array $unactivatedAccountIds): void
     {
         $this->pdo->beginTransaction();
         try {

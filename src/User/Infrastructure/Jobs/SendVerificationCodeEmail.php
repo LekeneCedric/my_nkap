@@ -14,10 +14,20 @@ class SendVerificationCodeEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 5; // The number of times the job should be retried
+
+    public $timeout = 120; // The maximum number of seconds the job can run
+
+    protected $email;
+    protected $code;
+
     public function __construct(
-        public string $email,
-        public string $code
-    ){}
+        string $email,
+        string $code
+    ){
+        $this->email = $email;
+        $this->code = $code;
+    }
 
     public function handle(): void
     {
