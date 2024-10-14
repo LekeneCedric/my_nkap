@@ -42,7 +42,7 @@ class FilterAccountOperationsHandler
 
         if (!empty($month)) {
             $limit = 10000000;
-            $offset = 1;
+            $offset = 0;
         }
         $sql = "
             SELECT
