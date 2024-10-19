@@ -2,6 +2,7 @@
 
 namespace App\User\Domain\Repository;
 
+use App\Operation\Domain\OperationUser;
 use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\User;
@@ -39,4 +40,10 @@ interface UserRepository
      * @return User|null
      */
     public function of(string $email, UserStatusEnum $status): ?User;
+
+    /**
+     * @param OperationUser $user
+     * @return void
+     */
+    public function updateToken(OperationUser $user): void;
 }

@@ -2,6 +2,7 @@
 
 namespace App\User\Tests\Units\Repository;
 
+use App\Operation\Domain\OperationUser;
 use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\User;
@@ -31,6 +32,11 @@ class InMemoryUserRepository implements UserRepository
 
     public function of(string $email, UserStatusEnum $status): ?User
     {
-        //
+        return null;
+    }
+
+    public function updateToken(OperationUser $user): void
+    {
+        // TODO: Implement updateToken() method.
     }
 }
