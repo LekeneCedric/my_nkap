@@ -2,6 +2,7 @@
 
 namespace App\User\Infrastructure\Repository;
 
+use App\Operation\Domain\OperationUser;
 use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Repository\UserRepository;
@@ -85,5 +86,19 @@ class PdoUserRepository implements UserRepository
             ->where('is_deleted', false)
             ->orderBy('created_at', 'desc')
             ->first()?->toDomain();
+    }
+
+    /**
+     * @param OperationUser $user
+     * @return void
+     * @throws Exception
+     */
+    public function updateToken(OperationUser $user): void
+    {
+        UserModel::whereUuid($user->id()->value())
+            ->update([
+                'token' => $user->token(),
+                'token_updated_at' => $user->tokenUpdatedAt()->formatYMDHIS(),
+            ]);
     }
 }

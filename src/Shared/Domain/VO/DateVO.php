@@ -17,7 +17,13 @@ class DateVO
         } else {
             $this->value = date('Y-m-d H:i:s');
         }
-        $this->format = $format ?? 'Y-m-d H:i:s';
+        if ($format) {
+            $this->format = $format;
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->value)) {
+            $this->format = 'Y-m-d';  // Simple date format
+        } else {
+            $this->format = 'Y-m-d H:i:s';  // Full date-time format
+        }
         $this->validate();
     }
 
@@ -78,5 +84,17 @@ class DateVO
     {
         $timestamp = strtotime($this->value);
         return date('m', $timestamp);
+    }
+
+    public function isFromPreviousDay()
+    {
+        // Get today's date in Y-m-d format (ignoring time)
+        $today = (new DateTime())->format('Y-m-d');
+
+        // Format the entered date to Y-m-d for comparison
+        $formattedEnteredDate = (new DateTime($this->value))->format('Y-m-d');
+
+        // Return true if the entered date is earlier than today
+        return $formattedEnteredDate < $today;
     }
 }

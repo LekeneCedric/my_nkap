@@ -31,6 +31,7 @@ use App\User\Domain\User as UserDomain;
  * @property mixed $verification_code_exp
  * @method static whereUuid(string|null $value)
  * @method static where(string $string, mixed $email)
+ * @method static select(string[] $array)
  */
 #[ObservedBy([UserObserver::class])]
 class User extends Model

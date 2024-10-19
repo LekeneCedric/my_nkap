@@ -36,6 +36,7 @@ class LoginHandler
         $response->isLogged = true;
         $response->user  = $userData;
         $response->token = $token;
+        $response->aiToken = $user->token;
         return $response;
     }
 }

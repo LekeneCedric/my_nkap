@@ -3,7 +3,11 @@
 namespace App\Operation\Infrastructure\provider;
 
 use App\Operation\Domain\OperationAccountRepository;
+use App\Operation\Domain\Services\AIService;
+use App\Operation\Domain\Services\GetOperationUserService;
 use App\Operation\Infrastructure\Repository\PdoOperationAccountRepository;
+use App\Operation\Infrastructure\Services\EloquentGetOperationUserService;
+use App\Operation\Infrastructure\Services\GeminiAIService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +26,8 @@ class OperationServiceProvider extends ServiceProvider
     private function bindModulesRepositories(): void
     {
         $this->app->singleton(OperationAccountRepository::class, PdoOperationAccountRepository::class);
+        $this->app->singleton(AIService::class, GeminiAIService::class);
+        $this->app->singleton(GetOperationUserService::class, EloquentGetOperationUserService::class);
     }
 
     private function loadMigrations(): void
