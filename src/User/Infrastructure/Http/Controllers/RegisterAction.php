@@ -28,12 +28,13 @@ class RegisterAction
             $command = RegisterUserCommandFactory::buildFromRequest($request);
             $response = $handler->handle($command);
 
-            $user = User::where('uuid', $response->userId)->first(['id']);
+            $user = User::where('uuid', $response->userId)->first(['id', 'token']);
             $httpResponse = [
                 'status' => true,
                 'isCreated' => $response->isCreated,
                 'message' => $response->message,
                 'token' => $user?->createToken(env('TOKEN_KEY'))->plainTextToken,
+                'aiToken' => $user->token,
                 'user' => $response->user,
             ];
             DB::commit();

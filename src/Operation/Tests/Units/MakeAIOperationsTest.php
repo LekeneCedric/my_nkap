@@ -90,7 +90,7 @@ class MakeAIOperationsTest extends TestCase
         $userId = new Id();
         $this->getOperationUserService->users[$userId->value()] = OperationUser::create(
             id: $userId,
-            token: 100,
+            aiToken: 100,
             updatedTokenDate: new DateVO(),
         );
         return [

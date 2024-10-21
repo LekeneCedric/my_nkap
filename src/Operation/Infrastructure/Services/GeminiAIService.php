@@ -26,7 +26,7 @@ class GeminiAIService implements AIService
                 3. **User Message**: Describe the financial activity.
 
                 Your task:
-                - Identify the operation type (INCOME=1, EXPENSE=2), amount, relevant category, and return operations in the format making string utf-8 encoded:
+                - Identify the operation type (INCOME=1, EXPENSE=2), amount, relevant category, and return operations in the format making string utf-8 encoded only if corresponding category found:
                 [
                     {
                         "type": TYPE,

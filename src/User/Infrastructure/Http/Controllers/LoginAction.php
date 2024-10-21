@@ -30,6 +30,8 @@ class LoginAction
             ];
         } catch (NotFoundUserException $e) {
             $httpResponse['message'] = 'not_found_user';
+        } catch (\Exception $e) {
+            $httpResponse['message'] = $e->getMessage();
         }
         return response()->json($httpResponse);
     }

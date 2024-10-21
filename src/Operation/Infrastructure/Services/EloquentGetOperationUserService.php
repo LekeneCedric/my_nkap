@@ -19,7 +19,7 @@ class EloquentGetOperationUserService implements GetOperationUserService
         }
         return OperationUser::create(
             id: new Id($user->uuid),
-            token: $user->token,
+            aiToken: $user->token,
             updatedTokenDate: new DateVO($user->token_updated_at)
         );
     }

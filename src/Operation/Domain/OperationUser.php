@@ -10,7 +10,7 @@ class OperationUser
 {
     private function __construct(
         private Id     $id,
-        private int    $token,
+        private int    $aiToken,
         private DateVO $tokenUpdatedAt,
     )
     {
@@ -18,28 +18,32 @@ class OperationUser
 
     /**
      * @param Id $id
-     * @param int $token
+     * @param int $aiToken
      * @param DateVO $updatedTokenDate
      * @return OperationUser
      */
     public static function create(
-        Id $id,
-        int $token,
+        Id     $id,
+        int    $aiToken,
         DateVO $updatedTokenDate,
     ): OperationUser
     {
         if ($updatedTokenDate->isFromPreviousDay()) {
-            $token = UserTokenEnum::DEFAULT_TOKEN;
+            $aiToken = UserTokenEnum::DEFAULT_TOKEN;
         }
         return new self(
             id: $id,
-            token: $token,
+            aiToken: $aiToken,
             tokenUpdatedAt: $updatedTokenDate,
         );
     }
     public function retrievedConsumedToken(mixed $consumedToken): void
     {
-        $this->token -= $consumedToken;
+        $this->aiToken -= $consumedToken;
+        $this->tokenUpdatedAt = new DateVO();
+        if ($this->aiToken < 0) {
+            $this->aiToken = 0;
+        }
     }
 
     /**
@@ -47,7 +51,7 @@ class OperationUser
      */
     public function token(): int
     {
-        return $this->token;
+        return $this->aiToken;
     }
 
     /**

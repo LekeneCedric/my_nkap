@@ -47,6 +47,7 @@ class AuthenticationTest extends TestCase
         $this->assertEquals(UserStatusEnum::PENDING->value, $createdUser->status);
         $this->assertNotNull($createdUser->verification_code);
         $this->assertNotNull($createdUser);
+        $this->assertEquals($response['aiToken'], $createdUser->token);
     }
 
     public function test_can_activate_account_after_registration()
