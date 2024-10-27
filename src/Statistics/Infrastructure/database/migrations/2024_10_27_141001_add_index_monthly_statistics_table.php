@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->integer('user_id')->index();
+        Schema::table('monthly_statistics', function (Blueprint $table) {
+            $table->index('year');
+            $table->index('month');
         });
     }
 
@@ -21,8 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->dropColumn('user_id');
+        Schema::table('monthly_statistics', function (Blueprint $table) {
+            $table->dropIndex('year');
+            $table->dropIndex('month');
         });
     }
 };

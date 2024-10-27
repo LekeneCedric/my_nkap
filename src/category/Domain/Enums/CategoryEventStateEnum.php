@@ -1,6 +1,6 @@
 <?php
 
-namespace App\category\Domain\Enums\EventState;
+namespace App\category\Domain\Enums;
 
 enum CategoryEventStateEnum
 {

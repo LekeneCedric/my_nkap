@@ -2,6 +2,7 @@
 
 namespace App\category\Application\Command\Save;
 
+use App\category\Domain\Enums\CategoryMessagesEnum;
 use App\category\Domain\Exceptions\AlreadyExistsCategoryException;
 use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\category\Domain\Exceptions\NotFoundUserCategoryException;
@@ -52,7 +53,7 @@ class SaveCategoryHandler
         $this->repository->save($user);
 
         $response->isSaved = true;
-        $response->message = $command->categoryId ? 'category-updated' : 'category-created';
+        $response->message = $command->categoryId ? CategoryMessagesEnum::UPDATED : CategoryMessagesEnum::CREATED;
         $response->categoryId = $user->currentCategory()->categoryId->value();
         return $response;
     }

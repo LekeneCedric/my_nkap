@@ -8,6 +8,7 @@ use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
 use App\Shared\Domain\Command\Command;
 use App\Shared\Domain\Command\CommandHandler;
+use App\Shared\Domain\Enums\ErrorMessagesEnum;
 use App\Shared\Domain\VO\AmountVO;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
@@ -50,8 +51,10 @@ class MakeManyOperationsHandler implements CommandHandler
             }
             $response->operationsSaved = true;
             $response->operationIds = $operationIds;
-        } catch (NotFoundAccountException|Exception $e) {
+        } catch (NotFoundAccountException $e) {
             $response->message = $e->getMessage();
+        } catch (Exception) {
+            $response->message = ErrorMessagesEnum::TECHNICAL;
         }
 
         return $response;
@@ -66,7 +69,7 @@ class MakeManyOperationsHandler implements CommandHandler
     {
         $account = $this->repository->byId(new Id($accountId));
         if (!$account) {
-            throw new NotFoundAccountException("Le compte sélectionné n'existe pas !");
+            throw new NotFoundAccountException();
         }
         return $account;
     }

@@ -2,6 +2,7 @@
 
 namespace App\User\Infrastructure\Http\Controllers;
 
+use App\Shared\Domain\Enums\ErrorMessagesEnum;
 use App\User\Application\Command\VerificationAccount\VerificationAccountHandler;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Exceptions\NotFoundUserException;
@@ -35,17 +36,16 @@ class VerificationAccountAction
                 'message' => $response->message,
                 'accountVerified' => $response->accountVerified,
             ];
-        } catch (InvalidArgumentException $e) {
-            $httpResponse['message'] = config('my-nkap.message.technical_error');
-        }  catch (
+        } catch (
         NotFoundUserException|
         UnknownVerificationCodeException|
         VerificationCodeNotMatchException $e) {
-
             $httpResponse['message'] = $e->getMessage();
-        }  catch (ErrorOnSaveUserException|Exception $e) {
-
-            $httpResponse['message'] = config('my-nkap.message.critical_technical_error');
+        } catch (
+        InvalidArgumentException|
+        ErrorOnSaveUserException|
+        Exception) {
+            $httpResponse['message'] = ErrorMessagesEnum::TECHNICAL;
         }
         return response()->json($httpResponse);
     }

@@ -4,7 +4,7 @@ namespace App\category\Tests\Units;
 
 use App\category\Application\Command\Delete\DeleteCategoryHandler;
 use App\category\Application\Command\Delete\DeleteCategoryResponse;
-use App\category\Domain\Enums\EventState\CategoryEventStateEnum;
+use App\category\Domain\Enums\CategoryEventStateEnum;
 use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\category\Domain\Exceptions\NotFoundUserCategoryException;
 use App\category\Domain\UserCategoryRepository;

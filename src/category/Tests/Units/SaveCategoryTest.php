@@ -5,7 +5,7 @@ namespace App\category\Tests\Units;
 use App\category\Application\Command\Save\SaveCategoryCommand;
 use App\category\Application\Command\Save\SaveCategoryHandler;
 use App\category\Application\Command\Save\SaveCategoryResponse;
-use App\category\Domain\Enums\EventState\CategoryEventStateEnum;
+use App\category\Domain\Enums\CategoryEventStateEnum;
 use App\category\Domain\Exceptions\AlreadyExistsCategoryException;
 use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\category\Domain\Exceptions\NotFoundUserCategoryException;

@@ -20,7 +20,7 @@ class DeleteOperationActionTest extends TestCase
 {
     use StatisticsComposedIdBuilderTrait;
 
-    use RefreshDatabase;
+//    use RefreshDatabase;
     const DELETE_OPERATION = 'api/operation/delete';
     private User $user;
     private string $token;

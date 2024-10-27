@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class SendRecoverPasswordCodeAction
 {
@@ -40,7 +41,7 @@ class SendRecoverPasswordCodeAction
                 'message' => $response->message
             ];
             DB::commit();
-        } catch (\InvalidArgumentException) {
+        } catch (InvalidArgumentException) {
             DB::rollBack();
             $httpJson['message'] = config('my-nkap.message.technical_error');
         } catch (NotFoundUserException) {

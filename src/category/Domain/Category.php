@@ -2,7 +2,7 @@
 
 namespace App\category\Domain;
 
-use App\category\Domain\Enums\EventState\CategoryEventStateEnum;
+use App\category\Domain\Enums\CategoryEventStateEnum;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
 

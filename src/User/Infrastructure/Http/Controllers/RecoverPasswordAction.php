@@ -2,6 +2,7 @@
 
 namespace App\User\Infrastructure\Http\Controllers;
 
+use App\Shared\Domain\Enums\ErrorMessagesEnum;
 use App\User\Application\Command\RecoverPassword\RecoverPasswordHandler;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Exceptions\NotFoundUserException;
@@ -17,7 +18,7 @@ class RecoverPasswordAction
 {
     public function __invoke(
         RecoverPasswordHandler $handler,
-        Request $request,
+        Request                $request,
     ): JsonResponse
     {
         $httpResponse = [
@@ -31,19 +32,19 @@ class RecoverPasswordAction
             $response = $handler->handle($command);
 
             $httpResponse = [
-              'status' => true,
-              'passwordReset' => $response->passwordReset
+                'status' => true,
+                'passwordReset' => $response->passwordReset,
+                'message' => $response->message,
             ];
         } catch (
-            InvalidArgumentException|
-            NotFoundUserException|
-            UnknownVerificationCodeException|
-            VerificationCodeNotMatchException $e) {
-            $httpResponse['message'] = $e->getMessage();
-        } catch (ErrorOnSaveUserException $e) {
+        InvalidArgumentException|
+        NotFoundUserException|
+        UnknownVerificationCodeException|
+        VerificationCodeNotMatchException|
+        ErrorOnSaveUserException $e) {
             $httpResponse['message'] = $e->getMessage();
         } catch (Exception) {
-            $httpResponse['message'] = config('my-nkap.message.critical_technical_error');
+            $httpResponse['message'] = ErrorMessagesEnum::TECHNICAL;
         }
 
         return response()->json($httpResponse);

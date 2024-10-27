@@ -4,6 +4,7 @@ namespace App\User\Application\Command\Register;
 
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\User\Domain\Enums\UserMessagesEnum;
 use App\User\Domain\Exceptions\AlreadyUserExistWithSameEmailException;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Repository\UserRepository;
@@ -45,7 +46,7 @@ class RegisterUserHandler
 
         $userId = $user->id()->value();
         $response->isCreated = true;
-        $response->message = 'Utilisateur créer avec succès !';
+        $response->message = UserMessagesEnum::REGISTERED;
         $response->userId = $userId;
         $response->user = $this->getUserById($userId);
         $response->code = $user->verificationCode();
@@ -61,7 +62,7 @@ class RegisterUserHandler
     {
         $userAlreadyExistWithSameEmail = $this->checkIfAlreadyUserExistWithSameEmailByEmailService->execute(new StringVO($command->email));
         if ($userAlreadyExistWithSameEmail) {
-            throw new AlreadyUserExistWithSameEmailException('Un compte à déjà été créer avec cette adresse email !');
+            throw new AlreadyUserExistWithSameEmailException();
         }
     }
 

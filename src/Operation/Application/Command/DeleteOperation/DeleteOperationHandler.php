@@ -3,12 +3,14 @@
 namespace App\Operation\Application\Command\DeleteOperation;
 
 use App\Account\Domain\Exceptions\NotFoundAccountException;
+use App\Operation\Domain\Enums\OperationsMessagesEnum;
 use App\Operation\Domain\Exceptions\NotFoundOperationException;
 use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Shared\Domain\Command\Command;
 use App\Shared\Domain\Command\CommandHandler;
+use App\Shared\Domain\Enums\ErrorMessagesEnum;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
@@ -21,8 +23,8 @@ class DeleteOperationHandler implements CommandHandler
     use StatisticsComposedIdBuilderTrait;
 
     public function __construct(
-        private OperationAccountRepository $repository,
-        private UserRepository $userRepository,
+        private readonly OperationAccountRepository $repository,
+        private readonly UserRepository             $userRepository,
     )
     {
     }
@@ -49,15 +51,15 @@ class DeleteOperationHandler implements CommandHandler
             );
             $operationAccount->publishOperationDeleted($command);
 
-            $response->message = 'Operation supprimée avec succès !';
+            $response->message = OperationsMessagesEnum::DELETED;
             $response->isDeleted = true;
         } catch (
         NotFoundAccountException|
         NotFoundOperationException $e
         ) {
             $response->message = $e->getMessage();
-        } catch (Exception $e) {
-            $response->message = 'Une erreur est survenue lors de la suppression de l\'opération';
+        } catch (Exception) {
+            $response->message = ErrorMessagesEnum::TECHNICAL;
         }
         return $response;
     }
@@ -72,7 +74,7 @@ class DeleteOperationHandler implements CommandHandler
         $accountId = $command->accountId;
         $account = $this->repository->byId(new Id($accountId));
         if (!$account) {
-            throw new NotFoundAccountException("Le compte sélectionné n'existe pas !");
+            throw new NotFoundAccountException();
         }
         return $account;
     }

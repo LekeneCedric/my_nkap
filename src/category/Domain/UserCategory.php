@@ -2,7 +2,7 @@
 
 namespace App\category\Domain;
 
-use App\category\Domain\Enums\EventState\CategoryEventStateEnum;
+use App\category\Domain\Enums\CategoryEventStateEnum;
 use App\category\Domain\Exceptions\AlreadyExistsCategoryException;
 use App\category\Domain\Exceptions\NotFoundCategoryException;
 use App\Shared\Domain\VO\Id;

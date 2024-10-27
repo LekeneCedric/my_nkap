@@ -21,12 +21,11 @@ class DeleteAccountAction
 
         try {
             $accountId = $request->get('accountId');
-
             $response = $handler->handle(accountToDeleteId: $accountId);
-
             $httpJson['accountId'] = $accountId;
             $httpJson['status'] = true;
             $httpJson['isDeleted'] = $response->isDeleted;
+            $httpJson['message'] = $response->message;
         } catch (NotFoundAccountException $e) {
             $httpJson['message'] = $e->getMessage();
         } catch (\Exception $e) {

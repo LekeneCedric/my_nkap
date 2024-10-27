@@ -45,7 +45,7 @@ class SaveCategoryAction
         } catch (
         NotFoundCategoryException
         |NotFoundUserCategoryException  $e) {
-            $httpJson['message'] = config('my-nkap.message.technical_error');
+            $httpJson['message'] = $e->getMessage();
             $logger->Log(
                 message: $e->getMessage(),
                 level: LogLevelEnum::ERROR,

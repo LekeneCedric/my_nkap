@@ -15,6 +15,7 @@ return new class extends Migration
             $table->index('status');
             $table->index('email');
             $table->index('is_deleted');
+            $table->index('verification_code_exp');
         });
     }
 
@@ -24,7 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropIndex(['status', 'email', 'is_deleted']);
+            $table->dropIndex('status');
+            $table->dropIndex('email');
+            $table->dropIndex('is_deleted');
+            $table->dropIndex('verification_code_exp');
         });
     }
 };

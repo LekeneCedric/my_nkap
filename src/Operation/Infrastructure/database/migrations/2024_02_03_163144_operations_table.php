@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->integer('account_id');
             $table->string('uuid');
             $table->integer('type');
-            $table->decimal('amount',15,2);
+            $table->decimal('amount',15);
             $table->integer('category_id')->index();
             $table->text('details');
             $table->dateTime('date');
