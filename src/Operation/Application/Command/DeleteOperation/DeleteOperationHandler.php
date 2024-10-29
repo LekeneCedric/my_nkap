@@ -10,10 +10,13 @@ use App\Operation\Domain\OperationAccountRepository;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Shared\Domain\Command\Command;
 use App\Shared\Domain\Command\CommandHandler;
-use App\Shared\Domain\Enums\ErrorMessagesEnum;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
-use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
+use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
+use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
@@ -25,6 +28,7 @@ class DeleteOperationHandler implements CommandHandler
     public function __construct(
         private readonly OperationAccountRepository $repository,
         private readonly UserRepository             $userRepository,
+        private readonly ChannelNotification        $channelNotification,
     )
     {
     }
@@ -58,8 +62,32 @@ class DeleteOperationHandler implements CommandHandler
         NotFoundOperationException $e
         ) {
             $response->message = $e->getMessage();
-        } catch (Exception) {
+            $this->channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'OPERATION (DELETE)',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::WARNING->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
+        } catch (Exception $e) {
             $response->message = ErrorMessagesEnum::TECHNICAL;
+            $this->channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'OPERATION (DELETE)',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::CRITICAL->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
         }
         return $response;
     }
@@ -81,10 +109,10 @@ class DeleteOperationHandler implements CommandHandler
 
     private function completeCommandWithAdditionalInformations(
         DeleteOperationCommand|Command &$command,
-        float $amount,
-        string $date,
-        OperationTypeEnum $type,
-        string $categoryId
+        float                          $amount,
+        string                         $date,
+        OperationTypeEnum              $type,
+        string                         $categoryId
     ): void
     {
         list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];

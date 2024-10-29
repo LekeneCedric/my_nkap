@@ -6,4 +6,6 @@ class VerificationAccountResponse
 {
     public string $message = '';
     public bool $accountVerified = false;
+    public array $userData = [];
+    public int $countUsers = 0;
 }

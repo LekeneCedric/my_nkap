@@ -10,7 +10,7 @@ use App\User\Domain\Exceptions\UnknownVerificationCodeException;
 use App\User\Domain\Exceptions\VerificationCodeNotMatchException;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\User;
-
+use App\User\Infrastructure\Models\User as UserModel;
 class VerificationAccountHandler
 {
     public function __construct(
@@ -35,6 +35,10 @@ class VerificationAccountHandler
         $this->userRepository->update($user);
         $response->accountVerified = true;
         $response->message = UserMessagesEnum::ACCOUNT_VERIFIED;
+        $response->userData = $user->publicInfo();
+        $response->countUsers = UserModel::where('status', UserStatusEnum::ACTIVE)
+            ->where('is_deleted', 0)
+            ->count();
         return $response;
     }
 

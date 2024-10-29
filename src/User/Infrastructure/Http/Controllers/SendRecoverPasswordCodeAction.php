@@ -2,6 +2,11 @@
 
 namespace App\User\Infrastructure\Http\Controllers;
 
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
+use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
+use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\User\Application\Command\SendRecoverPasswordCode\SendRecoverPasswordCodeCommand;
 use App\User\Application\Command\SendRecoverPasswordCode\SendRecoverPasswordCodeHandler;
 use App\User\Domain\Enums\UserMessagesEnum;
@@ -17,6 +22,7 @@ use InvalidArgumentException;
 class SendRecoverPasswordCodeAction
 {
     public function __invoke(
+        ChannelNotification $channelNotification,
         SendRecoverPasswordCodeHandler $handler,
         Request $request,
     ): JsonResponse
@@ -43,13 +49,37 @@ class SendRecoverPasswordCodeAction
             DB::commit();
         } catch (InvalidArgumentException) {
             DB::rollBack();
-            $httpJson['message'] = config('my-nkap.message.technical_error');
-        } catch (NotFoundUserException) {
+            $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
+        } catch (NotFoundUserException $e) {
             DB::rollBack();
             $httpJson['message'] = UserMessagesEnum::NOT_FOUND;
-        } catch (ErrorOnSaveUserException|Exception) {
+            $channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'AUTHENTICATION (RECOVER-PASSWORD)',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::WARNING->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
+        } catch (ErrorOnSaveUserException|Exception $e) {
             DB::rollBack();
-            $httpJson['message'] = config('my-nkap.message.critical_technical_error');
+            $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
+            $channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'AUTHENTICATION (RECOVER-PASSWORD)',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::CRITICAL->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
         }
         return response()->json($httpJson);
     }

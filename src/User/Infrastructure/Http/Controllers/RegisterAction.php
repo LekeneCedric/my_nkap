@@ -2,10 +2,12 @@
 
 namespace App\User\Infrastructure\Http\Controllers;
 
-use App\Shared\Domain\Enums\ErrorMessagesEnum;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
+use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
 use App\User\Application\Command\Register\RegisterUserHandler;
 use App\User\Domain\Exceptions\AlreadyUserExistWithSameEmailException;
-use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Infrastructure\Factories\RegisterUserCommandFactory;
 use App\User\Infrastructure\Http\Requests\RegisterUserRequest;
 use App\User\Infrastructure\Jobs\SendVerificationCodeEmail;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 class RegisterAction
 {
     public function __invoke(
+        ChannelNotification $channelNotification,
         RegisterUserHandler $handler,
         RegisterUserRequest $request,
     ): JsonResponse
@@ -45,6 +48,18 @@ class RegisterAction
         } catch (Exception $e) {
             DB::rollBack();
             $httpResponse['message'] = $command->professionId;
+            $channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'AUTHENTICATION (REGISTER)',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::CRITICAL->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
         }
 
         return response()->json($httpResponse);

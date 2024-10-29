@@ -7,7 +7,12 @@ use App\category\Infrastructure\Models\Category;
 use App\FinancialGoal\Infrastructure\Model\FinancialGoal;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
 use App\Shared\Domain\VO\Id;
+use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
+use App\Shared\Infrastructure\Notifications\Channel\Discord\DiscordChannelNotification;
+use App\Statistics\Application\Query\MonthlyCategoryStatistics\All\GetAllMonthlyCategoryStatisticsCommand;
 use App\Statistics\Infrastructure\Model\MonthlyCategoryStatistic;
 use App\Statistics\Infrastructure\Model\MonthlyStatistic;
 use App\User\Infrastructure\Models\Profession;
@@ -38,6 +43,25 @@ class MakeOperationActionTest extends TestCase
         $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
     }
 
+    public function test()
+    {
+        (new DiscordChannelNotification())
+            ->send(new ChannelNotificationContent(
+                type: ChannelNotificationTypeEnum::ISSUE,
+                data: [
+                    'module' => 'Accounts',
+                    'message' => 'message',
+                    'level' => ErrorLevelEnum::CRITICAL->value,
+                    'command' => json_encode(new GetAllMonthlyCategoryStatisticsCommand(
+                        userId: 'userId',
+                        year: 2002,
+                        month: 10
+                    ), JSON_PRETTY_PRINT),
+                    'trace' => 'trace'
+                ],
+            ));
+        $this->assertTrue(true);
+    }
     public function test_can_make_operation()
     {
         $initData = $this->buildSUT();
@@ -81,7 +105,7 @@ class MakeOperationActionTest extends TestCase
             'date' => '2023-09-30 15:00:00'
         ];
 
-        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
+        $response = $this->postJson(self::INFOSAVE_OPERATION_ROUTE, $data, [
             'Authorization' => 'Bearer ' . $this->token,
         ]);
         $updatedAccount = Account::whereUuid($initData['accountId'])->whereIsDeleted(false)->first();

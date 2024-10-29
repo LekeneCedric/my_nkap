@@ -8,11 +8,15 @@ use App\Operation\Domain\operationAccount;
 use App\Operation\Domain\OperationAccountRepository;
 use App\Shared\Domain\Command\Command;
 use App\Shared\Domain\Command\CommandHandler;
-use App\Shared\Domain\Enums\ErrorMessagesEnum;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
 use App\Shared\Domain\VO\AmountVO;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
+use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
@@ -24,6 +28,7 @@ class MakeManyOperationsHandler implements CommandHandler
     public function __construct(
         private OperationAccountRepository $repository,
         private UserRepository $userRepository,
+        private ChannelNotification $channelNotification,
     )
     {
     }
@@ -53,8 +58,32 @@ class MakeManyOperationsHandler implements CommandHandler
             $response->operationIds = $operationIds;
         } catch (NotFoundAccountException $e) {
             $response->message = $e->getMessage();
-        } catch (Exception) {
+            $this->channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'OPERATION (ADD-MANY)',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::WARNING->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
+        } catch (Exception $e) {
             $response->message = ErrorMessagesEnum::TECHNICAL;
+            $this->channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'OPERATION (ADD-MANY)',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::CRITICAL->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
         }
 
         return $response;

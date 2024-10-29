@@ -7,6 +7,7 @@ use App\Operation\Application\Command\MakeOperation\makeOperationResponse;
 use App\Operation\Infrastructure\Factories\MakeOperationCommandFactory;
 use App\Operation\Infrastructure\Http\Requests\MakeOperationRequest;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
 use App\Shared\Domain\Transaction\TransactionCommandHandler;
 use App\Shared\Domain\Transaction\TransactionSession;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
@@ -29,7 +30,10 @@ class MakeOperationAction
             $command = MakeOperationCommandFactory::buildFromRequest($request);
             $command->previousAmount = $request->get('previousAmount') ?? 0;
 
-            $transactionCommandHandler = new TransactionCommandHandler($handler, $transactionSession);
+            $transactionCommandHandler = new TransactionCommandHandler(
+                handler: $handler,
+                session: $transactionSession
+            );
             $response = $transactionCommandHandler->handle($command);
 
             if ($response instanceof makeOperationResponse) {

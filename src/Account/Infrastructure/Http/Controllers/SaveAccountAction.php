@@ -7,6 +7,11 @@ use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Infrastructure\Factories\SaveAccountCommandFactory;
 use App\Account\Infrastructure\Http\Requests\SaveAccountRequest;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
+use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
+use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -15,6 +20,7 @@ class SaveAccountAction
     public function __invoke(
         SaveAccountHandler $handler,
         SaveAccountRequest $request,
+        ChannelNotification $channelNotification,
     ): JsonResponse
     {
         $httpJson = [
@@ -23,6 +29,7 @@ class SaveAccountAction
         ];
         try {
             $command = SaveAccountCommandFactory::buildFromRequest($request);
+
             $response = $handler->handle($command);
             $httpJson['status'] = $response->status;
             $httpJson['isSaved'] = $response->isSaved;
@@ -30,11 +37,47 @@ class SaveAccountAction
             $httpJson['message'] = $response->message;
         } catch (NotFoundAccountException $e){
             $httpJson['message'] = $e->getMessage();
-        } catch (ErrorOnSaveAccountException) {
-            $httpJson['message'] = 'Une érreur critique est survenue lors du traitement de votre opération , veuillez réessayez plus târd !';
+            $channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'Accounts',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::INFO->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
+        } catch (ErrorOnSaveAccountException $e) {
+            $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
+            $channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'Accounts',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::WARNING->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
         }
-        catch (Exception) {
-            $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veuillez réessayer ultérieurement !';
+        catch (Exception $e) {
+            $httpJson['message'] = 'exeeee';
+            $channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'Accounts',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::CRITICAL->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
         }
 
         return response()->json($httpJson);

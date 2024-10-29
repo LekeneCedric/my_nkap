@@ -2,7 +2,7 @@
 
 namespace App\User\Infrastructure\Http\Controllers;
 
-use App\Shared\Domain\Enums\ErrorMessagesEnum;
+use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\User\Application\Command\RecoverPassword\RecoverPasswordHandler;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Exceptions\NotFoundUserException;

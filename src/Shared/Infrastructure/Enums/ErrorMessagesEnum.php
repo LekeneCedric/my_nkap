@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Domain\Enums;
+namespace App\Shared\Infrastructure\Enums;
 
 enum ErrorMessagesEnum
 {
