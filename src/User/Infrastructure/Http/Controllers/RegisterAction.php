@@ -2,6 +2,7 @@
 
 namespace App\User\Infrastructure\Http\Controllers;
 
+use App\Shared\Domain\Enums\ErrorMessagesEnum;
 use App\User\Application\Command\Register\RegisterUserHandler;
 use App\User\Domain\Exceptions\AlreadyUserExistWithSameEmailException;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
@@ -41,9 +42,9 @@ class RegisterAction
         } catch (AlreadyUserExistWithSameEmailException $e) {
             DB::rollBack();
             $httpResponse['message'] = $e->getMessage();
-        }catch (ErrorOnSaveUserException|Exception) {
+        } catch (Exception $e) {
             DB::rollBack();
-            $httpResponse['message'] = config('my-nkap.message.critical_technical_error');
+            $httpResponse['message'] = $command->professionId;
         }
 
         return response()->json($httpResponse);

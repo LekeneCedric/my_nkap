@@ -44,6 +44,13 @@ COPY --chown=www-data:www-data . /var/www
 # Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
+# Create a log file for the cron job
+RUN touch /var/www/storage/logs/scheduler.log \
+    && chmod 777 /var/www/storage/logs/scheduler.log
+
+# Add cron job to execute Laravel scheduler every minute
+RUN echo "* * * * * www-data php /var/www/artisan schedule:run >> /var/www/storage/logs/scheduler.log 2>&1" > /etc/crontabs/www-data
+
 # Expose port 9000 and start PHP-FPM server
 EXPOSE 9000
 CMD ["php-fpm"]
