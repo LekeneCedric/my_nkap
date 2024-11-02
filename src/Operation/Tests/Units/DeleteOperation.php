@@ -13,25 +13,30 @@ use App\Operation\Domain\OperationAccountRepository;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Tests\Units\Builders\DeleteOperationCommandBuilder;
 use App\Operation\Tests\Units\Repository\InMemoryOperationAccountRepository;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
 use App\Shared\Domain\VO\AmountVO;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Tests\Units\Repository\InMemoryUserRepository;
-use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
-class DeleteOperationTest extends TestCase
+/**
+ * @deprecated
+ */
+class DeleteOperation extends TestCase
 {
     private OperationAccountRepository $repository;
     private UserRepository $userRepository;
+    private ChannelNotification $channelNotification;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->repository = new InMemoryOperationAccountRepository();
         $this->userRepository = new InMemoryUserRepository();
+        $this->channelNotification = new InMemoryChannelNotification();
     }
 
     /**

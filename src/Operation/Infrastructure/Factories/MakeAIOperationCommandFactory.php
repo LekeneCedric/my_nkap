@@ -15,6 +15,7 @@ class MakeAIOperationCommandFactory
     {
         return new MakeAIOperationCommand(
             userId: $request->get('userId'),
+            accounts: $request->get('accounts'),
             categories: $request->get('categories'),
             currentDate: $request->get('currentDate'),
             message: $request->get('message'),

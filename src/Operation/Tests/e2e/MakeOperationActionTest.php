@@ -105,7 +105,7 @@ class MakeOperationActionTest extends TestCase
             'date' => '2023-09-30 15:00:00'
         ];
 
-        $response = $this->postJson(self::INFOSAVE_OPERATION_ROUTE, $data, [
+        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
             'Authorization' => 'Bearer ' . $this->token,
         ]);
         $updatedAccount = Account::whereUuid($initData['accountId'])->whereIsDeleted(false)->first();

@@ -7,6 +7,11 @@ use App\Operation\Application\Command\MakeAIOperation\MakeAIOperationHandler;
 use App\Operation\Domain\Exceptions\AIOperationEmptyMessageException;
 use App\Operation\Infrastructure\Factories\MakeAIOperationCommandFactory;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
+use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
+use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
 use App\User\Domain\Exceptions\NotFoundUserException;
 use Exception;
@@ -20,6 +25,7 @@ class MakeAIOperationAction
         MakeAIOperationHandler $handler,
         Request $request,
         OperationsLogger $logger,
+        ChannelNotification $channelNotification,
     ): JsonResponse
     {
         $httpResponse = [
@@ -55,15 +61,26 @@ class MakeAIOperationAction
                 level: LogLevelEnum::ERROR,
                 description: $e,
             );
-            $httpResponse['message'] = $e->getMessage();
+            $httpResponse['message'] = ErrorMessagesEnum::TECHNICAL;
         } catch (Exception $e) {
-
             $logger->Log(
                 message: $e->getMessage(),
                 level: LogLevelEnum::CRITICAL,
                 description: $e,
             );
-            $httpResponse['message'] = $e->getMessage();
+            $channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'AI-OPERATION',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::CRITICAL->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
+            $httpResponse['message'] = ErrorMessagesEnum::TECHNICAL;
         }
 
         return response()->json($httpResponse);

@@ -82,6 +82,7 @@ class OperationAccountRepositoryTest extends TestCase
             categoryId: new Id(Category::factory()->create()->uuid),
             detail: new StringVO('$command->detail'),
             date: new DateVO('2002-09-30 00:00:00'),
+            previousAmount: 0,
         );
 
         $this->repository->saveOperation($operationAccount);

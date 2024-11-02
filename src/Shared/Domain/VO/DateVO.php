@@ -10,6 +10,7 @@ class DateVO
 {
     private string $value;
     private string $format;
+
     public function __construct(?string $value = null, ?string $format = null)
     {
         if ($value) {
@@ -19,10 +20,24 @@ class DateVO
         }
         if ($format) {
             $this->format = $format;
-        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->value)) {
-            $this->format = 'Y-m-d';  // Simple date format
         } else {
-            $this->format = 'Y-m-d H:i:s';  // Full date-time format
+            // Check for different date formats
+            if (preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{1,2}(:\d{2})?(:\d{2})?)?$/', $this->value)) {
+                // Match: Y-m-d, Y-m-d H, Y-m-d H:i, or Y-m-d H:i:s
+                if (str_contains($this->value, ':')) {
+                    // Check if seconds are present
+                    $parts = explode(':', $this->value);
+                    if (count($parts) == 2) {
+                        $this->format = 'Y-m-d H:i'; // Y-m-d H:i format
+                    } else {
+                        $this->format = 'Y-m-d H:i:s'; // Y-m-d H:i:s format
+                    }
+                } else {
+                    $this->format = 'Y-m-d'; // Y-m-d format
+                }
+            } else {
+                $this->format = 'Y-m-d H:i:s'; // Default to full date-time format
+            }
         }
         $this->validate();
     }
@@ -35,7 +50,7 @@ class DateVO
         if (!$this->value) {
             throw new Exception(' La date n\'est pas valide !');
         }
-            return (new DateTime($this->value))->format('Y-m-d H:i:s');
+        return (new DateTime($this->value))->format('Y-m-d H:i:s');
     }
 
     /**

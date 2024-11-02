@@ -21,7 +21,10 @@ use App\User\Tests\Units\Repository\InMemoryUserRepository;
 use Exception;
 use Tests\TestCase;
 
-class MakeOperationTest extends TestCase
+/**
+ * @deprecated
+ */
+class MakeOperation extends TestCase
 {
     private OperationAccountRepository $repository;
     private UserRepository $userRepository;
