@@ -20,6 +20,7 @@ use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class DeleteOperationHandler implements CommandHandler
 {
@@ -40,6 +41,7 @@ class DeleteOperationHandler implements CommandHandler
     public function handle(DeleteOperationCommand|Command $command): DeleteOperationResponse
     {
         $response = new DeleteOperationResponse();
+        DB::beginTransaction();
         try {
             $operationAccount = $this->getOperationAccountOrThrowException($command);
             $operationAccount->deleteOperation(new Id($command->operationId));
@@ -54,13 +56,14 @@ class DeleteOperationHandler implements CommandHandler
                 $operationAccount->currentOperation()->categoryId()->value(),
             );
             $operationAccount->publishOperationDeleted($command);
-
+            DB::commit();
             $response->message = OperationsMessagesEnum::DELETED;
             $response->isDeleted = true;
         } catch (
         NotFoundAccountException|
         NotFoundOperationException $e
         ) {
+            DB::rollBack();
             $response->message = $e->getMessage();
             $this->channelNotification->send(
                 new ChannelNotificationContent(
@@ -75,6 +78,7 @@ class DeleteOperationHandler implements CommandHandler
                 )
             );
         } catch (Exception $e) {
+            DB::rollBack();
             $response->message = ErrorMessagesEnum::TECHNICAL;
             $this->channelNotification->send(
                 new ChannelNotificationContent(

@@ -20,6 +20,7 @@ use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class MakeManyOperationsHandler implements CommandHandler
 {
@@ -37,6 +38,7 @@ class MakeManyOperationsHandler implements CommandHandler
     {
         $response = new MakeManyOperationResponse();
         $operationIds = [];
+        DB::beginTransaction();
         try {
             foreach ($command->operations as $operationCommand) {
                 $operationCommand->previousAmount = 0;
@@ -54,9 +56,11 @@ class MakeManyOperationsHandler implements CommandHandler
                 $operationAccount->publishOperationSaved($operationCommand);
                 $operationIds[] = $operationAccount->currentOperation()->id()->value();
             }
+            DB::commit();
             $response->operationsSaved = true;
             $response->operationIds = $operationIds;
         } catch (NotFoundAccountException $e) {
+            DB::rollBack();
             $response->message = $e->getMessage();
             $this->channelNotification->send(
                 new ChannelNotificationContent(
@@ -71,6 +75,7 @@ class MakeManyOperationsHandler implements CommandHandler
                 )
             );
         } catch (Exception $e) {
+            DB::rollBack();
             $response->message = ErrorMessagesEnum::TECHNICAL;
             $this->channelNotification->send(
                 new ChannelNotificationContent(
