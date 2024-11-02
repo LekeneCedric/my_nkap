@@ -39,6 +39,7 @@ class operationAccount extends AggregateRoot
     /**
      * @param Id $operationId
      * @param AmountVO $amount
+     * @param AmountVO $previousAmount
      * @param OperationTypeEnum $type
      * @param Id $categoryId
      * @param StringVO $detail
@@ -49,15 +50,17 @@ class operationAccount extends AggregateRoot
     public function updateOperation(
         Id                $operationId,
         AmountVO          $amount,
+        AmountVO          $previousAmount,
         OperationTypeEnum $type,
-        Id          $categoryId,
+        Id                $categoryId,
         StringVO          $detail,
         DateVO            $date
     ): void
     {
-        $this->checkIfOperationAmoutGreaterThantAccountBalancecapacity(
+        $this->checkIfOperationAmountGreaterThantAccountBalanceCapacity(
             operationType: $type,
             amount: $amount,
+            previousAmount: $previousAmount
         );
         $operation = $this->operations[$operationId->value()];
         $previousOperationType = $operation->type();
@@ -81,17 +84,20 @@ class operationAccount extends AggregateRoot
     /**
      * @param OperationTypeEnum $operationType
      * @param AmountVO $amount
+     * @param AmountVO $previousAmount
      * @return void
      * @throws OperationGreaterThanAccountBalanceException
      */
-    private function checkIfOperationAmoutGreaterThantAccountBalancecapacity(
+    private function checkIfOperationAmountGreaterThantAccountBalanceCapacity(
         OperationTypeEnum $operationType,
-        AmountVO          $amount
+        AmountVO          $amount,
+        AmountVO          $previousAmount,
     ): void
     {
         if ($operationType === OperationTypeEnum::EXPENSE) {
-            if ($amount->value() > $this->balance->value()) {
-                throw new OperationGreaterThanAccountBalanceException("Le solde du compte est insuffisant pour cette transaction !");
+            $newBalanceAmount = $this->balance->value() + $previousAmount->value();
+            if ($amount->value() > $newBalanceAmount) {
+                throw new OperationGreaterThanAccountBalanceException();
             }
         }
     }
@@ -154,14 +160,15 @@ class operationAccount extends AggregateRoot
     public function makeOperation(
         AmountVO          $amount,
         OperationTypeEnum $type,
-        Id          $categoryId,
+        Id                $categoryId,
         StringVO          $detail,
         DateVO            $date
     ): void
     {
-        $this->checkIfOperationAmoutGreaterThantAccountBalancecapacity(
+        $this->checkIfOperationAmountGreaterThantAccountBalanceCapacity(
             operationType: $type,
             amount: $amount,
+            previousAmount: new AmountVO(0),
         );
         $operation = Operation::create(
             amount: $amount,
@@ -189,10 +196,10 @@ class operationAccount extends AggregateRoot
         AmountVO $balance,
         AmountVO $totalIncomes,
         AmountVO $totalExpenses,
-        ?Id       $accountId = null,
+        ?Id      $accountId = null,
     ): operationAccount
     {
-        $self =  new self(
+        $self = new self(
             accountId: $accountId ?? new Id(),
             balance: $balance,
             totalIncomes: $totalIncomes,
@@ -204,22 +211,6 @@ class operationAccount extends AggregateRoot
             $self->createdAt = new DateVO();
         }
         return $self;
-    }
-
-    /**
-     * @return AmountVO
-     */
-    public function totalExpenses(): AmountVO
-    {
-        return $this->totalExpenses;
-    }
-
-    /**
-     * @return AmountVO
-     */
-    public function totalIncomes(): AmountVO
-    {
-        return $this->totalIncomes;
     }
 
     public function currentOperation(): Operation
@@ -244,7 +235,7 @@ class operationAccount extends AggregateRoot
     {
         $operation = $this->deleteAndRetrieveOperation($operationId);
         if (!$operation) {
-            throw new NotFoundOperationException("L'operation sélectionné n'existe plus dans le système !");
+            throw new NotFoundOperationException();
         }
         $this->currentOperation = $operation;
         $this->applyDeleteOperationSideEffects();
@@ -273,13 +264,13 @@ class operationAccount extends AggregateRoot
      */
     private function applyDeleteOperationSideEffects(
         ?OperationTypeEnum $type = null,
-        ?AmountVO $amount= null,
+        ?AmountVO          $amount = null,
     ): void
     {
         $newBalanceValue = $this->balance->value();
         $totalExpensesValue = $this->totalExpenses->value();
         $totalIncomesValue = $this->totalIncomes->value();
-        $currentOperationAmountValue = $amount ? $amount->value() :$this->currentOperation->amount()->value();
+        $currentOperationAmountValue = $amount ? $amount->value() : $this->currentOperation->amount()->value();
         $currentOperationType = $type ?: $this->currentOperation->type();
         if ($currentOperationType === OperationTypeEnum::EXPENSE) {
             $newBalanceValue += $currentOperationAmountValue;
@@ -327,7 +318,7 @@ class operationAccount extends AggregateRoot
         $this->domainEventPublisher->publish(
             new OperationSaved(
                 accountId: $command->accountId,
-                previousAmount: $command->previousAmount,
+                previousAmount: $command->previousAmount ?? 0,
                 newAmount: $command->amount,
                 operationDate: $command->date,
                 type: $command->type,
@@ -345,18 +336,18 @@ class operationAccount extends AggregateRoot
     {
         $this->domainEventPublisher->publish(
             new OperationDeleted(
-               accountId: $command->accountId,
-               previousAmount: $command->previousAmount,
-               newAmount: $command->newAmount,
-               date: $command->date,
-               type: $command->type,
-               isDeleted: $command->isDeleted,
-               monthlyStatisticsComposedId: $command->monthlyStatisticsComposedId,
-               monthlyStatisticsByCategoryComposedId: $command->monthlyStatisticsByCategoryComposedId,
-               userId: $command->userId,
-               year: $command->year,
-               month: $command->month,
-               categoryId: $command->categoryId,
+                accountId: $command->accountId,
+                previousAmount: $command->previousAmount,
+                newAmount: $command->newAmount,
+                date: $command->date,
+                type: $command->type,
+                isDeleted: $command->isDeleted,
+                monthlyStatisticsComposedId: $command->monthlyStatisticsComposedId,
+                monthlyStatisticsByCategoryComposedId: $command->monthlyStatisticsByCategoryComposedId,
+                userId: $command->userId,
+                year: $command->year,
+                month: $command->month,
+                categoryId: $command->categoryId,
             )
         );
     }

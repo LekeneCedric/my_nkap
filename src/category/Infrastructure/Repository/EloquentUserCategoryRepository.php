@@ -3,7 +3,7 @@
 namespace App\category\Infrastructure\Repository;
 
 use App\category\Domain\Category;
-use App\category\Domain\Enums\EventState\CategoryEventStateEnum;
+use App\category\Domain\Enums\CategoryEventStateEnum;
 use App\category\Domain\Exceptions\ErrorOnSaveCategoryException;
 use App\category\Domain\UserCategory;
 use App\category\Domain\UserCategoryRepository;

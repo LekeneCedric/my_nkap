@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
     app:
         build:
@@ -25,6 +23,10 @@ services:
                    php artisan key:generate &&
                    php artisan db:seed --class=ProfessionsSeed &&
                    php-fpm"
+        deploy:
+            resources:
+                limits:
+                    memory: '128M'
 
     webserver:
         image: nginx:alpine
@@ -37,6 +39,10 @@ services:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
         networks:
             - app-network
+        deploy:
+            resources:
+                limits:
+                    memory: '128M'
 
     mysql:
         image: mysql:8.0
@@ -58,6 +64,10 @@ services:
             retries: 5
         networks:
             - app-network
+        deploy:
+            resources:
+                limits:
+                    memory: '256M'
 
 networks:
     app-network:

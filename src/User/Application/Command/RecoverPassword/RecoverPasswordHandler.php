@@ -2,6 +2,7 @@
 
 namespace App\User\Application\Command\RecoverPassword;
 
+use App\User\Domain\Enums\UserMessagesEnum;
 use App\User\Domain\Exceptions\ErrorOnSaveUserException;
 use App\User\Domain\Exceptions\NotFoundUserException;
 use App\User\Domain\Exceptions\UnknownVerificationCodeException;
@@ -35,6 +36,7 @@ class RecoverPasswordHandler
         $user->resetPassword($command->password);
         $this->repository->update($user);
 
+        $response->message = UserMessagesEnum::PASSWORD_RESET;
         $response->passwordReset = true;
         return $response;
     }

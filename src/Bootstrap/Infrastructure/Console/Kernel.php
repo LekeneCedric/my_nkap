@@ -13,7 +13,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('authentication:remove-unactivated-accounts-after-10-minutes-of-his-creation')->everyTenMinutes();
+        $schedule->command('authentication:remove-unactivated-accounts-after-10-minutes-of-his-creation')
+            ->withoutOverlapping()
+            ->everyTenMinutes();
     }
 
     /**

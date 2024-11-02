@@ -39,6 +39,7 @@ class MakeAIOperationHandler
             throw new AIOperationEmptyMessageException();
         }
         $makeAIOperationResponse = $this->AIService->makeOperation(
+            accounts: $command->accounts,
             categories: $command->categories,
             message: $command->message,
             currentDate: $command->currentDate,

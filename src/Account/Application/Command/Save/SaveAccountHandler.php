@@ -3,6 +3,7 @@
 namespace App\Account\Application\Command\Save;
 
 use App\Account\Domain\Account;
+use App\Account\Domain\Enums\AccountMessagesEnum;
 use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
@@ -44,9 +45,9 @@ class SaveAccountHandler
         $response->status = true;
         $response->isSaved = true;
         $response->accountId = $account->id()->value();
-        $response->message = 'Compte créer avec succès !';
+        $response->message = AccountMessagesEnum::CREATED;
         if ($command->accountId) {
-            $response->message = 'Informations compte modifiés avec succès !';
+            $response->message = AccountMessagesEnum::UPDATED;
         }
         return $response;
     }
@@ -61,7 +62,7 @@ class SaveAccountHandler
         if ($command->accountId) {
            $account = $this->repository->byId(new Id($command->accountId));
            if (!$account) {
-               throw new NotFoundAccountException("Le compte sélectionné n'existe pas !");
+               throw new NotFoundAccountException(AccountMessagesEnum::NOT_FOUND);
            }
            return $account;
         }

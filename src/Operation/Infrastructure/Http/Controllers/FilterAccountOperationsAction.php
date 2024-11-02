@@ -6,6 +6,11 @@ use App\Operation\Application\Queries\Filter\FilterAccountOperationsHandler;
 use App\Operation\Infrastructure\Factories\FilterAccountOperationsCommandFactory;
 use App\Operation\Infrastructure\Logs\OperationsLogger;
 use App\Operation\Infrastructure\ViewModels\FilterAccountOperationsViewModel;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
+use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
+use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
+use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Shared\Infrastructure\Logs\Enum\LogLevelEnum;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -18,6 +23,7 @@ class FilterAccountOperationsAction
         FilterAccountOperationsHandler $handler,
         Request                        $request,
         OperationsLogger               $logger,
+        ChannelNotification            $channelNotification,
     ): JsonResponse
     {
 
@@ -63,7 +69,19 @@ class FilterAccountOperationsAction
                 level: LogLevelEnum::ERROR,
                 description: $e,
             );
-            $httpJson['message'] = 'Une erreur est survenue lors du traitement de votre requête , veuillez réessayer ultérieurement !';
+            $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
+            $channelNotification->send(
+                new ChannelNotificationContent(
+                    type: ChannelNotificationTypeEnum::ISSUE,
+                    data: [
+                        'module' => 'OPERATION (FILTER)',
+                        'message' => $e->getMessage(),
+                        'level' => ErrorLevelEnum::CRITICAL->value,
+                        'command' => json_encode($command, JSON_PRETTY_PRINT),
+                        'trace' => $e->getTraceAsString()
+                    ],
+                )
+            );
         }
 
         return response()->json($httpJson);

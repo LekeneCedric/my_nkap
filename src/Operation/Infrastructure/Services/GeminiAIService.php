@@ -11,7 +11,7 @@ use Ramsey\Uuid\Uuid;
 class GeminiAIService implements AIService
 {
 
-    public function makeOperation(array $categories, string $message, string $currentDate, string $language): MakeAIOperationServiceResponseVO
+    public function makeOperation(array $accounts, array $categories, string $message, string $currentDate, string $language): MakeAIOperationServiceResponseVO
     {
         $apiKey = env('GEMINI_API_KEY');
         $apiUrl = env('GEMINI_API_URL').'?key='.$apiKey;
@@ -20,37 +20,47 @@ class GeminiAIService implements AIService
         $contents = [
             [
                 "text" => '
-                You are an AI assistant for financial management. Please analyze the user message and return structured operations in JSON format based on the following inputs:
-                1. **Categories**: An array of user action categories in the form { id, label } (e.g., { 1, "Food" }, { 2, "Transport" }).
-                2. **Current Date**: Format "YYYY-MM-DD HH:mm:ss".
-                3. **User Message**: Describe the financial activity.
+                    You are an AI financial assistant. Analyze the user message and return operations in JSON format from these inputs:
 
-                Your task:
-                - Identify the operation type (INCOME=1, EXPENSE=2), amount, relevant category, and return operations in the format making string utf-8 encoded only if corresponding category found:
-                [
+                    1. **Categories**: Array of { id, label } (e.g., { 1, "Food" }).
+                    2. **Accounts**: Array of { id, label } (e.g., { 1, "Cash" }).
+                    3. **Current Date**: "YYYY-MM-DD HH:mm:ss".
+                    4. **User Message**: Describe the activity.
+
+                    Your task:
+                    - Identify operation type (1=INCOME, 2=EXPENSE), amount, category, and account (first if only one).
+                    - Return operations if a categoryId is found in this format:
+                    [
                     {
-                        "type": TYPE,
-                        "amount": number,
-                        "categoryId": string,
-                        "date": string,
-                        "title": string
+                    "accountId": "string",
+                    "type": 1|2,
+                    "amount": number,
+                    "categoryId": "string",
+                    "date": "string",
+                    "title": "string"
                     }
-                ]
+                    ]
+                    Use UTF-8 encoding for operation strings.
                 ',
             ],
             [
                 "text" => "List of given categories : (" . implode(", ", array_map(function($ca) {
                         return "{ id: {$ca['id']}, label: '{$ca['label']}' }";
-                    }, $categories)) . ")",
+                    }, $categories)) . ")
+                    \n List of given accounts : (" . implode(", ", array_map(function($ac) {
+                        return "{ id: {$ac['id']}, label: '{$ac['label']}' }";
+                    }, $accounts)) . ")",
             ],
             [
                 "text" => "Today is : $currentDate",
             ],
             [
+                "text" => "specified language : $language"
+            ],
+            [
                 "text" => $message,
             ],
         ];
-
         // Prepare the request body
         $requestBody = [
             "contents" => [
@@ -85,6 +95,7 @@ class GeminiAIService implements AIService
                 return [
                     'type' => $data['type'],
                     'amount' => $data['amount'],
+                    'accountId' => $data['accountId'],
                     'categoryId' => $data['categoryId'],
                     'date' => $data['date'],
                     'title' => $data['title'],

@@ -119,6 +119,13 @@ class User
         return $data;
     }
 
+    public function publicInfo(): array
+    {
+        return [
+          'name' => $this->name->value(),
+          'email' => $this->email->value(),
+        ];
+    }
     public function activateAccount(): void
     {
         $this->status = UserStatusEnum::ACTIVE;

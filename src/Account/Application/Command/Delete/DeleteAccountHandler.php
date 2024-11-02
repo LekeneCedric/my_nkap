@@ -2,6 +2,7 @@
 
 namespace App\Account\Application\Command\Delete;
 
+use App\Account\Domain\Enums\AccountMessagesEnum;
 use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
@@ -28,12 +29,11 @@ class DeleteAccountHandler
 
         $account = $this->repository->byId(new Id($accountToDeleteId));
         if (!$account) {
-            throw new NotFoundAccountException("Impossible de supprimer ce compte , reessayez plus-tard !");
+            throw new NotFoundAccountException(AccountMessagesEnum::NOT_FOUND);
         }
         $account->delete();
-
         $this->repository->save($account);
-
+        $response->message = AccountMessagesEnum::DELETED;
         $response->isDeleted = true;
 
         return $response;

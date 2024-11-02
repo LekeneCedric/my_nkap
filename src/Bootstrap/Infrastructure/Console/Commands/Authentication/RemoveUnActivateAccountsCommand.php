@@ -30,6 +30,7 @@ class RemoveUnActivateAccountsCommand extends Command
             return;
         }
         $this->deleteUserAccount($unactivatedAccountsBefore10MinutesIds);
+        $this->info('finish', 'success');
     }
 
     private function deleteUserAccount(array $unactivatedAccountIds): void
@@ -38,8 +39,7 @@ class RemoveUnActivateAccountsCommand extends Command
         try {
             $queryIds = implode(',', $unactivatedAccountIds);
             $sql = "
-                UPDATE users
-                SET is_deleted = true
+                DELETE FROM users
                 WHERE id IN (".$queryIds.")";
             $st = $this->pdo->prepare($sql);
             $st->execute();

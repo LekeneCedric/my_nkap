@@ -24,7 +24,7 @@ class LoginHandler
         $user = User::where('email', $command->email)->where('is_active', true)->where('is_deleted', false)->first();
 
         if (!$user || !Hash::check($command->password, $user->password)) {
-            throw new NotFoundUserException("Aucun compte ne correspond a ces informations !");
+            throw new NotFoundUserException();
         }
 
         $userData = [

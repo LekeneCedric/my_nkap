@@ -8,8 +8,10 @@ use App\FinancialGoal\Infrastructure\Provider\FinancialGoalServiceProvider;
 use App\Operation\Infrastructure\provider\OperationServiceProvider;
 use App\Profession\Infrastructure\Provider\ProfessionServiceProvider;
 use App\Shared\Domain\Event\DomainEventPublisher;
+use App\Shared\Domain\Notifications\Channel\ChannelNotification;
 use App\Shared\Domain\Transaction\TransactionSession;
 use App\Shared\Infrastructure\Logs\Provider\LogServiceProvider;
+use App\Shared\Infrastructure\Notifications\Channel\Discord\DiscordChannelNotification;
 use App\Shared\Infrastructure\Transaction\EloquentTransactionSession;
 use App\Statistics\Infrastructure\Providers\StatisticsServiceProvider;
 use App\User\Infrastructure\Provider\UserProvider;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         $this->loadDefaultMigrations();
         $this->bindModuleRepositories();
         $this->loadDomainEventSubscribers();
+        $this->loadServices();
     }
 
     /**
@@ -64,5 +67,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DomainEventPublisher::class, function() {
             return DomainEventPublisher::instance();
         });
+    }
+
+    private function loadServices(): void
+    {
+        $this->app->singleton(ChannelNotification::class, DiscordChannelNotification::class);
     }
 }

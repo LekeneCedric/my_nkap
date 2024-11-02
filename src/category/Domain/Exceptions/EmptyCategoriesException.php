@@ -7,5 +7,5 @@ use Exception;
 
 class EmptyCategoriesException extends Exception
 {
-    protected $message = CategoryMessagesEnum::empty;
+    protected $message = CategoryMessagesEnum::NOT_FOUND;
 }

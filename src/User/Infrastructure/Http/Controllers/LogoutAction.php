@@ -2,9 +2,10 @@
 
 namespace App\User\Infrastructure\Http\Controllers;
 
+use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
+use App\User\Domain\Enums\UserMessagesEnum;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class LogoutAction
 {
@@ -16,10 +17,10 @@ class LogoutAction
             $httpResponse = [
                 'status' => true,
                 'isLogout' => true,
-                'message' => 'Déconnexion avec succès !'
+                'message' => UserMessagesEnum::LOGOUT
             ];
         } catch (Exception) {
-            $httpResponse['message'] = 'Une érreur est survenue lors du traitement de votre opération, veuillez réssayer plus tard !';
+            $httpResponse['message'] = ErrorMessagesEnum::TECHNICAL;
         }
 
         return response()->json($httpResponse);

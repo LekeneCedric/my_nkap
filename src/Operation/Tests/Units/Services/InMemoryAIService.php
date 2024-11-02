@@ -8,7 +8,7 @@ use App\Operation\Domain\VO\MakeAIOperationServiceResponseVO;
 class InMemoryAIService implements AIService
 {
 
-    public function makeOperation(array $categories, string $message, string $currentDate, string $language): MakeAIOperationServiceResponseVO
+    public function makeOperation(array $accounts, array $categories, string $message, string $currentDate, string $language): MakeAIOperationServiceResponseVO
     {
         return new MakeAIOperationServiceResponseVO(
             operations: [],
