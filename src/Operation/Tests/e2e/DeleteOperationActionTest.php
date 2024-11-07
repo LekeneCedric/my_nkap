@@ -20,7 +20,7 @@ class DeleteOperationActionTest extends TestCase
 {
     use StatisticsComposedIdBuilderTrait;
 
-//    use RefreshDatabase;
+    use RefreshDatabase;
     const DELETE_OPERATION = 'api/operation/delete';
     private User $user;
     private string $token;
@@ -82,9 +82,11 @@ class DeleteOperationActionTest extends TestCase
             'user_id' => $this->user->id,
             'balance' => 2500000
         ]);
-        $category = Category::factory()->create();
+        $category = Category::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
         $operation = Operation::factory()->create([
-            'account_id' => $account->getAttribute('id'),
+            'account_id' => $account->id,
             'amount' => 2500000,
             'type' => OperationTypeEnum::INCOME,
             'date' => '2024-09-30',

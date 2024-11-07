@@ -11,12 +11,21 @@ class DateVO
     private string $value;
     private string $format;
 
-    public function __construct(?string $value = null, ?string $format = null)
+    /**
+     * @throws Exception
+     */
+    public function __construct(?string $value = null, ?string $format = null, ?string $extraTime = null)
     {
         if ($value) {
             $this->value = $value;
         } else {
-            $this->value = date('Y-m-d H:i:s');
+            if (!$extraTime) {
+                $this->value = date('Y-m-d H:i:s');
+            } else {
+                $date = new DateTime();
+                $date->modify($extraTime);
+                $this->value = $date->format('Y-m-d H:i:s');
+            }
         }
         if ($format) {
             $this->format = $format;
@@ -111,5 +120,13 @@ class DateVO
 
         // Return true if the entered date is earlier than today
         return $formattedEnteredDate < $today;
+    }
+
+    /**
+     * @return int
+     */
+    public function timestamp(): int
+    {
+        return strtotime($this->value);
     }
 }

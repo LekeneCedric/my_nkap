@@ -112,14 +112,15 @@ class DeleteOperationHandler implements CommandHandler
     }
 
     private function completeCommandWithAdditionalInformations(
-        DeleteOperationCommand|Command &$command,
+        DeleteOperationCommand|Command $command,
         float                          $amount,
-        string                         $date,
+        string                         $operationDate,
         OperationTypeEnum              $type,
         string                         $categoryId
     ): void
     {
-        list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];
+        list($year, $month) = [(new DateVO($operationDate))->year(), (new DateVO($operationDate))->month()];
+
         $userId = $this->userRepository->userId();
         $command->userId = $userId;
         $command->year = $year;
@@ -127,7 +128,7 @@ class DeleteOperationHandler implements CommandHandler
         $command->categoryId = $categoryId;
         $command->previousAmount = $amount;
         $command->newAmount = $amount;
-        $command->date = $date;
+        $command->date = $operationDate;
         $command->type = $type;
         $command->isDeleted = true;
         $command->monthlyStatisticsComposedId = $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $userId);

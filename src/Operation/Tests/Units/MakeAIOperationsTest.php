@@ -42,6 +42,16 @@ class MakeAIOperationsTest extends TestCase
         $initSUT = $this->buildSUT();
         $command = new MakeAIOperationCommand(
             userId: $initSUT['userId'],
+            accounts: [
+                [
+                    'id' => (new Id())->value(),
+                    'label' => 'Account 1',
+                ],
+                [
+                    'id' => (new Id())->value(),
+                    'label' => 'Account 2',
+                ],
+            ],
             categories: [
                 [
                     'id' => (new Id())->value(),

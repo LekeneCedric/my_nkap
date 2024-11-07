@@ -28,7 +28,7 @@ class EloquentMonthlyStatisticRepository implements MonthlyStatisticRepository
 
     public function ofFilterParams(string $userId, int $year, int $month): array
     {
-        $previousMonths = $this->selectPreviousMonth($month, [], 2);
+        $previousMonths = $this->selectPreviousMonth($month, [], 3);
         return MonthlyStatisticModel::whereUserId($userId)
             ->where('year', $year)
             ->whereIn('month', $previousMonths)

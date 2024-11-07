@@ -14,6 +14,7 @@ use App\Shared\Infrastructure\Logs\Provider\LogServiceProvider;
 use App\Shared\Infrastructure\Notifications\Channel\Discord\DiscordChannelNotification;
 use App\Shared\Infrastructure\Transaction\EloquentTransactionSession;
 use App\Statistics\Infrastructure\Providers\StatisticsServiceProvider;
+use App\Subscription\Infrastructure\Provider\SubscriptionServiceProvider;
 use App\User\Infrastructure\Provider\UserProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -44,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(LogServiceProvider::class);
         $this->app->register(CategoryServiceProvider::class);
         $this->app->register(StatisticsServiceProvider::class);
+        $this->app->register(SubscriptionServiceProvider::class);
     }
 
     /**
