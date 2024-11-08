@@ -20,6 +20,9 @@ return new class extends Migration
             $table->integer('end_date');
             $table->unsignedMediumInteger('nb_token');
             $table->unsignedSmallInteger('nb_operations');
+            $table->tinyInteger('nb_accounts');
+            $table->integer('nb_token_updated_at');
+            $table->integer('nb_operations_updated_at');
             $table->timestamps();
         });
     }

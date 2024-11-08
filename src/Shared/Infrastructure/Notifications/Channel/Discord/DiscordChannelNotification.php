@@ -16,6 +16,7 @@ class DiscordChannelNotification implements ChannelNotification
     public function send(ChannelNotificationContent $notification): void
     {
       $content = DiscordChannelNotificationContentFactory::buildFromNotification($notification);
+
       $inDeveloperMode = in_array(App::environment(), ['testing', 'local']);
       $webhook = $notification->type() === ChannelNotificationTypeEnum::ISSUE ?
           DiscordWebhookEnum::ISSUES_NOTIFICATIONS :

@@ -17,6 +17,7 @@ use App\Subscription\Domain\SubscriberSubscription AS SubscriberSubscriptionDoma
  * @property mixed $uuid
  * @property mixed $user_id
  * @property mixed $subscription_id
+ * @property mixed $nb_accounts
  */
 class SubscriberSubscription extends Model
 {
@@ -39,7 +40,8 @@ class SubscriberSubscription extends Model
             startDate: $this->start_date,
             endDate: $this->end_date,
             nbToken: $this->nb_token,
-            nbOperations: $this->nb_operations
+            nbOperations: $this->nb_operations,
+            nbAccounts: $this->nb_accounts,
         );
     }
 }

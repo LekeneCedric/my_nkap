@@ -6,6 +6,7 @@ use App\Shared\Domain\VO\Id;
 use App\Subscription\Application\Command\Subscribe\SubscriptionCommand;
 use App\Subscription\Application\Command\Subscribe\SubscriptionHandler;
 use App\Subscription\Application\Command\Subscribe\SubscriptionResponse;
+use App\Subscription\Domain\Enums\SubscriptionMessagesEnum;
 use App\Subscription\Domain\Exceptions\NotFoundSubscriptionException;
 use App\Subscription\Domain\Exceptions\SubscriberAlreadySubscribedToThisSubscriptionException;
 use App\Subscription\Domain\Repository\SubscriberRepository;
@@ -13,7 +14,6 @@ use App\Subscription\Domain\Repository\SubscriptionRepository;
 use App\Subscription\Domain\Subscriber;
 use App\Subscription\Domain\SubscriberSubscription;
 use App\Subscription\Domain\Subscription;
-use App\Subscription\Domain\SubscriptionMessagesEnum;
 use Tests\TestCase;
 
 class SubscriptionTest extends TestCase
@@ -27,6 +27,11 @@ class SubscriptionTest extends TestCase
         $this->subscriberRepository = new InMemorySubscriberRepository();
     }
 
+    /**
+     * @return void
+     * @throws NotFoundSubscriptionException
+     * @throws SubscriberAlreadySubscribedToThisSubscriptionException
+     */
     public function test_user_can_subscribe()
     {
         $initSUT = $this->buildSUT();
@@ -42,7 +47,8 @@ class SubscriptionTest extends TestCase
         $this->assertEquals(SubscriptionMessagesEnum::SUBSCRIPTION_SUCCESS, $response->message);
         $this->assertEquals($response->subscriptionNbTokenPerDay, $initSUT['subscriptionNbTokenPerDay']);
         $this->assertEquals($response->subscriptionNbOperationsPerDay, $initSUT['subscriptionNbOperationsPerDay']);
-        $this->assertEquals($this->subscriberRepository->subscribers[$initSUT['userId']]->subscription()->subscriptionId, $initSUT['subscriptionIds'][1]);
+        $this->assertEquals($response->subscriptionNbAccounts, $initSUT['subscriptionNbAccounts']);
+        $this->assertEquals($this->subscriberRepository->subscribers[$initSUT['userId']]->subscription()->subscriptionId(), $initSUT['subscriptionIds'][1]);
     }
 
     /**
@@ -62,6 +68,10 @@ class SubscriptionTest extends TestCase
         $this->expectException(SubscriberAlreadySubscribedToThisSubscriptionException::class);
         $this->subscribe($command);
     }
+
+    /**
+     * @return array
+     */
     private function buildSUT(): array
     {
         $userId = (new Id())->value();
@@ -69,25 +79,30 @@ class SubscriptionTest extends TestCase
         $subscription2Id = (new Id())->value();
         $subscriptionNbTokenPerDay = 10;
         $subscriptionNbOperationsPerDay = 100;
-        $subscription1 = Subscription::create(
+        $subscriptionNbAccounts = 2;
+        $subscription1 = new Subscription(
             subscriptionId: $subscriptionId,
             subscriptionNbTokenPerDay: $subscriptionNbTokenPerDay,
             subscriptionNbOperationsPerDay: $subscriptionNbOperationsPerDay,
+            subscriptionNbAccounts: $subscriptionNbAccounts,
         );
-        $subscription2 = Subscription::create(
+        $subscription2 = new Subscription(
             subscriptionId: $subscription2Id,
             subscriptionNbTokenPerDay: $subscriptionNbTokenPerDay,
             subscriptionNbOperationsPerDay: $subscriptionNbOperationsPerDay,
+            subscriptionNbAccounts: $subscriptionNbAccounts,
         );
         $subscriber = new Subscriber(
             userId: $userId,
             subscription: SubscriberSubscription::create(
+                id: (new Id())->value(),
                 userId: $userId,
                 subscriptionId: $subscriptionId,
                 startDate: time(),
                 endDate: strtotime('+10 month'),
                 nbToken: $subscriptionNbTokenPerDay,
                 nbOperations: $subscriptionNbOperationsPerDay,
+                nbAccounts: $subscriptionNbAccounts,
             ),
         );
 
@@ -100,6 +115,7 @@ class SubscriptionTest extends TestCase
             'subscriptionIds' => [$subscriptionId, $subscription2Id],
             'subscriptionNbTokenPerDay' => $subscriptionNbTokenPerDay,
             'subscriptionNbOperationsPerDay' => $subscriptionNbOperationsPerDay,
+            'subscriptionNbAccounts' => $subscriptionNbAccounts,
         ];
     }
 

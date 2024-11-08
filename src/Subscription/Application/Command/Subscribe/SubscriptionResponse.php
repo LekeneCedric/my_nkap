@@ -8,4 +8,5 @@ class SubscriptionResponse
     public string $message = '';
     public int $subscriptionNbTokenPerDay = 0;
     public int $subscriptionNbOperationsPerDay = 0;
+    public int $subscriptionNbAccounts = 0;
 }

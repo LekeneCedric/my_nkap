@@ -18,6 +18,9 @@ class SubscriberSubscriptionFactory extends Factory
             'end_date' => strtotime("+12 month"),
             'nb_token' => 10,
             'nb_operations' => 10,
+            'nb_accounts' => 1,
+            'nb_token_updated_at' => strtotime('now'),
+            'nb_operations_updated_at' => strtotime('now'),
         ];
     }
 }

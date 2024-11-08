@@ -7,5 +7,7 @@ class LoginResponse
     public bool $isLogged = false;
     public array $user = [];
     public string $token = '';
-    public int $aiToken = 0;
+    public int $leftNbToken = 0;
+    public int $leftNbOperations = 0;
+    public int $leftNbAccounts = 0;
 }

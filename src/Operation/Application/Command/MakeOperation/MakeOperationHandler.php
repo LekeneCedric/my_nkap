@@ -17,6 +17,7 @@ use App\Shared\Domain\VO\StringVO;
 use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
 use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
+use App\Subscription\Domain\Services\SubscriptionService;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ class MakeOperationHandler implements CommandHandler
         private OperationAccountRepository $repository,
         private UserRepository $userRepository,
         private ChannelNotification $channelNotification,
+        private SubscriptionService $subscriptionService,
     )
     {
     }
@@ -70,11 +72,14 @@ class MakeOperationHandler implements CommandHandler
               $command
             );
             $operationAccount->publishOperationSaved($command);
+            $this->subscriptionService->retrieveOperation(userId: $command->userId, count: 1);
             DB::commit();
             $response->operationSaved = true;
             $response->operationId = $operationAccount->currentOperation()->id()->value();
         } catch (NotFoundAccountException $e) {
             DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $response->message = $e->getMessage();
             $this->channelNotification->send(
                 new ChannelNotificationContent(
@@ -84,12 +89,14 @@ class MakeOperationHandler implements CommandHandler
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::WARNING->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         } catch (Exception $e) {
             DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $response->message = ErrorMessagesEnum::TECHNICAL;
             $this->channelNotification->send(
                 new ChannelNotificationContent(
@@ -99,7 +106,7 @@ class MakeOperationHandler implements CommandHandler
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

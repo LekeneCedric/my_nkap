@@ -12,6 +12,7 @@ class SubscriberSubscription
         private int $endDate,
         private int $nbToken,
         private int $nbOperations,
+        private int $nbAccounts,
     )
     {
     }
@@ -23,7 +24,8 @@ class SubscriberSubscription
         int $startDate,
         int $endDate,
         int $nbToken,
-        int $nbOperations
+        int $nbOperations,
+        int $nbAccounts,
     ): SubscriberSubscription
     {
         return new self(
@@ -34,6 +36,7 @@ class SubscriberSubscription
             endDate: $endDate,
             nbToken: $nbToken,
             nbOperations: $nbOperations,
+            nbAccounts: $nbAccounts,
         );
     }
 
@@ -42,7 +45,8 @@ class SubscriberSubscription
         int $startDate,
         int $endDate,
         int $nbToken,
-        int $nbOperations
+        int $nbOperations,
+        int $nbAccounts,
     ): void
     {
         $this->subscriptionId = $subscriptionId;
@@ -50,6 +54,7 @@ class SubscriberSubscription
         $this->endDate = $endDate;
         $this->nbToken = $nbToken;
         $this->nbOperations = $nbOperations;
+        $this->nbAccounts = $nbAccounts;
     }
 
     /**
@@ -60,23 +65,43 @@ class SubscriberSubscription
         return $this->subscriptionId;
     }
 
+    /**
+     * @return int
+     */
     public function startDate(): int
     {
         return $this->startDate;
     }
 
+    /**
+     * @return int
+     */
     public function endDate(): int
     {
         return $this->endDate;
     }
 
+    /**
+     * @return int
+     */
     public function nbToken(): int
     {
         return $this->nbToken;
     }
 
+    /**
+     * @return int
+     */
     public function nbOperations(): int
     {
         return $this->nbOperations;
+    }
+
+    /**
+     * @return int
+     */
+    public function nbAccounts(): int
+    {
+        return $this->nbAccounts;
     }
 }

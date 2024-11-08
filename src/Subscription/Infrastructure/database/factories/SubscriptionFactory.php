@@ -2,6 +2,7 @@
 
 namespace App\Subscription\Infrastructure\database\factories;
 
+use App\Subscription\Domain\Enums\SubscriptionPlansEnum;
 use App\Subscription\Infrastructure\Model\Subscription;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -13,10 +14,11 @@ class SubscriptionFactory extends Factory
     {
         return [
             'uuid' => $this->faker->uuid,
-            'name' => $this->faker->name,
+            'name' => SubscriptionPlansEnum::FREE_PLAN->name,
             'price' => $this->faker->numberBetween(0, 0),
             'nb_token_per_day' => $this->faker->numberBetween(0, 0),
             'nb_operations_per_day' => $this->faker->numberBetween(0, 0),
+            'nb_accounts' => $this->faker->numberBetween(0, 0),
         ];
     }
 }

@@ -46,7 +46,7 @@ class VerificationAccountAction
                 new ChannelNotificationContent(
                     type: ChannelNotificationTypeEnum::NEW_MEMBER,
                     data: [
-                        'module' => 'AUTHENTICATION (RECOVER-PASSWORD)',
+                        'module' => 'NEW USER',
                         'users_data' => json_encode($response->userData, JSON_PRETTY_PRINT),
                         'total_users' => $response->countUsers,
                     ],
@@ -61,6 +61,8 @@ class VerificationAccountAction
         InvalidArgumentException|
         ErrorOnSaveUserException|
         Exception $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpResponse['message'] = ErrorMessagesEnum::TECHNICAL;
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -70,7 +72,7 @@ class VerificationAccountAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

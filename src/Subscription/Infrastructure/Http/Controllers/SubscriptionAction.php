@@ -38,10 +38,13 @@ class SubscriptionAction
                 'isSubscribed' => $response->isSubscribed,
                 'nb_token_per_day' => $response->subscriptionNbTokenPerDay,
                 'nb_operations_per_day' => $response->subscriptionNbOperationsPerDay,
+                'nb_accounts' => $response->subscriptionNbAccounts,
             ];
         } catch (
         NotFoundSubscriptionException|
         SubscriberAlreadySubscribedToThisSubscriptionException $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = $e->getMessage();
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -51,11 +54,13 @@ class SubscriptionAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::INFO->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         } catch (Exception $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -65,7 +70,7 @@ class SubscriptionAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

@@ -64,6 +64,8 @@ class DeleteOperationHandler implements CommandHandler
         NotFoundOperationException $e
         ) {
             DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $response->message = $e->getMessage();
             $this->channelNotification->send(
                 new ChannelNotificationContent(
@@ -73,12 +75,14 @@ class DeleteOperationHandler implements CommandHandler
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::WARNING->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         } catch (Exception $e) {
             DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $response->message = ErrorMessagesEnum::TECHNICAL;
             $this->channelNotification->send(
                 new ChannelNotificationContent(
@@ -88,7 +92,7 @@ class DeleteOperationHandler implements CommandHandler
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

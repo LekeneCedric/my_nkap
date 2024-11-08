@@ -36,6 +36,8 @@ class GetAllAccountAction
                 'accounts' => $response->accounts,
             ];
         } catch (Exception $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
             $logger->Log(
                 message: $e->getMessage(),
@@ -49,7 +51,7 @@ class GetAllAccountAction
                         'module' => 'Accounts',
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode(['userId' => $userId], JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

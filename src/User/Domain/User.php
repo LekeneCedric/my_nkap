@@ -2,6 +2,7 @@
 
 namespace App\User\Domain;
 
+use App\Shared\Domain\AggregateRoot;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
@@ -11,7 +12,7 @@ use App\User\Domain\Exceptions\VerificationCodeNotMatchException;
 use App\User\Domain\VO\VerificationCodeVO;
 use Exception;
 
-class User
+class User extends AggregateRoot
 {
     private ?DateVO $createdAt = null;
 
@@ -25,6 +26,7 @@ class User
         private ?VerificationCodeVO $verificationCode = null,
     )
     {
+        parent::__construct();
     }
 
     public static function create(
@@ -129,5 +131,14 @@ class User
     public function activateAccount(): void
     {
         $this->status = UserStatusEnum::ACTIVE;
+    }
+
+    public function publishUserVerified(): void
+    {
+        $this->domainEventPublisher->publish(
+            new UserVerified(
+                userId: $this->userId->value(),
+            )
+        );
     }
 }

@@ -15,6 +15,8 @@ use App\Shared\Infrastructure\Notifications\Channel\Discord\DiscordChannelNotifi
 use App\Statistics\Application\Query\MonthlyCategoryStatistics\All\GetAllMonthlyCategoryStatisticsCommand;
 use App\Statistics\Infrastructure\Model\MonthlyCategoryStatistic;
 use App\Statistics\Infrastructure\Model\MonthlyStatistic;
+use App\Subscription\Infrastructure\Model\SubscriberSubscription;
+use App\Subscription\Infrastructure\Model\Subscription;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -43,25 +45,6 @@ class MakeOperationActionTest extends TestCase
         $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
     }
 
-    public function test()
-    {
-        (new DiscordChannelNotification())
-            ->send(new ChannelNotificationContent(
-                type: ChannelNotificationTypeEnum::ISSUE,
-                data: [
-                    'module' => 'Accounts',
-                    'message' => 'message',
-                    'level' => ErrorLevelEnum::CRITICAL->value,
-                    'command' => json_encode(new GetAllMonthlyCategoryStatisticsCommand(
-                        userId: 'userId',
-                        year: 2002,
-                        month: 10
-                    ), JSON_PRETTY_PRINT),
-                    'trace' => 'trace'
-                ],
-            ));
-        $this->assertTrue(true);
-    }
     public function test_can_make_operation()
     {
         $initData = $this->buildSUT();
@@ -215,6 +198,29 @@ class MakeOperationActionTest extends TestCase
         $this->assertEquals(20000, $monthlyCategoryStat->total_income);
     }
 
+    public function test_can_update_subscription_when_add_operation()
+    {
+        $initData = $this->buildSUT();
+
+        $data = [
+            'accountId' => $initData['accountId'],
+            'type' => OperationTypeEnum::INCOME,
+            'amount' => 20000,
+            'categoryId' => Category::factory()->create()->uuid,
+            'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+            'date' => '2023-09-30 15:00:00'
+        ];
+
+        $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
+
+        $this->assertDatabaseHas('subscriber_subscriptions', [
+            'user_id' => $this->user->id,
+            'nb_operations' => 1,
+        ]);
+    }
     private function buildSUT(
         bool $withExistingOperation = false,
         bool $withExistingFinancialGoal = false,
@@ -249,7 +255,14 @@ class MakeOperationActionTest extends TestCase
             ]);
             $result['financialGoalId'] = $financialGoal->uuid;
         }
-
+        $subscription = Subscription::factory()->create([
+            'nb_operations_per_day' => 2,
+        ]);
+        SubscriberSubscription::factory()->create([
+            'subscription_id' => $subscription->id,
+            'user_id' => $this->user->id,
+            'nb_operations' => 2,
+        ]);
         return $result;
     }
 }

@@ -5,6 +5,9 @@ namespace App\Account\Tests\e2e;
 use App\Account\Infrastructure\Model\Account;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
+use App\Subscription\Domain\Enums\SubscriptionPlansEnum;
+use App\Subscription\Infrastructure\Model\SubscriberSubscription;
+use App\Subscription\Infrastructure\Model\Subscription;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 use Exception;
@@ -25,6 +28,11 @@ class SaveAccountActionTest extends TestCase
     {
         parent::setUp();
         DB::rollBack();
+        $this->buildSUT();
+    }
+
+    public function buildSUT()
+    {
         $this->user = User::factory()->create([
             'uuid' => (new Id())->value(),
             'email' => (new Id())->value().'@gmail.com',
@@ -33,8 +41,16 @@ class SaveAccountActionTest extends TestCase
             'profession_id' => (Profession::factory()->create())->id,
         ]);
         $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
+        $subscription = Subscription::factory()->create([
+            'name' => SubscriptionPlansEnum::FREE_PLAN->value,
+            'nb_accounts' => 2,
+        ]);
+        SubscriberSubscription::factory()->create([
+           'user_id' => $this->user->id,
+           'subscription_id' => $subscription->id,
+           'nb_accounts' => 2,
+        ]);
     }
-
     public function test_can_create_account()
     {
         $data = [
@@ -104,5 +120,27 @@ class SaveAccountActionTest extends TestCase
 
         $this->assertFalse($response['status']);
         $this->assertNotNull($response['message']);
+    }
+
+    public function test_can_update_subscription_nb_accounts_when_create_account()
+    {
+        $data = [
+            'userId' => $this->user->uuid,
+            'name' => 'compte epargne',
+            'type' => 'epargne',
+            'icon' => 'wallet_icon',
+            'color' => 'green',
+            'balance' => 20000,
+            'isIncludeInTotalBalance' => true,
+        ];
+
+        $this->postJson(self::SAVE_ACCOUNT_ROUTE, $data, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
+
+        $this->assertDatabaseHas('subscriber_subscriptions', [
+            'user_id' => $this->user->id,
+            'nb_accounts' => 1,
+        ]);
     }
 }

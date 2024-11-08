@@ -11,10 +11,11 @@ use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\Service\CheckIfAlreadyUserExistWithSameEmailByEmailService;
 use App\User\Domain\User;
 use Illuminate\Support\Facades\DB;
+use PDO;
 
 class RegisterUserHandler
 {
-    private \PDO $pdo;
+    private PDO $pdo;
     public function __construct(
         private UserRepository $repository,
         private CheckIfAlreadyUserExistWithSameEmailByEmailService $checkIfAlreadyUserExistWithSameEmailByEmailService,
@@ -79,7 +80,7 @@ class RegisterUserHandler
             WHERE u.uuid = :id
         ";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $stmt->execute(['id' => $userId]);
         return $stmt->fetch();
     }

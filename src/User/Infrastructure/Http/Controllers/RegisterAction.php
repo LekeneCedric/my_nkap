@@ -32,13 +32,12 @@ class RegisterAction
             $command = RegisterUserCommandFactory::buildFromRequest($request);
             $response = $handler->handle($command);
 
-            $user = User::where('uuid', $response->userId)->first(['id', 'token']);
+            $user = User::where('uuid', $response->userId)->first(['id']);
             $httpResponse = [
                 'status' => true,
                 'isCreated' => $response->isCreated,
                 'message' => $response->message,
                 'token' => $user?->createToken(env('TOKEN_KEY'))->plainTextToken,
-                'aiToken' => $user->token,
                 'user' => $response->user,
             ];
             DB::commit();
@@ -48,6 +47,8 @@ class RegisterAction
             $httpResponse['message'] = $e->getMessage();
         } catch (Exception $e) {
             DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpResponse['message'] = $command->professionId;
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -57,7 +58,7 @@ class RegisterAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

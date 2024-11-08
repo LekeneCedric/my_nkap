@@ -39,6 +39,8 @@ class EloquentSubscriberRepository implements SubscriberRepository
             ...$data,
             'user_id' => $userId,
             'subscription_id' => $subscriptionId,
+            'nb_token_updated_at' => strtotime("now"),
+            'nb_operations_updated_at' => strtotime("now"),
         ]);
     }
 }

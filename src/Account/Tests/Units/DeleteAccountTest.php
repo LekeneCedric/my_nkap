@@ -8,20 +8,25 @@ use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
 use App\Account\Tests\Units\Repositories\InMemoryAccountRepository;
+use App\Subscription\Domain\Services\SubscriptionService;
+use App\Subscription\Tests\Units\Services\InMemorySubscriptionService;
 use Tests\TestCase;
 
 class DeleteAccountTest extends TestCase
 {
     private AccountRepository $repository;
+    private SubscriptionService $subscriptionService;
     public function setUp(): void
     {
         parent::setUp();
         $this->repository = new InMemoryAccountRepository();
+        $this->subscriptionService = new InMemorySubscriptionService();
     }
 
     /**
      * @return void
      * @throws ErrorOnSaveAccountException
+     * @throws NotFoundAccountException
      */
     public function test_can_delete_account()
     {
@@ -55,10 +60,18 @@ class DeleteAccountTest extends TestCase
 
         $this->deleteAccount($accountToDeleteId);
     }
+
+    /**
+     * @param string $accountToDeleteId
+     * @return DeleteAccountResponse
+     * @throws ErrorOnSaveAccountException
+     * @throws NotFoundAccountException
+     */
     private function deleteAccount(string $accountToDeleteId): DeleteAccountResponse
     {
         $handler = new DeleteAccountHandler(
-            $this->repository,
+            repository: $this->repository,
+            subscriptionService: $this->subscriptionService,
         );
         return $handler->handle($accountToDeleteId);
     }

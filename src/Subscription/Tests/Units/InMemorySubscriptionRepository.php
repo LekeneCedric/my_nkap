@@ -2,6 +2,7 @@
 
 namespace App\Subscription\Tests\Units;
 
+use App\Subscription\Domain\Enums\SubscriptionPlansEnum;
 use App\Subscription\Domain\Repository\SubscriptionRepository;
 use App\Subscription\Domain\Subscription;
 
@@ -15,5 +16,10 @@ class InMemorySubscriptionRepository implements SubscriptionRepository
     public function ofId(string $subscriptionId): ?Subscription
     {
         return $this->subscriptions[$subscriptionId] ?? null;
+    }
+
+    public function ofPlan(SubscriptionPlansEnum $plan): ?Subscription
+    {
+        return null;
     }
 }

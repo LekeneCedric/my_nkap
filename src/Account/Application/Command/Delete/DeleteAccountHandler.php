@@ -7,12 +7,14 @@ use App\Account\Domain\Exceptions\ErrorOnSaveAccountException;
 use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Domain\Repository\AccountRepository;
 use App\Shared\Domain\VO\Id;
+use App\Subscription\Domain\Services\SubscriptionService;
 
 class DeleteAccountHandler
 {
 
     public function __construct(
         private readonly AccountRepository $repository,
+        private SubscriptionService $subscriptionService,
     )
     {
     }
@@ -33,6 +35,7 @@ class DeleteAccountHandler
         }
         $account->delete();
         $this->repository->save($account);
+        $this->subscriptionService->updateNbAccounts(userId: $account->userId()->value(), count: 1);
         $response->message = AccountMessagesEnum::DELETED;
         $response->isDeleted = true;
 

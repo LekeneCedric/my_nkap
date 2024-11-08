@@ -28,6 +28,7 @@ class Subscriber
             endDate: strtotime("+$nbMonth month"),
             nbToken: $subscription->subscriptionNbTokenPerDay,
             nbOperations: $subscription->subscriptionNbOperationsPerDay,
+            nbAccounts: $subscription->subscriptionNbAccounts,
         );
     }
 
@@ -61,6 +62,7 @@ class Subscriber
             'end_date' => $this->subscription->endDate(),
             'nb_token' => $this->subscription->nbToken(),
             'nb_operations' => $this->subscription->nbOperations(),
+            'nb_accounts' => $this->subscription->nbAccounts(),
         ];
     }
 }

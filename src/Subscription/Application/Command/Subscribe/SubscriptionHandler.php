@@ -2,12 +2,12 @@
 
 namespace App\Subscription\Application\Command\Subscribe;
 
+use App\Subscription\Domain\Enums\SubscriptionMessagesEnum;
 use App\Subscription\Domain\Exceptions\NotFoundSubscriptionException;
 use App\Subscription\Domain\Exceptions\SubscriberAlreadySubscribedToThisSubscriptionException;
 use App\Subscription\Domain\Repository\SubscriberRepository;
 use App\Subscription\Domain\Repository\SubscriptionRepository;
 use App\Subscription\Domain\Subscription;
-use App\Subscription\Domain\SubscriptionMessagesEnum;
 
 class SubscriptionHandler
 {
@@ -41,6 +41,7 @@ class SubscriptionHandler
         $response->isSubscribed = true;
         $response->subscriptionNbTokenPerDay = $subscription->subscriptionNbTokenPerDay;
         $response->subscriptionNbOperationsPerDay = $subscription->subscriptionNbOperationsPerDay;
+        $response->subscriptionNbAccounts = $subscription->subscriptionNbAccounts;
         $response->message = SubscriptionMessagesEnum::SUBSCRIPTION_SUCCESS;
 
         return $response;

@@ -33,11 +33,15 @@ class LoginAction
                 'user' => $response->user,
                 'token' => $response->token,
                 'message' => $response->user['name'],
-                'aiToken' => $response->aiToken,
+                'nbTokens' => $response->leftNbToken,
+                'nbOperations' => $response->leftNbOperations,
+                'nbAccounts' => $response->leftNbAccounts,
             ];
         } catch (NotFoundUserException) {
             $httpResponse['message'] = UserMessagesEnum::NOT_FOUND;
         } catch (Exception $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $channelNotification->send(
                 new ChannelNotificationContent(
                     type: ChannelNotificationTypeEnum::ISSUE,
@@ -46,7 +50,7 @@ class LoginAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

@@ -10,15 +10,20 @@ use App\Account\Domain\Exceptions\NotFoundAccountException;
 use App\Account\Tests\Units\Builders\SaveAccountCommandBuilder;
 use App\Account\Tests\Units\Repositories\InMemoryAccountRepository;
 use App\Shared\Domain\VO\Id;
+use App\Subscription\Domain\Services\SubscriptionService;
+use App\Subscription\Tests\Units\Services\InMemorySubscriptionService;
 use Tests\TestCase;
 
 class SaveAccountTest extends TestCase
 {
     private InMemoryAccountRepository $repository;
+    private SubscriptionService $subscriptionService;
+
     public function setUp(): void
     {
         parent::setUp();
         $this->repository = new InMemoryAccountRepository();
+        $this->subscriptionService = new InMemorySubscriptionService();
     }
 
     /**
@@ -110,7 +115,8 @@ class SaveAccountTest extends TestCase
     private function saveAccount(SaveAccountCommand $command): SaveAccountResponse
     {
         $handler = new SaveAccountHandler(
-            repository: $this->repository
+            repository: $this->repository,
+            subscriptionService: $this->subscriptionService,
         );
         return $handler->handle($command);
     }

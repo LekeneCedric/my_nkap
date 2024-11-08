@@ -2,7 +2,7 @@
 
 namespace App\Subscription\Domain\Exceptions;
 
-use App\Subscription\Domain\SubscriptionMessagesEnum;
+use App\Subscription\Domain\Enums\SubscriptionMessagesEnum;
 use Exception;
 
 class SubscriberAlreadySubscribedToThisSubscriptionException extends Exception

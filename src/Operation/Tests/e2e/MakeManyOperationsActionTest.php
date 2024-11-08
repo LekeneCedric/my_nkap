@@ -9,6 +9,8 @@ use App\Operation\Infrastructure\Model\Operation;
 use App\Shared\Domain\VO\Id;
 use App\Statistics\Infrastructure\Model\MonthlyCategoryStatistic;
 use App\Statistics\Infrastructure\Model\MonthlyStatistic;
+use App\Subscription\Infrastructure\Model\SubscriberSubscription;
+use App\Subscription\Infrastructure\Model\Subscription;
 use App\User\Infrastructure\Models\Profession;
 use App\User\Infrastructure\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,6 +24,7 @@ class MakeManyOperationsActionTest extends TestCase
     const SAVE_MANY_OPERATOPMS_ROUTE = 'api/operation/add-many';
     private User $user;
     private string $token;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -133,13 +136,57 @@ class MakeManyOperationsActionTest extends TestCase
         $this->assertEmpty($monthlyStatistics);
         $this->assertEmpty($monthlyByCategoryStats);
     }
+
+    public function test_can_update_subscription_after_make_many_operations()
+    {
+        $initData = $this->buildSUT();
+        $data = [
+            'operations' => [
+                [
+                    'accountId' => $initData['accountId'],
+                    'type' => OperationTypeEnum::INCOME,
+                    'amount' => 20000,
+                    'categoryId' => Category::factory()->create()->uuid,
+                    'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+                    'date' => '2023-09-30 15:00:00'
+                ],
+                [
+                    'accountId' => $initData['accountId'],
+                    'type' => OperationTypeEnum::EXPENSE,
+                    'amount' => 10000,
+                    'categoryId' => Category::factory()->create()->uuid,
+                    'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+                    'date' => '2023-09-30 15:00:00'
+                ]
+            ]
+        ];
+
+        $this->postJson(self::SAVE_MANY_OPERATOPMS_ROUTE, $data, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
+
+        $this->assertDatabaseHas('subscriber_subscriptions', [
+            'user_id' => $this->user->id,
+            'nb_operations' => 8,
+        ]);
+    }
+
     private function buildSUT(): array
     {
         $account = Account::factory()->create([
             'user_id' => $this->user->id,
             'balance' => 0
         ]);
-
+        $subscription = Subscription::factory()->create([
+            'nb_operations_per_day' => 10,
+        ]);
+        SubscriberSubscription::factory()->create([
+            'subscription_id' => $subscription->id,
+            'user_id' => $this->user->id,
+            'nb_operations' => 10,
+        ]);
         return [
             'accountId' => $account->uuid,
         ];

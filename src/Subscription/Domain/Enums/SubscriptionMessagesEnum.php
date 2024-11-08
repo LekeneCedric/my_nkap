@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Subscription\Domain;
+namespace App\Subscription\Domain\Enums;
 
 enum SubscriptionMessagesEnum: string
 {
