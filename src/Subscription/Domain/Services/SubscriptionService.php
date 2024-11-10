@@ -3,6 +3,9 @@
 namespace App\Subscription\Domain\Services;
 
 
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitAccountCreationException;
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitOperationException;
+
 interface SubscriptionService
 {
     /**
@@ -51,4 +54,18 @@ interface SubscriptionService
      * @return void
      */
     public function retrieveOperation(string $userId, int $count): void;
+
+    /**
+     * @param string $userId
+     * @return void
+     * @throws SubscriptionCannotPermitAccountCreationException
+     */
+    public function checkIfCanCreateAccount(string $userId): void;
+
+    /**
+     * @param string $userId
+     * @return void
+     * @throws SubscriptionCannotPermitOperationException
+     */
+    public function checkIfCanMakeOperation(string $userId): void;
 }

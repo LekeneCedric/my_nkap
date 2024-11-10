@@ -18,6 +18,7 @@ use App\Shared\Domain\VO\StringVO;
 use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
 use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitOperationException;
 use App\Subscription\Domain\Services\SubscriptionService;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
@@ -42,6 +43,8 @@ class MakeManyOperationsHandler implements CommandHandler
         $operationIds = [];
         DB::beginTransaction();
         try {
+            $userId = auth()->user()->uuid;
+            $this->subscriptionService->checkIfCanMakeOperation(userId: $userId);
             foreach ($command->operations as $operationCommand) {
                 $operationCommand->previousAmount = 0;
                 $operationAccount = $this->getOperationAccountOrThrowNotFoundException($operationCommand->accountId);
@@ -59,13 +62,15 @@ class MakeManyOperationsHandler implements CommandHandler
                 $operationIds[] = $operationAccount->currentOperation()->id()->value();
             }
             $this->subscriptionService->retrieveOperation(
-                userId: $command->operations[0]->userId,
+                userId: $userId,
                 count: count($command->operations),
             );
             DB::commit();
             $response->operationsSaved = true;
             $response->operationIds = $operationIds;
-        } catch (NotFoundAccountException $e) {
+        } catch (
+            NotFoundAccountException|
+            SubscriptionCannotPermitOperationException $e) {
             DB::rollBack();
             $file = $e->getFile();
             $line = $e->getLine();

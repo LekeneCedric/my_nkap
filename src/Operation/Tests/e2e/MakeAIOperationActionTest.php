@@ -28,8 +28,7 @@ class MakeAIOperationActionTest extends TestCase
             'email' => (new Id())->value() . '@gmail.com',
             'name' => 'lekene',
             'password' => bcrypt('lekene@5144'),
-            'profession_id' => (Profession::factory()->create())->id,
-            'token' => UserTokenEnum::DEFAULT_TOKEN
+            'profession_id' => (Profession::factory()->create())->id
         ]);
         $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
     }

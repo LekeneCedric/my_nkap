@@ -17,6 +17,7 @@ use App\Shared\Domain\VO\StringVO;
 use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
 use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitOperationException;
 use App\Subscription\Domain\Services\SubscriptionService;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
@@ -28,9 +29,9 @@ class MakeOperationHandler implements CommandHandler
 
     public function __construct(
         private OperationAccountRepository $repository,
-        private UserRepository $userRepository,
-        private ChannelNotification $channelNotification,
-        private SubscriptionService $subscriptionService,
+        private UserRepository             $userRepository,
+        private ChannelNotification        $channelNotification,
+        private SubscriptionService        $subscriptionService,
     )
     {
     }
@@ -44,6 +45,10 @@ class MakeOperationHandler implements CommandHandler
         $response = new makeOperationResponse();
         DB::beginTransaction();
         try {
+            $command->userId = $this->userRepository->userId();
+            if (!$command->operationId) {
+                $this->subscriptionService->checkIfCanMakeOperation(userId: $command->userId);
+            }
             $operationAccount = $this->getOperationAccountOrThrowNotFoundException($command->accountId);
             if ($command->operationId) {
                 $response->previousOperationAmount = $operationAccount->operation($command->operationId)->amount()->value();
@@ -69,14 +74,18 @@ class MakeOperationHandler implements CommandHandler
 
             $this->repository->saveOperation($operationAccount);
             $this->completCommandWithAdditionalInformation(
-              $command
+                $command
             );
             $operationAccount->publishOperationSaved($command);
-            $this->subscriptionService->retrieveOperation(userId: $command->userId, count: 1);
+            if (!$command->operationId) {
+                $this->subscriptionService->retrieveOperation(userId: $command->userId, count: 1);
+            }
             DB::commit();
             $response->operationSaved = true;
             $response->operationId = $operationAccount->currentOperation()->id()->value();
-        } catch (NotFoundAccountException $e) {
+        } catch (
+            NotFoundAccountException|
+            SubscriptionCannotPermitOperationException $e) {
             DB::rollBack();
             $file = $e->getFile();
             $line = $e->getLine();
@@ -132,11 +141,11 @@ class MakeOperationHandler implements CommandHandler
     private function completCommandWithAdditionalInformation(MakeOperationCommand|Command &$command): void
     {
         list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];
-        $userId = $this->userRepository->userId();
-        $command->userId = $userId;
+//        $userId = $this->userRepository->userId();
+//        $command->userId = $userId;
         $command->year = $year;
         $command->month = $month;
-        $command->monthlyStatsComposedId = $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $userId);
-        $command->monthlyStatsByCategoryComposedId = $this->buildMonthlyCategoryStatisticsComposedId(month: $month, year: $year, userId: $userId, categoryId: $command->categoryId);
+        $command->monthlyStatsComposedId = $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $command->userId);
+        $command->monthlyStatsByCategoryComposedId = $this->buildMonthlyCategoryStatisticsComposedId(month: $month, year: $year, userId: $command->userId, categoryId: $command->categoryId);
     }
 }

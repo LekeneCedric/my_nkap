@@ -12,6 +12,7 @@ use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
 use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
 use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
 use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitAccountCreationException;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -35,7 +36,10 @@ class SaveAccountAction
             $httpJson['isSaved'] = $response->isSaved;
             $httpJson['accountId'] = $response->accountId;
             $httpJson['message'] = $response->message;
-        } catch (NotFoundAccountException $e){
+        } catch (
+            NotFoundAccountException|
+            SubscriptionCannotPermitAccountCreationException
+        $e){
             $file = $e->getFile();
             $line = $e->getLine();
             $httpJson['message'] = $e->getMessage();

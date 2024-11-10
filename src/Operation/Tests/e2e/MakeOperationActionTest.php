@@ -7,14 +7,10 @@ use App\category\Infrastructure\Models\Category;
 use App\FinancialGoal\Infrastructure\Model\FinancialGoal;
 use App\Operation\Domain\OperationTypeEnum;
 use App\Operation\Infrastructure\Model\Operation;
-use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
-use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
 use App\Shared\Domain\VO\Id;
-use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
-use App\Shared\Infrastructure\Notifications\Channel\Discord\DiscordChannelNotification;
-use App\Statistics\Application\Query\MonthlyCategoryStatistics\All\GetAllMonthlyCategoryStatisticsCommand;
 use App\Statistics\Infrastructure\Model\MonthlyCategoryStatistic;
 use App\Statistics\Infrastructure\Model\MonthlyStatistic;
+use App\Subscription\Domain\Enums\SubscriptionMessagesEnum;
 use App\Subscription\Infrastructure\Model\SubscriberSubscription;
 use App\Subscription\Infrastructure\Model\Subscription;
 use App\User\Infrastructure\Models\Profession;
@@ -221,9 +217,37 @@ class MakeOperationActionTest extends TestCase
             'nb_operations' => 1,
         ]);
     }
+
+    public function test_cannot_make_operation_when_exceed_nb_operations_per_day()
+    {
+        $initData = $this->buildSUT(nbOperations: 0);
+
+        $data = [
+            'accountId' => $initData['accountId'],
+            'type' => OperationTypeEnum::INCOME,
+            'amount' => 20000,
+            'categoryId' => Category::factory()->create()->uuid,
+            'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+            'date' => '2023-09-30 15:00:00'
+        ];
+
+        $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
+
+        $response = $this->postJson(self::SAVE_OPERATION_ROUTE, $data, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
+
+        $response->assertOk();
+        $this->assertFalse($response['status']);
+        $this->assertEquals(SubscriptionMessagesEnum::CANNOT_MAKE_OPERATION, $response['message']);
+    }
     private function buildSUT(
         bool $withExistingOperation = false,
         bool $withExistingFinancialGoal = false,
+        int $nbOperations = 2
     ): array
     {
         $operationAmount = 20000;
@@ -256,12 +280,12 @@ class MakeOperationActionTest extends TestCase
             $result['financialGoalId'] = $financialGoal->uuid;
         }
         $subscription = Subscription::factory()->create([
-            'nb_operations_per_day' => 2,
+            'nb_operations_per_day' => $nbOperations,
         ]);
         SubscriberSubscription::factory()->create([
             'subscription_id' => $subscription->id,
             'user_id' => $this->user->id,
-            'nb_operations' => 2,
+            'nb_operations' => $nbOperations,
         ]);
         return $result;
     }

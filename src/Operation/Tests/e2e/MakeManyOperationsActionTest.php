@@ -9,6 +9,7 @@ use App\Operation\Infrastructure\Model\Operation;
 use App\Shared\Domain\VO\Id;
 use App\Statistics\Infrastructure\Model\MonthlyCategoryStatistic;
 use App\Statistics\Infrastructure\Model\MonthlyStatistic;
+use App\Subscription\Domain\Enums\SubscriptionMessagesEnum;
 use App\Subscription\Infrastructure\Model\SubscriberSubscription;
 use App\Subscription\Infrastructure\Model\Subscription;
 use App\User\Infrastructure\Models\Profession;
@@ -173,7 +174,50 @@ class MakeManyOperationsActionTest extends TestCase
         ]);
     }
 
-    private function buildSUT(): array
+    public function test_cannot_make_many_operations_when_subscription_nb_left_operation_is_0()
+    {
+        $initData = $this->buildSUT(nbLeftOperations: 0);
+        $data = [
+            'operations' => [
+                [
+                    'accountId' => $initData['accountId'],
+                    'type' => OperationTypeEnum::INCOME,
+                    'amount' => 20000,
+                    'categoryId' => Category::factory()->create()->uuid,
+                    'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+                    'date' => '2023-09-30 15:00:00'
+                ],
+                [
+                    'accountId' => $initData['accountId'],
+                    'type' => OperationTypeEnum::EXPENSE,
+                    'amount' => 10000,
+                    'categoryId' => Category::factory()->create()->uuid,
+                    'detail' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+                    'date' => '2023-09-30 15:00:00'
+                ]
+            ]
+        ];
+
+        $response = $this->postJson(self::SAVE_MANY_OPERATOPMS_ROUTE, $data, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
+        $createdOperations = Operation::with('account')->whereHas('account', function ($query) {
+            $query->whereUserId($this->user->id);
+        })->get();
+        $monthlyStatistics = MonthlyStatistic::whereUserId($this->user->uuid)->get();
+        $monthlyByCategoryStats = MonthlyCategoryStatistic::whereUserId($this->user->uuid)->get();
+
+        $response->assertOk();
+        $this->assertFalse($response['status']);
+        $this->assertEquals(SubscriptionMessagesEnum::CANNOT_MAKE_OPERATION, $response['message']);
+        $this->assertCount(0, $createdOperations);
+        $this->assertEmpty($monthlyStatistics);
+        $this->assertEmpty($monthlyByCategoryStats);
+    }
+
+    private function buildSUT(int $nbLeftOperations = 10): array
     {
         $account = Account::factory()->create([
             'user_id' => $this->user->id,
@@ -185,7 +229,7 @@ class MakeManyOperationsActionTest extends TestCase
         SubscriberSubscription::factory()->create([
             'subscription_id' => $subscription->id,
             'user_id' => $this->user->id,
-            'nb_operations' => 10,
+            'nb_operations' => $nbLeftOperations,
         ]);
         return [
             'accountId' => $account->uuid,

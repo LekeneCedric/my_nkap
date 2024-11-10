@@ -41,4 +41,18 @@ class InMemorySubscriptionService implements SubscriptionService
     {
         // TODO: Implement retrieveOperation() method.
     }
+
+    public function checkIfCanCreateAccount(string $userId): void
+    {
+        // TODO: Implement checkIfCanCreateAccount() method.
+    }
+
+    /**
+     * @param string $userId
+     * @return void
+     */
+    public function checkIfCanMakeOperation(string $userId): void
+    {
+        // TODO: Implement checkIfCanMakeOperation() method.
+    }
 }

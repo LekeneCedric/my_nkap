@@ -2,6 +2,8 @@
 
 namespace App\Subscription\Infrastructure\Services;
 
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitAccountCreationException;
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitOperationException;
 use App\Subscription\Domain\Services\SubscriptionService;
 use App\Subscription\Infrastructure\Model\SubscriberSubscription;
 use App\Subscription\Infrastructure\Model\Subscription;
@@ -86,5 +88,33 @@ class EloquentSubscriptionService implements SubscriptionService
         SubscriberSubscription::whereUserId($user_id)->update([
             'nb_operations' => max($currentNbOperations - $count, 0),
         ]);
+    }
+
+    /**
+     * @param string $userId
+     * @return void
+     * @throws SubscriptionCannotPermitAccountCreationException
+     */
+    public function checkIfCanCreateAccount(string $userId): void
+    {
+        $user_id = User::select(['id'])->where('uuid', $userId)->first()->id;
+        $currentNbAccountsCanCreate = SubscriberSubscription::whereUserId($user_id)->first()->nb_accounts;
+        if ($currentNbAccountsCanCreate == 0) {
+            throw new SubscriptionCannotPermitAccountCreationException();
+        }
+    }
+
+    /**
+     * @param string $userId
+     * @return void
+     * @throws SubscriptionCannotPermitOperationException
+     */
+    public function checkIfCanMakeOperation(string $userId): void
+    {
+        $user_id = User::select(['id'])->where('uuid', $userId)->first()->id;
+        $currentNbOperations = SubscriberSubscription::whereUserId($user_id)->first()->nb_operations;
+        if ($currentNbOperations == 0) {
+            throw new SubscriptionCannotPermitOperationException();
+        }
     }
 }
