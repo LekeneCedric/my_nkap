@@ -15,10 +15,10 @@ interface SubscriptionService
     public function getUserSubscriptionData(string $userId): array;
 
     /**
-     * @param string $subscription_id
+     * @param string $subscriptionId
      * @return array
      */
-    public function getSubscriptionData(string $subscription_id): array;
+    public function getSubscriptionData(string $subscriptionId): array;
 
     /**
      * @param string $userId

@@ -141,8 +141,6 @@ class MakeOperationHandler implements CommandHandler
     private function completCommandWithAdditionalInformation(MakeOperationCommand|Command &$command): void
     {
         list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];
-//        $userId = $this->userRepository->userId();
-//        $command->userId = $userId;
         $command->year = $year;
         $command->month = $month;
         $command->monthlyStatsComposedId = $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $command->userId);

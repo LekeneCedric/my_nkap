@@ -19,7 +19,8 @@ class LogoutAction
                 'isLogout' => true,
                 'message' => UserMessagesEnum::LOGOUT
             ];
-        } catch (Exception) {
+        } catch (Exception $e) {
+            dd($e);
             $httpResponse['message'] = ErrorMessagesEnum::TECHNICAL;
         }
 

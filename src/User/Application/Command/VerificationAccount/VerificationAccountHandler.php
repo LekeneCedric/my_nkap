@@ -47,6 +47,9 @@ class VerificationAccountHandler
         $response->userData = [
             ...$user->publicInfo(),
             ...[
+                'subscriptionId' => $subscriptionData['subscriptionId'],
+                'subscriptionStatedAt' => $subscriptionData['start_date'],
+                'subscriptionEndAt' => $subscriptionData['end_date'],
                 'nbTokens' => $subscriptionData['nb_token'],
                 'nbOperations' => $subscriptionData['nb_operations'],
                 'nbAccounts' => $subscriptionData['nb_accounts'],

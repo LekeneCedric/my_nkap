@@ -36,6 +36,11 @@ class LoginAction
                 'nbTokens' => $response->leftNbToken,
                 'nbOperations' => $response->leftNbOperations,
                 'nbAccounts' => $response->leftNbAccounts,
+                'subscriptionId' => $response->subscriptionId,
+                'subscriptionStatedAt' => $response->subscriptionStartDate,
+                'subscriptionEndAt' => $response->subscriptionEndDate,
+                'nbTokensUpdatedAt' => $response->nbTokenUpdatedAt,
+                'nbOperationsUpdatedAt' => $response->nbOperationsUpdatedAt,
             ];
         } catch (NotFoundUserException) {
             $httpResponse['message'] = UserMessagesEnum::NOT_FOUND;

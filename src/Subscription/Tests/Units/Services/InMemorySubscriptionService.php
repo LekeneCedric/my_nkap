@@ -12,7 +12,7 @@ class InMemorySubscriptionService implements SubscriptionService
         return [];
     }
 
-    public function getSubscriptionData(string $subscription_id): array
+    public function getSubscriptionData(string $subscriptionId): array
     {
         return [];
     }

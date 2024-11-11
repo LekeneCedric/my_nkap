@@ -23,7 +23,6 @@ class LoginHandler
      * @param LoginCommand $command
      * @return LoginResponse
      * @throws NotFoundUserException
-     * @throws \Exception
      */
     public function handle(LoginCommand $command): LoginResponse
     {
@@ -42,7 +41,7 @@ class LoginHandler
           'profession' => Profession::where('id', $user->profession_id)->first()->name,
         ];
         $userSubscriptionData = $this->subscriptionService->getUserSubscriptionData($user->uuid);
-        $subscriptionData = $this->subscriptionService->getSubscriptionData($userSubscriptionData['subscription_id']);
+        $subscriptionData = $this->subscriptionService->getSubscriptionData($userSubscriptionData['subscriptionId']);
 
         $leftNbToken = $userSubscriptionData['nb_token'];
         $leftNbOperations = $userSubscriptionData['nb_operations'];
@@ -66,6 +65,11 @@ class LoginHandler
         $response->leftNbToken = $leftNbToken;
         $response->leftNbOperations = $leftNbOperations;
         $response->leftNbAccounts = $leftNbAccounts;
+        $response->subscriptionId = $userSubscriptionData['subscriptionId'];
+        $response->subscriptionStartDate = $userSubscriptionData['start_date'];
+        $response->subscriptionEndDate = $userSubscriptionData['end_date'];
+        $response->nbTokenUpdatedAt = $userSubscriptionData['nb_token_updated_at'];
+        $response->nbOperationsUpdatedAt = $userSubscriptionData['nb_operations_updated_at'];
         return $response;
     }
 }
