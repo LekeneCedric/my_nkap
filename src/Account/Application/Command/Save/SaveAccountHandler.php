@@ -10,11 +10,14 @@ use App\Account\Domain\Repository\AccountRepository;
 use App\Shared\Domain\VO\AmountVO;
 use App\Shared\Domain\VO\Id;
 use App\Shared\Domain\VO\StringVO;
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitAccountCreationException;
+use App\Subscription\Domain\Services\SubscriptionService;
 
 class SaveAccountHandler
 {
     public function __construct(
         private readonly AccountRepository $repository,
+        private readonly SubscriptionService $subscriptionService,
     )
     {
     }
@@ -24,6 +27,7 @@ class SaveAccountHandler
      * @return SaveAccountResponse
      * @throws NotFoundAccountException
      * @throws ErrorOnSaveAccountException
+     * @throws SubscriptionCannotPermitAccountCreationException
      */
     public function handle(SaveAccountCommand $command): SaveAccountResponse
     {
@@ -39,6 +43,10 @@ class SaveAccountHandler
                 balance: new AmountVO($command->balance),
                 isIncludeInTotalBalance: $command->isIncludeInTotalBalance,
             );
+        }
+        if (!$command->accountId) {
+            $this->subscriptionService->checkIfCanCreateAccount(userId: $command->userId);
+            $this->subscriptionService->updateNbAccounts(userId: $command->userId, count: -1);
         }
         $this->repository->save($account);
 

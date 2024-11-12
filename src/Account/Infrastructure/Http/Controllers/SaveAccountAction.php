@@ -12,6 +12,7 @@ use App\Shared\Domain\Notifications\Channel\ChannelNotificationContent;
 use App\Shared\Domain\Notifications\Channel\ChannelNotificationTypeEnum;
 use App\Shared\Infrastructure\Enums\ErrorLevelEnum;
 use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
+use App\Subscription\Domain\Exceptions\SubscriptionCannotPermitAccountCreationException;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -35,7 +36,12 @@ class SaveAccountAction
             $httpJson['isSaved'] = $response->isSaved;
             $httpJson['accountId'] = $response->accountId;
             $httpJson['message'] = $response->message;
-        } catch (NotFoundAccountException $e){
+        } catch (
+            NotFoundAccountException|
+            SubscriptionCannotPermitAccountCreationException
+        $e){
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = $e->getMessage();
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -45,11 +51,13 @@ class SaveAccountAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::INFO->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         } catch (ErrorOnSaveAccountException $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -59,13 +67,15 @@ class SaveAccountAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::WARNING->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         }
         catch (Exception $e) {
-            $httpJson['message'] = 'exeeee';
+            $file = $e->getFile();
+            $line = $e->getLine();
+            $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
             $channelNotification->send(
                 new ChannelNotificationContent(
                     type: ChannelNotificationTypeEnum::ISSUE,
@@ -74,7 +84,7 @@ class SaveAccountAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

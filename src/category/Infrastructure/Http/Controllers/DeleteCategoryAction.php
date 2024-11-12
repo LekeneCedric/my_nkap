@@ -45,6 +45,8 @@ class DeleteCategoryAction
         } catch (
         NotFoundUserCategoryException|
         NotFoundCategoryException $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
             $logger->Log(
                 message: $e->getMessage(),
@@ -59,11 +61,13 @@ class DeleteCategoryAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::WARNING->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         } catch (Exception $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
             $logger->Log(
                 message: $e->getMessage(),
@@ -78,7 +82,7 @@ class DeleteCategoryAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

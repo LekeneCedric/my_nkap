@@ -41,6 +41,8 @@ class GetAllMonthlyStatisticsAction
                 'data' => $data
             ];
         } catch (Exception $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $channelNotification->send(
                 new ChannelNotificationContent(
                     type: ChannelNotificationTypeEnum::ISSUE,
@@ -49,7 +51,7 @@ class GetAllMonthlyStatisticsAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

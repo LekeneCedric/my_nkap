@@ -2,6 +2,7 @@
 
 namespace App\User\Tests\e2e;
 
+use App\Subscription\Infrastructure\Model\SubscriberSubscription;
 use App\User\Domain\Enums\UserStatusEnum;
 use App\User\Domain\VO\VerificationCodeVO;
 use App\User\Infrastructure\Models\User;
@@ -47,32 +48,8 @@ class AuthenticationTest extends TestCase
         $this->assertEquals(UserStatusEnum::PENDING->value, $createdUser->status);
         $this->assertNotNull($createdUser->verification_code);
         $this->assertNotNull($createdUser);
-        $this->assertEquals($response['aiToken'], $createdUser->token);
     }
 
-    public function test_can_activate_account_after_registration()
-    {
-        $userEmail = 'lekene@gmail.com';
-        $verificationCode = new VerificationCodeVO();
-        UserSUT::asSUT()
-            ->withExistingUser(
-                email: $userEmail,
-                status: UserStatusEnum::PENDING,
-                verificationCode: $verificationCode,
-            )
-            ->build();
-
-        $data = [
-          'email' => $userEmail,
-          'code' =>  $verificationCode->verificationCode(),
-        ];
-
-        $response = $this->postJson(self::VERIFICATION_ACCOUNT, $data);
-        $updatedUser = User::where('email', $userEmail)->first();
-
-        $response->assertOk();
-        $this->assertEquals(UserStatusEnum::ACTIVE->value, $updatedUser->status);
-    }
     public function test_can_throw_message_if_already_exist_user_with_same_email()
     {
         $email = 'lekene@gmail.com';
@@ -156,5 +133,60 @@ class AuthenticationTest extends TestCase
        ])->postJson('api/users/logout');
 
        $this->assertNotNull($response['message']);
+    }
+
+    public function test_can_activate_account_after_registration()
+    {
+        $userEmail = 'lekene@gmail.com';
+        $verificationCode = new VerificationCodeVO();
+        UserSUT::asSUT()
+            ->withExistingUser(
+                email: $userEmail,
+                status: UserStatusEnum::PENDING,
+                verificationCode: $verificationCode,
+            )
+            ->build();
+
+        $data = [
+            'email' => $userEmail,
+            'code' =>  $verificationCode->verificationCode(),
+        ];
+
+        $response = $this->postJson(self::VERIFICATION_ACCOUNT, $data);
+        $updatedUser = User::where('email', $userEmail)->first();
+
+        $response->assertOk();
+        $this->assertEquals(UserStatusEnum::ACTIVE->value, $updatedUser->status);
+    }
+
+    public function test_can_subscribe_user_after_verified_account()
+    {
+        $userEmail = 'lekene@gmail.com';
+        $verificationCode = new VerificationCodeVO();
+        UserSUT::asSUT()
+            ->withExistingUser(
+                email: $userEmail,
+                status: UserStatusEnum::PENDING,
+                verificationCode: $verificationCode,
+                withSubscription: false,
+            )
+            ->build();
+
+        $data = [
+            'email' => $userEmail,
+            'code' =>  $verificationCode->verificationCode(),
+        ];
+
+        $userCurrenSubscription = SubscriberSubscription::whereUserId(User::where('email', $userEmail)->first()->id)->first();
+        $this->assertNull($userCurrenSubscription);
+
+        $response = $this->postJson(self::VERIFICATION_ACCOUNT, $data);
+        $updatedUser = User::where('email', $userEmail)->first();
+
+        $response->assertOk();
+        $this->assertEquals(UserStatusEnum::ACTIVE->value, $updatedUser->status);
+        $this->assertDatabaseHas('subscriber_subscriptions', [
+           'user_id' => $updatedUser->id,
+        ]);
     }
 }

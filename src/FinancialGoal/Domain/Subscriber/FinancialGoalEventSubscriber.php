@@ -14,7 +14,7 @@ use Exception;
 class FinancialGoalEventSubscriber implements DomainEventSubscriber
 {
     public function __construct(
-        private FinancialGoalRepository $financialGoalRepository,
+        private readonly FinancialGoalRepository $financialGoalRepository,
     )
     {
     }

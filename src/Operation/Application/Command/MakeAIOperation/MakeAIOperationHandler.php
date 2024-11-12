@@ -8,6 +8,7 @@ use App\Operation\Domain\OperationsMessagesEnum;
 use App\Operation\Domain\OperationUser;
 use App\Operation\Domain\Services\AIService;
 use App\Operation\Domain\Services\GetOperationUserService;
+use App\Subscription\Domain\Services\SubscriptionService;
 use App\User\Domain\Exceptions\NotFoundUserException;
 use App\User\Domain\Repository\UserRepository;
 
@@ -15,8 +16,7 @@ class MakeAIOperationHandler
 {
     public function __construct(
         private AIService $AIService,
-        private GetOperationUserService $getOperationUserService,
-        private UserRepository $userRepository,
+        private SubscriptionService $subscriptionService,
     )
     {
     }
@@ -26,12 +26,10 @@ class MakeAIOperationHandler
      * @return MakeAIOperationResponse
      * @throws AIOperationEmptyMessageException
      * @throws EmptyCategoriesException
-     * @throws NotFoundUserException
      */
     public function handle(MakeAIOperationCommand $command): MakeAIOperationResponse
     {
         $response = new MakeAIOperationResponse();
-        $user = $this->getUserOrThrowNotFoundException($command->userId);
         if (empty($command->categories)) {
             throw new EmptyCategoriesException();
         }
@@ -47,8 +45,10 @@ class MakeAIOperationHandler
         );
         $response->operationOk = $makeAIOperationResponse->operationIsOk();
         if ($response->operationOk) {
-            $user->retrievedConsumedToken($makeAIOperationResponse->consumedToken());
-            $this->userRepository->updateToken($user);
+            $this->subscriptionService->retrieveUserToken(
+                userId: $command->userId,
+                consumedToken: $makeAIOperationResponse->consumedToken()
+            );
             $response->operations = $makeAIOperationResponse->operations();
             $response->consumedToken = $makeAIOperationResponse->consumedToken();
         }
@@ -56,19 +56,5 @@ class MakeAIOperationHandler
             $response->message = OperationsMessagesEnum::AIOperationFailed;
         }
         return $response;
-    }
-
-    /**
-     * @param string $userId
-     * @return OperationUser
-     * @throws NotFoundUserException
-     */
-    private function getUserOrThrowNotFoundException(string $userId): OperationUser
-    {
-        $user = $this->getOperationUserService->execute($userId);
-        if (!$user) {
-            throw new NotFoundUserException();
-        }
-        return $user;
     }
 }

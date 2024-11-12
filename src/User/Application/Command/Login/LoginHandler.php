@@ -3,6 +3,7 @@
 namespace App\User\Application\Command\Login;
 
 use App\Shared\Domain\VO\DateVO;
+use App\Subscription\Domain\Services\SubscriptionService;
 use App\User\Domain\Enums\UserTokenEnum;
 use App\User\Infrastructure\Exceptions\NotFoundUserException;
 use App\User\Infrastructure\Models\Profession;
@@ -11,6 +12,12 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginHandler
 {
+
+    public function __construct(
+        private readonly SubscriptionService $subscriptionService,
+    )
+    {
+    }
 
     /**
      * @param LoginCommand $command
@@ -33,22 +40,36 @@ class LoginHandler
           'name' => $user->name,
           'profession' => Profession::where('id', $user->profession_id)->first()->name,
         ];
-        $aiToken = $user->token;
-        $aiTokenUpdatedAt = new DateVO($user->token_updated_at);
-        if ($aiTokenUpdatedAt->isFromPreviousDay()) {
-            $aiToken = UserTokenEnum::DEFAULT_TOKEN;
-            User::whereUuid($user->uuid)
-                ->update([
-                    'token' => $aiToken,
-                    'token_updated_at' => $aiTokenUpdatedAt->formatYMDHIS(),
-                ]);
+        $userSubscriptionData = $this->subscriptionService->getUserSubscriptionData($user->uuid);
+        $subscriptionData = $this->subscriptionService->getSubscriptionData($userSubscriptionData['subscriptionId']);
+
+        $leftNbToken = $userSubscriptionData['nb_token'];
+        $leftNbOperations = $userSubscriptionData['nb_operations'];
+        $leftNbAccounts = $userSubscriptionData['nb_accounts'];
+        $leftTokenUpdatedAt = new DateVO(date("Y-m-d H:i:s", $userSubscriptionData['nb_token_updated_at']));
+        $leftNbOperationsUpdatedAt = new DateVO(date("Y-m-d H:i:s", $userSubscriptionData['nb_operations_updated_at']));
+
+        if ($leftTokenUpdatedAt->isFromPreviousDay()) {
+            $leftNbToken = $subscriptionData['nb_token_per_day'];
+            $this->subscriptionService->updateUserToken($user->uuid, $leftNbToken);
+        }
+        if ($leftNbOperationsUpdatedAt->isFromPreviousDay()) {
+            $leftNbOperations = $subscriptionData['nb_operations_per_day'];
+            $this->subscriptionService->updateUserNbOperations($user->uuid, $leftNbOperations);
         }
         $token = $user->createToken(env('TOKEN_KEY'))->plainTextToken;
 
         $response->isLogged = true;
         $response->user  = $userData;
         $response->token = $token;
-        $response->aiToken = $aiToken;
+        $response->leftNbToken = $leftNbToken;
+        $response->leftNbOperations = $leftNbOperations;
+        $response->leftNbAccounts = $leftNbAccounts;
+        $response->subscriptionId = $userSubscriptionData['subscriptionId'];
+        $response->subscriptionStartDate = $userSubscriptionData['start_date'];
+        $response->subscriptionEndDate = $userSubscriptionData['end_date'];
+        $response->nbTokenUpdatedAt = $userSubscriptionData['nb_token_updated_at'];
+        $response->nbOperationsUpdatedAt = $userSubscriptionData['nb_operations_updated_at'];
         return $response;
     }
 }

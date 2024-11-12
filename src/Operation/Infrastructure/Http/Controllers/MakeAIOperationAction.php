@@ -47,7 +47,6 @@ class MakeAIOperationAction
             ];
         } catch (
             AIOperationEmptyMessageException
-            |NotFoundUserException
             |EmptyCategoriesException $e) {
             $logger->Log(
                 message: $e->getMessage(),
@@ -63,6 +62,8 @@ class MakeAIOperationAction
             );
             $httpResponse['message'] = ErrorMessagesEnum::TECHNICAL;
         } catch (Exception $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $logger->Log(
                 message: $e->getMessage(),
                 level: LogLevelEnum::CRITICAL,
@@ -76,7 +77,7 @@ class MakeAIOperationAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

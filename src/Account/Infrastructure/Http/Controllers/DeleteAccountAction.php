@@ -34,6 +34,8 @@ class DeleteAccountAction
             $httpJson['isDeleted'] = $response->isDeleted;
             $httpJson['message'] = $response->message;
         } catch (NotFoundAccountException $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = $e->getMessage();
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -43,11 +45,13 @@ class DeleteAccountAction
                         'level' => ErrorLevelEnum::INFO->value,
                         'message' => $e->getMessage(),
                         'command' => json_encode(['accountId' => $accountId], JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         } catch (Exception $e) {
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -56,7 +60,7 @@ class DeleteAccountAction
                         'module' => 'Accounts',
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode(['accountId' => $accountId], JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

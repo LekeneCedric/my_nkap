@@ -14,6 +14,8 @@ use App\Operation\Tests\Units\Services\InMemoryAIService;
 use App\Operation\Tests\Units\Services\InMemoryGetOperationUserService;
 use App\Shared\Domain\VO\DateVO;
 use App\Shared\Domain\VO\Id;
+use App\Subscription\Domain\Services\SubscriptionService;
+use App\Subscription\Tests\Units\Services\InMemorySubscriptionService;
 use App\User\Domain\Exceptions\NotFoundUserException;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Tests\Units\Repository\InMemoryUserRepository;
@@ -22,26 +24,34 @@ use Tests\TestCase;
 class MakeAIOperationsTest extends TestCase
 {
     private AIService $AIService;
-    private GetOperationUserService $getOperationUserService;
-    private UserRepository $userRepository;
+    private SubscriptionService $subscriptionService;
     public function setUp(): void
     {
         parent::setUp();
         $this->AIService = new InMemoryAIService();
-        $this->getOperationUserService = new InMemoryGetOperationUserService();
-        $this->userRepository = new InMemoryUserRepository();
+        $this->subscriptionService = new InMemorySubscriptionService();
     }
 
     /**
+     * @return void
      * @throws AIOperationEmptyMessageException
      * @throws EmptyCategoriesException
-     * @throws NotFoundUserException
      */
     public function test_can_make_ai_operation()
     {
         $initSUT = $this->buildSUT();
         $command = new MakeAIOperationCommand(
             userId: $initSUT['userId'],
+            accounts: [
+                [
+                    'id' => (new Id())->value(),
+                    'label' => 'Account 1',
+                ],
+                [
+                    'id' => (new Id())->value(),
+                    'label' => 'Account 2',
+                ],
+            ],
             categories: [
                 [
                     'id' => (new Id())->value(),
@@ -60,24 +70,23 @@ class MakeAIOperationsTest extends TestCase
 
         $response = $this->makeAIOperation($command);
 
-        $user = $this->getOperationUserService->users[$initSUT['userId']];
         $this->assertTrue($response->operationOk);
         $this->assertNotEmpty($response->consumedToken);
         $this->assertNotNull($response->operations);
-        $this->assertEquals(0, $user->token());
     }
+//#TODO: SHOULD TEST SUBSCRIPTION SERVICE RETRIEVE TOKEN
 
     /**
-     * @throws EmptyCategoriesException
+     * @param MakeAIOperationCommand $command
+     * @return MakeAIOperationResponse
      * @throws AIOperationEmptyMessageException
-     * @throws NotFoundUserException
+     * @throws EmptyCategoriesException
      */
     private function makeAIOperation(MakeAIOperationCommand $command): MakeAIOperationResponse
     {
         $handler = new MakeAIOperationHandler(
             AIService: $this->AIService,
-            getOperationUserService: $this->getOperationUserService,
-            userRepository: $this->userRepository,
+            subscriptionService: $this->subscriptionService,
         );
         return $handler->handle($command);
     }
@@ -88,11 +97,6 @@ class MakeAIOperationsTest extends TestCase
     private function buildSUT(): array
     {
         $userId = new Id();
-        $this->getOperationUserService->users[$userId->value()] = OperationUser::create(
-            id: $userId,
-            aiToken: 100,
-            updatedTokenDate: new DateVO(),
-        );
         return [
             'userId' => $userId->value(),
         ];

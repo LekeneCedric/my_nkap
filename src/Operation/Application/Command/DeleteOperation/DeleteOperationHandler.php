@@ -20,6 +20,7 @@ use App\Shared\Infrastructure\Enums\ErrorMessagesEnum;
 use App\Statistics\Infrastructure\Trait\StatisticsComposedIdBuilderTrait;
 use App\User\Domain\Repository\UserRepository;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class DeleteOperationHandler implements CommandHandler
 {
@@ -40,6 +41,7 @@ class DeleteOperationHandler implements CommandHandler
     public function handle(DeleteOperationCommand|Command $command): DeleteOperationResponse
     {
         $response = new DeleteOperationResponse();
+        DB::beginTransaction();
         try {
             $operationAccount = $this->getOperationAccountOrThrowException($command);
             $operationAccount->deleteOperation(new Id($command->operationId));
@@ -54,13 +56,16 @@ class DeleteOperationHandler implements CommandHandler
                 $operationAccount->currentOperation()->categoryId()->value(),
             );
             $operationAccount->publishOperationDeleted($command);
-
+            DB::commit();
             $response->message = OperationsMessagesEnum::DELETED;
             $response->isDeleted = true;
         } catch (
         NotFoundAccountException|
         NotFoundOperationException $e
         ) {
+            DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $response->message = $e->getMessage();
             $this->channelNotification->send(
                 new ChannelNotificationContent(
@@ -70,11 +75,14 @@ class DeleteOperationHandler implements CommandHandler
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::WARNING->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         } catch (Exception $e) {
+            DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $response->message = ErrorMessagesEnum::TECHNICAL;
             $this->channelNotification->send(
                 new ChannelNotificationContent(
@@ -84,7 +92,7 @@ class DeleteOperationHandler implements CommandHandler
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
@@ -108,14 +116,15 @@ class DeleteOperationHandler implements CommandHandler
     }
 
     private function completeCommandWithAdditionalInformations(
-        DeleteOperationCommand|Command &$command,
+        DeleteOperationCommand|Command $command,
         float                          $amount,
-        string                         $date,
+        string                         $operationDate,
         OperationTypeEnum              $type,
         string                         $categoryId
     ): void
     {
-        list($year, $month) = [(new DateVO($command->date))->year(), (new DateVO($command->date))->month()];
+        list($year, $month) = [(new DateVO($operationDate))->year(), (new DateVO($operationDate))->month()];
+
         $userId = $this->userRepository->userId();
         $command->userId = $userId;
         $command->year = $year;
@@ -123,7 +132,7 @@ class DeleteOperationHandler implements CommandHandler
         $command->categoryId = $categoryId;
         $command->previousAmount = $amount;
         $command->newAmount = $amount;
-        $command->date = $date;
+        $command->date = $operationDate;
         $command->type = $type;
         $command->isDeleted = true;
         $command->monthlyStatisticsComposedId = $this->buildMonthlyStatisticsComposedId(month: $month, year: $year, userId: $userId);

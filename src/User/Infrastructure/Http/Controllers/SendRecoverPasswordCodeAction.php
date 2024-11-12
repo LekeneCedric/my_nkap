@@ -52,6 +52,8 @@ class SendRecoverPasswordCodeAction
             $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
         } catch (NotFoundUserException $e) {
             DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = UserMessagesEnum::NOT_FOUND;
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -61,12 +63,14 @@ class SendRecoverPasswordCodeAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::WARNING->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );
         } catch (ErrorOnSaveUserException|Exception $e) {
             DB::rollBack();
+            $file = $e->getFile();
+            $line = $e->getLine();
             $httpJson['message'] = ErrorMessagesEnum::TECHNICAL;
             $channelNotification->send(
                 new ChannelNotificationContent(
@@ -76,7 +80,7 @@ class SendRecoverPasswordCodeAction
                         'message' => $e->getMessage(),
                         'level' => ErrorLevelEnum::CRITICAL->value,
                         'command' => json_encode($command, JSON_PRETTY_PRINT),
-                        'trace' => $e->getTraceAsString()
+                        'trace' => "Error in file: $file on line: $line"
                     ],
                 )
             );

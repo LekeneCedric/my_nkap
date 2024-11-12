@@ -15,7 +15,6 @@ use InvalidArgumentException;
 
 class DeleteOperationAction
 {
-
     public function __invoke(
         ChannelNotification $channelNotification,
         DeleteOperationHandler $handler,
