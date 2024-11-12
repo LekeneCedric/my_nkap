@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 
-class DumpFakeData extends Command
+class DumpFakeDataCommand extends Command
 {
 
     protected $signature = 'data:dump-fake';

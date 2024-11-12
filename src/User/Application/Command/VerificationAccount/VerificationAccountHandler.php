@@ -12,10 +12,11 @@ use App\User\Domain\Exceptions\VerificationCodeNotMatchException;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\User;
 use App\User\Infrastructure\Models\User as UserModel;
+
 class VerificationAccountHandler
 {
     public function __construct(
-        private UserRepository $userRepository,
+        private UserRepository      $userRepository,
         private SubscriptionService $subscriptionService,
     )
     {
@@ -44,18 +45,18 @@ class VerificationAccountHandler
 
         $response->accountVerified = true;
         $response->message = UserMessagesEnum::ACCOUNT_VERIFIED;
-        $response->userData = [
-            ...$user->publicInfo(),
-            ...[
-                'subscriptionId' => $subscriptionData['subscriptionId'],
-                'subscriptionStatedAt' => $subscriptionData['start_date'],
-                'subscriptionEndAt' => $subscriptionData['end_date'],
-                'nbTokens' => $subscriptionData['nb_token'],
-                'nbOperations' => $subscriptionData['nb_operations'],
-                'nbAccounts' => $subscriptionData['nb_accounts'],
-                'nbTokensUpdatedAt' => $subscriptionData['nb_token_updated_at'],
-                'nbOperationsUpdatedAt' => $subscriptionData['nb_operations_updated_at'],
-            ]
+        $response->userData = $user->publicInfo();
+        $response->subscriptionData = [
+            'nbTokens' => $subscriptionData['nb_token'],
+            'nbOperations' => $subscriptionData['nb_operations'],
+            'nbAccounts' => $subscriptionData['nb_accounts'],
+            'subscriptionId' => $subscriptionData['subscriptionId'],
+            'subscriptionStatedAt' => $subscriptionData['start_date'],
+            'subscriptionEndAt' => $subscriptionData['end_date'],
+            'nbTokensUpdatedAt' => $subscriptionData['nb_token_updated_at'],
+            'nbOperationsUpdatedAt' => $subscriptionData['nb_operations_updated_at'],
+            'nbTokensPerDay' => $subscriptionData['nb_token_per_day'],
+            'nbOperationsPerDay' => $subscriptionData['nb_operations_per_day'],
         ];
         $response->countUsers = UserModel::where('status', UserStatusEnum::ACTIVE)
             ->where('is_deleted', 0)

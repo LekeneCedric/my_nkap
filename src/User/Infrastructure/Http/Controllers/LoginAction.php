@@ -41,6 +41,8 @@ class LoginAction
                 'subscriptionEndAt' => $response->subscriptionEndDate,
                 'nbTokensUpdatedAt' => $response->nbTokenUpdatedAt,
                 'nbOperationsUpdatedAt' => $response->nbOperationsUpdatedAt,
+                'nbTokensPerDay' => $response->nbTokenPerDay,
+                'nbOperationsPerDay' => $response->nbOperationsPerDay,
             ];
         } catch (NotFoundUserException) {
             $httpResponse['message'] = UserMessagesEnum::NOT_FOUND;
