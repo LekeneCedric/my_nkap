@@ -22,4 +22,9 @@ class InMemorySubscriptionRepository implements SubscriptionRepository
     {
         return null;
     }
+
+    public function all(string $userId): array
+    {
+        return [];
+    }
 }

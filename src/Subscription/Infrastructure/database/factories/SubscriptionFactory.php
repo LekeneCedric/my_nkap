@@ -15,6 +15,7 @@ class SubscriptionFactory extends Factory
         return [
             'uuid' => $this->faker->uuid,
             'name' => SubscriptionPlansEnum::FREE_PLAN->name,
+            'description' => $this->faker->name,
             'price' => $this->faker->numberBetween(0, 0),
             'nb_token_per_day' => $this->faker->numberBetween(0, 0),
             'nb_operations_per_day' => $this->faker->numberBetween(0, 0),
