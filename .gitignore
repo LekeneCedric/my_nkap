@@ -19,3 +19,5 @@ yarn-error.log
 /.vscode
 phpunit.xml
 .env
+docker-compose.yml
+.env.deploy
