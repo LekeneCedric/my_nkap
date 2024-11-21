@@ -19,9 +19,10 @@ class EloquentSubscriptionService implements SubscriptionService
     {
         $user_id = User::select(['id'])->where('uuid', $userId)->first()->id;
         $subscriberSubscription = SubscriberSubscription::whereUserId($user_id)->first();
-        $subscriptionId = Subscription::select(['uuid'])->whereId($subscriberSubscription->subscription_id)->first()->uuid;
+        $subscriptionData = Subscription::select(['uuid', 'nb_token_per_day', 'nb_operations_per_day'])
+            ->whereId($subscriberSubscription->subscription_id)->first();
         return [
-            'subscriptionId' => $subscriptionId,
+            'subscriptionId' => $subscriptionData->uuid,
             'start_date' => $subscriberSubscription->start_date,
             'end_date' => $subscriberSubscription->end_date,
             'nb_token' => $subscriberSubscription->nb_token,
@@ -29,6 +30,8 @@ class EloquentSubscriptionService implements SubscriptionService
             'nb_accounts' => $subscriberSubscription->nb_accounts,
             'nb_token_updated_at' => $subscriberSubscription->nb_token_updated_at,
             'nb_operations_updated_at' => $subscriberSubscription->nb_operations_updated_at,
+            'nb_token_per_day' => $subscriptionData->nb_token_per_day,
+            'nb_operations_per_day' => $subscriptionData->nb_operations_per_day
         ];
     }
 

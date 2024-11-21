@@ -2,6 +2,7 @@
 
 namespace App\Subscription\Domain\Repository;
 
+use App\Subscription\Application\Query\all\SubscriptionDto;
 use App\Subscription\Domain\Enums\SubscriptionPlansEnum;
 use App\Subscription\Domain\Subscription;
 
@@ -18,4 +19,10 @@ interface SubscriptionRepository
      * @return Subscription|null
      */
     public function ofPlan(SubscriptionPlansEnum $plan): ?Subscription;
+
+    /**
+     * @param string $userId
+     * @return SubscriptionDto[]
+     */
+    public function all(string $userId): array;
 }

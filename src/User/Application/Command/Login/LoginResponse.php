@@ -15,4 +15,6 @@ class LoginResponse
     public int $subscriptionEndDate = 0;
     public int $nbTokenUpdatedAt = 0;
     public int $nbOperationsUpdatedAt = 0;
+    public int $nbTokenPerDay = 0;
+    public int $nbOperationsPerDay = 0;
 }

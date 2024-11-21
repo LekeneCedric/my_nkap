@@ -3,6 +3,7 @@
 namespace App\Subscription\Tests\E2E;
 
 use App\Shared\Domain\VO\Id;
+use App\Subscription\Domain\Enums\SubscriptionPlansEnum;
 use App\Subscription\Infrastructure\Model\SubscriberSubscription;
 use App\Subscription\Infrastructure\Model\Subscription;
 use App\User\Infrastructure\Models\Profession;
@@ -11,12 +12,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
-class SubscriptionActionTest extends TestCase
+class GetAllSubscriptionsActionTest extends TestCase
 {
     use RefreshDatabase;
-    const SUBSCRIPTION_URL = 'api/subscriptions/subscribe';
 
-    protected function setUp(): void
+    const GET_ALL_SUBSCRIPTION_URL = 'api/subscriptions/all';
+
+    public function setUp(): void
     {
         parent::setUp();
         DB::rollBack();
@@ -30,32 +32,30 @@ class SubscriptionActionTest extends TestCase
         $this->token = $this->user->createToken('my_nkap_token')->plainTextToken;
     }
 
-    public function test_can_subscribe()
+    public function test_can_get_all_subscriptions_for_user()
     {
-        $initSUT = $this->buildSUT();
+        $this->buildSUT();
 
         $data = [
             'userId' => $this->user->uuid,
-            'subscriptionId' => Subscription::factory()->create()->uuid,
-            'nbMonth' => 12,
         ];
 
-        $response = $this->postJson(self::SUBSCRIPTION_URL, $data, [
+        $response = $this->postJson(self::GET_ALL_SUBSCRIPTION_URL, $data, [
             'Authorization' => 'Bearer '.$this->token,
         ]);
 
+        $response->dd();
         $response->assertOk();
-        $this->assertTrue($response['isSubscribed']);
-        $this->assertDatabaseHas('subscriber_subscriptions', [
-           'user_id' => $this->user->id,
-           'subscription_id' =>  $initSUT['subscription_id'],
-        ]);
+        $this->assertTrue($response['status']);
+        $this->assertNotEmpty($response['subscriptions']);
     }
-
 
     private function buildSUT(): array
     {
         $subscription = Subscription::factory()->create();
+        Subscription::factory()->create([
+            'name' => SubscriptionPlansEnum::STANDARD_PLAN->name
+        ]);
         SubscriberSubscription::factory()->create([
             'user_id' => $this->user->id,
             'subscription_id' => $subscription->id,

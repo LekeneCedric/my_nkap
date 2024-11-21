@@ -33,6 +33,7 @@ class DumpSubscriptionsCommand extends Command
             [
                 'uuid' => Uuid::uuid4()->toString(),
                 'name' => SubscriptionPlansEnum::FREE_PLAN->value,
+                'description' => 'Best for individuals with basic tracking needs and minimal daily usage.',
                 'price' => 0.0,
                 'nb_token_per_day' => 5000,
                 'nb_operations_per_day' => 30,
@@ -41,6 +42,7 @@ class DumpSubscriptionsCommand extends Command
             [
                 'uuid' => Uuid::uuid4()->toString(),
                 'name' => SubscriptionPlansEnum::STANDARD_PLAN->value,
+                'description' => 'Ideal for regular users who want more flexibility and control over their finances.',
                 'price' => 5.0,
                 'nb_token_per_day' => 10000,
                 'nb_operations_per_day' => 100,
@@ -49,6 +51,7 @@ class DumpSubscriptionsCommand extends Command
             [
                 'uuid' => Uuid::uuid4()->toString(),
                 'name' => SubscriptionPlansEnum::PREMIUM_PLAN->value,
+                'description' => 'Perfect for power users or families needing extensive financial tracking and advanced features.',
                 'price' => 15.0,
                 'nb_token_per_day' => 20000,
                 'nb_operations_per_day' => 500,

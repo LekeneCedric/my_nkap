@@ -21,7 +21,7 @@ use InvalidArgumentException;
 class VerificationAccountAction
 {
     public function __invoke(
-        ChannelNotification $channelNotification,
+        ChannelNotification        $channelNotification,
         VerificationAccountHandler $handler,
         Request                    $request,
     ): JsonResponse
@@ -40,6 +40,7 @@ class VerificationAccountAction
                 'status' => true,
                 'message' => $response->message,
                 'accountVerified' => $response->accountVerified,
+                'subscriptionData' => $response->subscriptionData
             ];
 
             $channelNotification->send(
