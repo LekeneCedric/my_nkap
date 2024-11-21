@@ -78,6 +78,7 @@ class GeminiAIService implements AIService
         ];
         // Make the HTTP call
         $result = HttpClient::httpCall($apiUrl, 'POST', $headers, $requestBody);
+
         if (!$result) {
             return new MakeAIOperationServiceResponseVO(
                 operations: [],

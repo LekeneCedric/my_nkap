@@ -43,6 +43,7 @@ class MakeAIOperationHandler
             currentDate: $command->currentDate,
             language: $command->language
         );
+
         $response->operationOk = $makeAIOperationResponse->operationIsOk();
         if ($response->operationOk) {
             $this->subscriptionService->retrieveUserToken(
